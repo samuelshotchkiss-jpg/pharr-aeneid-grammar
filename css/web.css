@@ -3,6 +3,106 @@
    Presentation/behavior that must NOT reach the printed page: page chrome,
    the minimizable left nav (TOC + search), term tooltips, the search page,
    hover/:target affordances.
-   Intentionally empty of rules today -- the source had no screen-scoped
-   rules. Screen-only styling lands here as the web features are built.
+   Built so far: the navigation panel + search-bar behavior (DESIGN.md 5a/5b).
+   Tooltips (5c) and the search page (5d) land here in later threads.
    ========================================================================= */
+
+:root{
+  --nav-w:290px;
+  --nav-bg:#fbfcfe;
+  --nav-edge:#e7d9a8;       /* warm hairline, kept clear of ochre's editorial role */
+}
+
+/* ---- room for the docked panel (desktop only; never on print) -------- */
+@media screen and (min-width:821px){
+  body:not(.nav-collapsed){ padding-left:var(--nav-w); transition:padding-left .22s ease; }
+}
+
+/* ---- panel shell ----------------------------------------------------- */
+.navpanel{
+  position:fixed; top:0; left:0; bottom:0; width:var(--nav-w);
+  display:flex; flex-direction:column; gap:.5rem;
+  background:var(--nav-bg); border-right:1px solid var(--line);
+  box-shadow:0 0 18px rgba(20,40,80,.06);
+  z-index:50; padding:.7rem .7rem 1rem;
+  transform:translateX(0); transition:transform .22s ease;
+  font-size:.92rem; overflow:hidden;
+}
+.nav-collapsed .navpanel{ transform:translateX(-100%); }
+
+/* search row */
+.nav-search{ display:flex; gap:.4rem; align-items:center; flex:0 0 auto; }
+.nav-search-input{
+  flex:1 1 auto; min-width:0; font:inherit; font-size:.95rem;
+  padding:.42rem .55rem; border:1px solid var(--line); border-radius:7px;
+  background:#fff; color:var(--ink);
+}
+.nav-search-input:focus{ outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent); }
+.nav-min{
+  flex:0 0 auto; cursor:pointer; border:1px solid var(--line); border-radius:7px;
+  background:#fff; color:var(--muted); width:2rem; height:2rem; font-size:1.1rem; line-height:1;
+}
+.nav-min:hover{ background:var(--fill1); color:var(--ink); }
+
+/* floating re-open button (visible only when collapsed) */
+.nav-open{
+  position:fixed; top:.7rem; left:.7rem; z-index:49; display:none;
+  cursor:pointer; width:2.5rem; height:2.5rem; font-size:1.2rem; line-height:1;
+  border:1px solid var(--line); border-radius:9px; background:var(--nav-bg); color:var(--head);
+  box-shadow:0 2px 8px rgba(20,40,80,.12);
+}
+.nav-collapsed .nav-open{ display:block; }
+.nav-open:hover{ background:#fff; }
+
+/* backdrop (mobile overlay only) */
+.nav-backdrop{ display:none; position:fixed; inset:0; background:rgba(15,25,45,.42); z-index:40; }
+
+/* ---- dropdown (index mirror) & results (Enter search) ---------------- */
+.nav-dropdown, .nav-results{
+  flex:0 1 auto; overflow:auto; border:1px solid var(--line); border-radius:8px;
+  background:#fff; padding:.35rem; max-height:46vh;
+}
+.nav-dd-head, .nav-res-head{
+  font-size:.78rem; color:var(--muted); padding:.15rem .3rem .35rem; border-bottom:1px solid var(--line);
+  margin-bottom:.3rem;
+}
+.nav-dd-empty{ font-size:.85rem; color:var(--muted); padding:.4rem .3rem; }
+.nav-dd-item{ margin:.1rem 0; padding:.18rem .3rem; border-radius:5px; font-size:.85rem; }
+.nav-dd-item:hover{ background:var(--fill2); }
+.nav-dd-item .lemma{ font-weight:700; }
+.nav-dd-more{ font-size:.78rem; color:var(--muted); padding:.35rem .3rem 0; font-style:italic; }
+
+.nav-res-item{ display:flex; gap:.4rem; padding:.28rem .3rem; border-radius:5px; text-decoration:none; color:var(--ink); }
+.nav-res-item:hover{ background:var(--fill2); }
+.nav-res-num{ flex:0 0 auto; font-weight:700; color:var(--accent-deep); min-width:2.2rem; }
+.nav-res-snip{ font-size:.82rem; color:var(--muted); }
+.nav-res-snip mark, .nav-dd-item mark{ background:#ffe9a8; color:inherit; padding:0 1px; border-radius:2px; }
+.nav-allinstances{ font-size:.78rem; color:var(--muted); font-style:italic; padding:.45rem .3rem .2rem; border-top:1px dashed var(--line); margin-top:.35rem; }
+
+/* ---- table of contents ---------------------------------------------- */
+.nav-toc{ flex:1 1 auto; overflow:auto; padding-right:.2rem; }
+.nav-toc ul{ list-style:none; margin:0; padding:0; }
+.nav-toc a{ display:block; text-decoration:none; color:var(--ink); border-radius:5px; }
+.nav-toc a:hover{ background:var(--fill1); color:var(--accent-deep); }
+.toc-i1 > a{ font-weight:700; color:var(--head); padding:.32rem .4rem; margin-top:.25rem; }
+.toc-l2{ margin:0 0 .35rem; }
+.toc-i2 > a{ font-size:.86rem; color:var(--muted); padding:.16rem .4rem .16rem .9rem; border-left:2px solid var(--line); margin-left:.45rem; }
+.toc-i2 > a:hover{ border-left-color:var(--accent); }
+
+/* ---- jump-to flash on the target section ----------------------------- */
+.nav-flash{ animation:navFlash 1.6s ease-out; }
+@keyframes navFlash{
+  0%{ background:#fff3cf; box-shadow:0 0 0 4px #fff3cf; }
+  100%{ background:transparent; box-shadow:0 0 0 4px transparent; }
+}
+
+/* ---- mobile: always-minimized overlay; content never pushed ---------- */
+@media screen and (max-width:820px){
+  body{ padding-left:0 !important; }
+  .navpanel{ width:min(86vw,330px); box-shadow:0 0 30px rgba(0,0,0,.28); }
+  .nav-dropdown, .nav-results{ max-height:38vh; }
+  body:not(.nav-collapsed) .nav-backdrop{ display:block; }
+}
+@media screen and (min-width:821px){
+  .nav-backdrop{ display:none !important; }
+}
