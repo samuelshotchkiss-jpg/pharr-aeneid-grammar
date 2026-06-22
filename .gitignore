@@ -1,0 +1,17 @@
+# --- Build / output artifacts ---
+/build/out/
+*.pdf
+
+# --- Node (for the future PDF pipeline) ---
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# --- Editor / OS cruft ---
+.DS_Store
+Thumbs.db
+*~
+*.tmp
+
+# --- Claude Code local settings (machine-specific) ---
+.claude/settings.local.json
