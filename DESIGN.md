@@ -1,0 +1,203 @@
+# DESIGN.md — Pharr *Aeneid* Grammar: Digital Scholarly Edition
+
+A reference for the project's architecture, conventions, and planned work.
+This is a **map, not a build order**: it describes the whole intended system,
+including parts not yet built. Each feature is built in its own focused
+conversation; this document supplies the shared context so individual task
+prompts can stay short and point here.
+
+Sections marked **[settled]** are decided. Sections marked **[open]** are
+deferred to their build thread — don't treat them as final, and don't
+re-litigate the settled ones without reason.
+
+---
+
+## 1. What this project is
+
+A digital scholarly edition of Pharr's grammatical appendix to the *Aeneid*,
+prepared for a 10th-grade Latin class whose students read at roughly grade
+level but have substantial gaps in grammar (including English grammar). The
+edition adds an editorial layer over Pharr's 1930 text: term glosses,
+comprehension aids, and occasional critical-thinking asides in the editor's
+voice.
+
+Two outputs are produced from one source:
+- an **interactive web page**, and
+- a **print-oriented PDF** (for handouts; cost and page count matter).
+
+---
+
+## 2. Single-source architecture **[settled in principle; structure per setup thread]**
+
+The governing goal: **maintain the content once.** Shared content lives in one
+place; output-specific presentation and behavior are separate layers over it.
+
+- **Shared core (edit once):** Pharr's text, the editorial notes/boxes/panels,
+  the paradigm tables, and the term/glossary data (`pharr_grammatical_terms_N.json`).
+- **Web layer:** external CSS + JavaScript (nav panel, tooltips, search). Adds
+  interactivity; adds no content.
+- **Print layer:** print/paged-media CSS, page-break control, the glossary
+  rendered at the back, print-safe color. Adds no content.
+
+**The leak test:** if the same *content* edit ever has to be made in two
+places, the architecture has sprung a leak and that content belongs in the
+shared core. Output-specific *additions* (e.g. page breaks) are expected and
+fine; duplicated *content* is the thing to avoid.
+
+**Cross-references use section (§) numbers, not page numbers.** A grammar is
+navigated by paragraph number, and § numbers are part of the content, so they
+are identical and stable across both outputs (e.g. "see §290" reads the same on
+web and in print). There is no page-reference system to generate; this removes a
+whole category of output-specific divergence and is a point in favor of
+single-source.
+
+**PDF approach [settled]:** single HTML→PDF pipeline (headless Chrome /
+Playwright print), **not** LaTeX. LaTeX would paginate better but breaks
+single-source by requiring a second representation of the content; least-
+maintenance single-source was chosen as the priority. Accept "good with clean
+row-breaks and repeated headers" on the largest tables rather than LaTeX-
+perfect; special-case an individual table only if it proves unacceptable.
+
+---
+
+## 3. Editorial voice system **[settled]**
+
+The editorial layer must always be visually distinguishable from Pharr's own
+text. Established classes:
+
+- `.ed` — inline gloss / one-line aside (italic ochre).
+- `.edbox` — light note box (soft background, 4px rule); `.edbox b` for upright
+  labels.
+- `.edpanel` — heavy panel (fuller background, 5px rule) with `.edpanel-h`
+  title and `.edpanel-key` keyword.
+- (Pharr's own notes use a separate blue-grey treatment; **ochre is reserved
+  for the editor's voice** and must stay exclusive to it.)
+
+Existing panels include a front-matter "How to read this edition," a "Finite
+and Infinite Forms" panel between §115–116, and a defective-verbs edpanel.
+Editorial asides are deliberately conservative and occasionally flippant
+(e.g. the §409 caesura note), inviting critical thinking. "Mr. Hotchkiss" in
+such notes is the editor referring to himself in the third person — an
+intentional deflationary device, never an external attribution.
+
+---
+
+## 4. Term / glossary data **[settled]**
+
+`pharr_grammatical_terms_N.json` is the single source for all definitions. Per
+term it records: the term and its variants; domain/parent; whether Pharr
+defines it; the definition and its source (Pharr's or editor's); Pharr's
+definition location and/or the editorial insertion point; and the in-situ
+note decision and rationale. A single `definition` field holds whichever
+definition applies, distinguished by `definition_source`; Pharr entries are
+read-only. This JSON feeds **both** the web tooltips and the printed glossary.
+
+---
+
+## 5. Web layer **[feature specs settled; implementation per build threads]**
+
+Built in separate thread-sized pieces, in dependency order. The CSS separation
+(foundational refactor) comes first and must be content-neutral.
+
+### 5a. Navigation panel
+Left side of the screen, **minimizable**. Search bar at top, table of contents
+below. A **mobile variant is always minimized**; tables and other content must
+remain legible on mobile as well as desktop.
+
+### 5b. Search bar behavior
+Defaults to displaying the **index** contents as a dropdown. Pressing Enter
+runs a standard full-text search of the page. (See also the search page, 5d.)
+
+### 5c. Grammatical tooltips
+At each occurrence of a term or its variants, the user can click the word to
+get a popup showing that term's full glossary definition.
+- Clickability is **invisible or only faintly visible** so as not to disturb
+  the existing emphasis hierarchy; **hover highlighting** signals selectability.
+- The tooltip has a close **×**, but clicking **anywhere else** also closes it.
+- Generously sized while keeping the rest of the page visible; **scrolls** if
+  the definition is long.
+- The definition includes: a link to Pharr's definition location (if he defines
+  the term), a link to the editorial insertion point (if we defined it), and an
+  option to open a search showing **all instances** of the term and its variants.
+- **Polysemy is a judgment problem [open — needs editor rulings]:** many
+  grammatical terms are also ordinary English words ("voice," "mood," "case,"
+  "person," "number," "perfect"). Auto-linking every occurrence will produce
+  false tooltips. The term-detection should **propose** ambiguous occurrences
+  for the editor to rule on, and/or use a stoplist of known-polysemous terms
+  linked only at genuine technical uses. This must not be fully automated.
+
+### 5d. Search page
+Opens from the tooltip's "all instances" option (and reachable from the nav
+search). Shows all occurrences of a term and its variants in the text.
+
+---
+
+## 6. Print layer **[approach settled; page-break tuning open]**
+
+### 6a. Page count
+Was 77 pages at last conversion; much has been added since, and the glossary
+will push it over. 100 pages is a **soft** target (color-printing cost;
+not intimidating students), **not a hard cap** — the glossary is worth
+exceeding it. Get the current number as an early, independent step.
+
+### 6b. Pagination via CSS paged media
+- `break-inside: avoid` to keep tables and titled boxes from splitting.
+- `break-after: avoid` on headings to prevent orphaned titles at page bottom.
+- `break-before` to start major sections fresh.
+- Large multi-page verb tables: aim for clean **row-boundary** breaks with the
+  **header row repeated** on continuation. Fine break placement is **[open]**
+  and where HTML is weakest; don't over-invest.
+
+### 6c. Color translation **[principle settled]**
+The print stylesheet has **two distinct jobs**, not a blanket desaturation:
+- **Translate functional color** (paradigm tables — singular/plural,
+  term-highlighting): the color there is for clarity and is easy to swap for a
+  print-clear equivalent (patterns, weights, rules, or a restrained scheme).
+- **Preserve editorial-voice color with redundancy:** the ochre voice
+  distinction *must survive print*, including a likely **grayscale photocopy**.
+  Keep ochre (or a print-safe near-ochre that stays distinct in CMYK and in
+  grayscale) **and** back it with a non-color channel (ruled margin/sidebar,
+  italic + indent, a labeled "Editor's note" rule) so the voice distinction is
+  **redundantly encoded** and never depends on color alone.
+
+### 6d. Glossary
+The term JSON is appended as a glossary at the **end** of the PDF.
+
+---
+
+## 7. Working conventions **[settled]**
+
+- **Version control by git**, not filename incrementing. Commit at meaningful
+  points; use diffs as the record of what changed. (This replaces the old
+  per-chat upload/download/rename workflow now that development is in Claude
+  Code against a persistent tree.)
+- **Content-neutral refactors must be provably content-neutral:** verify by
+  diff that only structure/location changed, not rendered output. (Parsed-
+  content comparison, not raw-file comparison — raw files are *meant* to
+  differ on a refactor.)
+- **One focused work stream per conversation.** Decompose work into
+  thread-sized tasks in dependency order; feed one per conversation. A "layer"
+  may be several threads (the web layer alone is nav / tooltips / search).
+- **Work in reviewable increments with verification between them**, not one
+  giant rewrite.
+- **Don't rebuild what exists.** Preserve established class names and the
+  editorial system; extend rather than duplicate.
+- **Propose-then-rule for judgment-laden passes** (tooltip polysemy, anything
+  touching the editor's voice or scholarly stance): surface candidates with
+  rationale; the editor decides.
+
+---
+
+## 8. Build order (dependency-ordered; each its own thread)
+
+1. **[done]** Project setup + structure recommendation.
+2. CSS separation (content-neutral foundational refactor).
+3. Web: navigation panel (5a) + search bar dropdown behavior (5b).
+4. Web: grammatical tooltips (5c) — includes editor rulings on polysemy.
+5. Web: search page (5d).
+6. Print: paged-media CSS + color translation (6b, 6c).
+7. Print: glossary rendering from JSON (6d).
+8. Current page-count conversion (6a) — independent and tiny; run anytime.
+
+Deferred / future: a possible student-facing rewrite of Pharr's own
+(sometimes sparse or old-fashioned) definitions; any further content passes.
