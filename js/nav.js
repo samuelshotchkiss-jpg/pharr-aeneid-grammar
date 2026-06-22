@@ -112,11 +112,16 @@
      We read the existing .idx entries (single source) and clone the
      matches so their real #sNN links keep working.
      ===================================================================== */
+  /* Latin forms use a non-breaking hyphen (U+2011) so endings like "-ōnis"
+     never wrap mid-form; fold it back to "-" for matching so a typed hyphen
+     still finds them. Length-preserving, so search hit offsets stay valid. */
+  function norm(s) { return s.toLowerCase().replace(/‑/g, '-'); }
+
   function collectIndex(page) {
     var out = [];
     page.querySelectorAll('.indexcols .idx').forEach(function (p) {
       var lemma = (p.querySelector('.lemma') || p).textContent.trim();
-      out.push({ lemma: lemma, key: lemma.toLowerCase(), all: p.textContent.toLowerCase(), node: p });
+      out.push({ lemma: lemma, key: norm(lemma), all: norm(p.textContent), node: p });
     });
     return out;
   }
@@ -125,7 +130,7 @@
 
   function renderDropdown(box, entries, q) {
     box.textContent = '';
-    var query = q.trim().toLowerCase();
+    var query = norm(q.trim());
     var matches = entries.filter(function (e) {
       return !query || e.key.indexOf(query) !== -1 || e.all.indexOf(query) !== -1;
     });
@@ -162,12 +167,12 @@
      5d: this whole results view is the placeholder the search page replaces.
      ===================================================================== */
   function searchSections(page, query) {
-    var q = query.trim().toLowerCase();
+    var q = norm(query.trim());
     var res = [];
     if (!q) return res;
     page.querySelectorAll('.sec').forEach(function (sec) {
       var text = sec.textContent;
-      var hit = text.toLowerCase().indexOf(q);
+      var hit = norm(text).indexOf(q);
       if (hit === -1) return;
       var id = sec.id;
       if (!id) {

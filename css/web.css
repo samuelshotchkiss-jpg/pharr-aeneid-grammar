@@ -149,6 +149,21 @@
     -webkit-overflow-scrolling:touch;
   }
 
+  /* --- table polish: fit more before the scroller has to engage --------- */
+  /* English column headers wrap instead of forcing the table wider -- e.g.
+     §31's "Stem Characteristic" / "Genitive Singular", which are nowrap by
+     default and were the only thing pushing that table past the viewport.
+     Latin forms are never broken: paradigm body cells wrap only at existing
+     spaces (multi-form cells like "dī, deī, diī"), and single forms stay
+     whole because nothing forces a mid-word break. */
+  .page table.grid th{ white-space:normal; }
+
+  /* Recover horizontal room from cell gutters rather than from font size --
+     the type stays full-size for a class with limited grammar background.
+     Vertical padding and font are untouched, so row banding reads the same. */
+  .page table.grid td, .page table.grid th{ padding-left:.42rem; padding-right:.42rem; }
+  .page table.grid.tight td, .page table.grid.tight th{ padding-left:.34rem; padding-right:.34rem; }
+
   /* Flex/inline set-pieces with nowrap rows (perfect-passive system, framed
      and abstract scansion) get the same horizontal scroller as a wrapper. */
   .page .ppsys,
