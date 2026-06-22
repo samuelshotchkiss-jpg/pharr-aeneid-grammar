@@ -1,0 +1,8 @@
+/* =========================================================================
+   web.css -- SCREEN-ONLY layer        (linked media="screen")
+   Presentation/behavior that must NOT reach the printed page: page chrome,
+   the minimizable left nav (TOC + search), term tooltips, the search page,
+   hover/:target affordances.
+   Intentionally empty of rules today -- the source had no screen-scoped
+   rules. Screen-only styling lands here as the web features are built.
+   ========================================================================= */

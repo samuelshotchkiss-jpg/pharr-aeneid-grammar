@@ -1,0 +1,25 @@
+/* =========================================================================
+   print.css -- PAGED-MEDIA layer      (linked media="print")
+   @page geometry + print overrides + page-break control. Print color
+   translation and the appended glossary will be added here.
+   The @media print wrapper is kept deliberately: redundant under a
+   media="print" link, but keeps this file correct if loaded unscoped.
+   ========================================================================= */
+/* ---- print ---- */
+@page{
+  size:Letter;
+  margin:0.7in 0.72in 0.78in;
+  @bottom-center{content:counter(page);color:#888;font-family:Arial,sans-serif;font-size:9pt}
+}
+@media print{
+  html{font-size:10.6pt}
+  body{background:#fff}
+  .page{max-width:none;margin:0;padding:0;box-shadow:none}
+  h2.h2{break-after:avoid}
+  h3.h3,h4.h4{break-after:avoid}
+  table.grid,.casetable,.scanrow,.callout,.note,.editnote,.edpanel,.edbox,.classlist,.braceitem{break-inside:avoid}
+  .ppsys .pptense,.ppgrid{break-inside:avoid}
+  .sec{break-inside:auto}
+  .no-print{display:none}
+  .indexcols{column-count:2}
+}

@@ -1,3 +1,11 @@
+/* =========================================================================
+   core.css -- SHARED layer (web + print)
+   Linked for all media. Holds everything not specific to one medium:
+   :root tokens, typography, section layout, inline roles, the editorial
+   system, tables/paradigms, scansion, braces. See the navigation map below.
+   Screen-only page chrome still lives here for now; it migrates to web.css
+   when the web layer is built (verified then by render-diff vs. print).
+   ========================================================================= */
 
 /*
   ============================================================================
@@ -609,21 +617,3 @@ table.grid.paradigm tbody tr.pl-row td.numdata .la{color:var(--la-green)}
 .legend{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;margin:.6rem 0 0;font-size:.85rem}
 .legend span b{display:inline-block;margin-right:.3rem}
 
-/* ---- print ---- */
-@page{
-  size:Letter;
-  margin:0.7in 0.72in 0.78in;
-  @bottom-center{content:counter(page);color:#888;font-family:Arial,sans-serif;font-size:9pt}
-}
-@media print{
-  html{font-size:10.6pt}
-  body{background:#fff}
-  .page{max-width:none;margin:0;padding:0;box-shadow:none}
-  h2.h2{break-after:avoid}
-  h3.h3,h4.h4{break-after:avoid}
-  table.grid,.casetable,.scanrow,.callout,.note,.editnote,.edpanel,.edbox,.classlist,.braceitem{break-inside:avoid}
-  .ppsys .pptense,.ppgrid{break-inside:avoid}
-  .sec{break-inside:auto}
-  .no-print{display:none}
-  .indexcols{column-count:2}
-}
