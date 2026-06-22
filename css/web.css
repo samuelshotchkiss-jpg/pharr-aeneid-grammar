@@ -106,3 +106,72 @@
 @media screen and (min-width:821px){
   .nav-backdrop{ display:none !important; }
 }
+
+/* =========================================================================
+   Mobile legibility (screen only, <=820px). Pre-existing wide content blocks
+   (paradigm/synopsis grids, the seven-cases table, the perfect-passive and
+   scansion set-pieces) are wider than a phone and otherwise force the WHOLE
+   document to pan sideways -- so body prose can't be read without horizontal
+   scrolling. Fix: trim the page gutter to give prose more room, and contain
+   each wide block in its OWN horizontal scroller so only that block scrolls.
+   Content-neutral: presentation only, no text/structure changes; never reaches
+   print (this file is media="screen" and the query is screen-scoped).
+   ========================================================================= */
+@media screen and (max-width:820px){
+  /* reclaim horizontal room for prose (desktop keeps its 2.6rem gutter) */
+  .page{ padding-left:1.05rem; padding-right:1.05rem; }
+
+  /* Wide blocks scroll within themselves instead of panning the page.
+     On a <table>, display:block makes the element a block-level scroll
+     container while the browser's anonymous table boxes preserve the
+     row/cell layout (and therefore all zebra/banding/divider classes).
+     width:max-content shrinks a table that already fits to its content
+     width -- so a narrow paradigm doesn't stretch its frame across the
+     viewport with white to the right -- and the paradigm tables then
+     re-center through core.css's margin:auto (matching desktop), while
+     example/synopsis grids stay left like desktop. Tables wider than the
+     phone are capped by max-width and scroll from the left. */
+  .page table.grid{
+    display:block;
+    width:max-content;
+    max-width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  /* the seven-cases set-piece is a full-width table whose cells hold wrapping
+     prose; keep it full width (its frame hugs the column) rather than
+     shrink-wrapping it to the longest line. */
+  .page .casetable{
+    display:block;
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* Flex/inline set-pieces with nowrap rows (perfect-passive system, framed
+     and abstract scansion) get the same horizontal scroller as a wrapper. */
+  .page .ppsys,
+  .page .scanblock,
+  .page .schemeblock,
+  .page .scanrow{
+    max-width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* Verb-conjugation blocks (.vconj) lock two fixed-width columns (16.5rem
+     each) that together exceed a phone. Scroll the WHOLE block as one unit so
+     the hoisted Ind./Subj. mood header (.vmoodrow) stays column-aligned with
+     the tense blocks below it as the reader pans. Let the locked grids keep
+     their natural max-content width and left-align them at a common origin;
+     the desktop centering would otherwise push the leftmost forms out of
+     reach. (.vconj4 already self-scrolls via core.css.) */
+  .page .vconj{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    align-items:flex-start;
+  }
+  .page .vconj .vtense:not(.vt-free),
+  .page .vconj .vmoodrow{ max-width:none; justify-content:start; }
+}
