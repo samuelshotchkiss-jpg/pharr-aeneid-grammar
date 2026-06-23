@@ -394,6 +394,11 @@ table.grid.paradigm{margin-left:auto;margin-right:auto}
 /* injected per-table mood labels for the collapsed two-column conjugations
    (.vconj.vstacked); hidden on desktop and in print, shown only on phones */
 .vml{display:none}
+/* injected rows/cells for the collapsed paradigm tables (.numcollapse, a §71
+   spike): the duplicated case labels and the per-number band/header rows are
+   inert on desktop and in print -- the table renders normally there. */
+.vc-hw,.vc-band,.vc-gh{display:none}
+td.casecopy{display:none}
 
 
 

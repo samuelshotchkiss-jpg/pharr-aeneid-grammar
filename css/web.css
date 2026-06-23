@@ -263,4 +263,47 @@
   .vconj4.v4stacked .v4tblock > .v4cell.v4pass,
   .vconj4.v4stacked .v4tblock > .v4colstack.v4pass,
   .vconj4.v4stacked .v4tblock > .v4peri.v4pass{ order:2; }
+
+  /* ---- §71-style paradigm collapse (.numcollapse, spike on bonus) ----
+     Convert the table to a 4-track grid (case · M · F · N) and stack the
+     Singular block over the Plural block. The cells keep their banding (it's
+     per-cell, so it survives the grid). The original spanning <thead> is
+     hidden; injected band/header rows and a duplicated case label per row
+     supply the labels each block needs. Ordering: headword 0, Sg band 1,
+     Sg M/F/N 2, Sg data 3, Pl band 4, Pl M/F/N 5, Pl data 6. */
+  .page table.numcollapse{
+    display:grid; grid-template-columns:max-content 1fr 1fr 1fr;
+    width:100%; box-shadow:0 0 0 2px var(--grid-frame);
+  }
+  .page table.numcollapse thead{ display:none; }
+  .page table.numcollapse tbody{ display:contents; }
+  .page table.numcollapse tbody tr{ display:contents; }
+  .page table.numcollapse .vc-hw, .page table.numcollapse .vc-band,
+  .page table.numcollapse .vc-gh{ display:contents; }
+  .page table.numcollapse td.casecopy{ display:block; }
+  .page table.numcollapse td, .page table.numcollapse th{
+    display:block;   /* clean grid items -- avoid anonymous table-cell boxes */
+    border:1px solid var(--grid-rule); padding:.22rem .5rem;
+  }
+  /* default tbody cell = Singular-block data */
+  .page table.numcollapse tbody td, .page table.numcollapse tbody th{ order:3; }
+  .page table.numcollapse tbody td.pl-grp, .page table.numcollapse td.casecopy{ order:6; }
+  /* headword + bands span the full width */
+  .page table.numcollapse .vc-hw td{
+    order:0; grid-column:1/-1; text-align:center; font-weight:700;
+    background:var(--head-blue); color:#fff; padding:.28rem;
+  }
+  .page table.numcollapse .vc-band td{
+    grid-column:1/-1; font-variant:small-caps; font-weight:700; color:#fff;
+    letter-spacing:.04em; padding:.16rem .5rem;
+  }
+  .page table.numcollapse .vc-band.vc-sg td{ order:1; background:var(--head-blue); }
+  .page table.numcollapse .vc-band.vc-pl td{ order:4; background:var(--num-green-deep); }
+  .page table.numcollapse .vc-gh.vc-sg td, .page table.numcollapse .vc-gh.vc-sg th{ order:2; }
+  .page table.numcollapse .vc-gh.vc-pl td, .page table.numcollapse .vc-gh.vc-pl th{ order:5; }
+  .page table.numcollapse .vc-gh th{ text-align:center; font-weight:700; background:var(--fill1); }
+  .page table.numcollapse td.vc-corner{ background:transparent; border:0; }
+  /* the desktop vertical divider before the plural block is meaningless when
+     stacked */
+  .page table.numcollapse td.pl-start, .page table.numcollapse th.pl-start{ border-left:1px solid var(--grid-rule); }
 }
