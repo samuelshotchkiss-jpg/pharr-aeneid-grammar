@@ -386,6 +386,12 @@ table.grid.paradigm{margin-left:auto;margin-right:auto}
 .vconj4 .v4colstack.v4pl .v4cell.empty{
   background:repeating-linear-gradient(135deg,#eef2f8,#eef2f8 6px,#e2e8f2 6px,#e2e8f2 12px)}
 
+/* Mobile voice-stack hooks (the phone reflow lives in web.css). These keep the
+   added markup inert on desktop AND in print: the per-tense wrapper is
+   transparent to the grid, and the injected mood/voice labels are hidden. */
+.v4tblock{display:contents}
+.v4mh,.v4vh,.v4nl{display:none}
+
 
 
 /* ===== legacy 2-column tables: tense-name title rows + locked subjunctive alignment ===== */

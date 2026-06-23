@@ -189,4 +189,58 @@
   }
   .page .vconj .vtense:not(.vt-free),
   .page .vconj .vmoodrow{ max-width:none; justify-content:start; }
+
+  /* ---- four-column verb grids (habeō etc.): stack into two columns on a
+     phone -- Indicative | Subjunctive, with the Active block over the Passive
+     block, per tense. Voice isn't class-encoded in the markup, so passive
+     items carry .v4pass; pushing them after the active items (via order) turns
+     the grid's auto-flow into the stack. Colstacks and periphrastic cells ride
+     along unchanged. Scoped to .v4stacked so the still-four-column siblings
+     (dīcō, audiō) keep today's horizontal scroll until they're converted. */
+  .vconj4.v4stacked .v4grid{ display:block; min-width:0; }
+  .vconj4.v4stacked .v4voice,
+  .vconj4.v4stacked .v4col{ display:none; }   /* global 4-col header is moot once stacked */
+  .vconj4.v4stacked .v4tblock{
+    display:grid; grid-template-columns:1fr 1fr;
+    column-gap:.4rem; row-gap:.08rem; align-content:start;
+    margin:.35rem 0 .9rem;
+  }
+  .vconj4.v4stacked .v4tblock > .v4tense{ grid-column:1/-1; order:0; }
+  /* mood headers sit inside each voice block and carry the §142-145 badges */
+  .vconj4.v4stacked .v4tblock > .v4mh{
+    display:block; font-variant:small-caps; font-weight:700;
+    letter-spacing:.03em; font-size:.74rem; color:var(--term-deep);
+    border-bottom:1px solid var(--line); padding:.12rem .3rem .1rem;
+  }
+  .vconj4.v4stacked .v4tblock > .v4mh.act{ order:1; }
+  .vconj4.v4stacked .v4tblock > .v4mh.pass{ order:2; }
+  .vconj4.v4stacked .v4tblock > .v4mh .secbadge{
+    font-variant:normal; font-weight:700; font-size:.66rem; color:var(--accent);
+    background:#fff; border:1px solid var(--line); border-radius:.3rem;
+    padding:0 .24rem; margin-right:.26rem; letter-spacing:0; vertical-align:.06em;
+  }
+  .vconj4.v4stacked .v4tblock > .v4vh{
+    display:block; grid-column:1/-1; font-variant:small-caps; font-weight:700;
+    letter-spacing:.04em; font-size:.78rem; color:var(--head); text-align:center;
+    background:var(--fill1); border-radius:5px; padding:.16rem; margin-top:.22rem;
+  }
+  .vconj4.v4stacked .v4tblock > .v4vh.act{ order:1; }
+  .vconj4.v4stacked .v4tblock > .v4vh.pass{ order:2; }
+  /* Sg./Pl. band labels, one per voice block (the shared .v4grp column is
+     dropped, so number is re-stated here). .act rides the active block,
+     .pass the passive; the Plural band echoes the row tint. */
+  .vconj4.v4stacked .v4tblock > .v4nl{
+    display:block; grid-column:1/-1; font-variant:small-caps; font-weight:700;
+    letter-spacing:.04em; font-size:.72rem; color:var(--muted);
+    padding:.2rem .3rem .05rem; border-bottom:1px dotted var(--line);
+  }
+  .vconj4.v4stacked .v4tblock > .v4nl.act{ order:1; }
+  .vconj4.v4stacked .v4tblock > .v4nl.pass{ order:2; }
+  .vconj4.v4stacked .v4tblock > .v4grp{ display:none; }
+  .vconj4.v4stacked .v4tblock > .v4cell,
+  .vconj4.v4stacked .v4tblock > .v4colstack,
+  .vconj4.v4stacked .v4tblock > .v4peri{ order:1; }
+  .vconj4.v4stacked .v4tblock > .v4cell.v4pass,
+  .vconj4.v4stacked .v4tblock > .v4colstack.v4pass,
+  .vconj4.v4stacked .v4tblock > .v4peri.v4pass{ order:2; }
 }
