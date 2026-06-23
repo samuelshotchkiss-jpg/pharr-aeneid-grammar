@@ -306,4 +306,12 @@
   /* the desktop vertical divider before the plural block is meaningless when
      stacked */
   .page table.numcollapse td.pl-start, .page table.numcollapse th.pl-start{ border-left:1px solid var(--grid-rule); }
+
+  /* asymmetric variant (ācer): three genders in the singular, two in the
+     plural. The plural M./F. spans the M+F tracks, centered, so the N column
+     still lines up under the singular N. */
+  .page table.numcollapse.vc-asym td.pl-grp.pl-start,
+  .page table.numcollapse.vc-asym .vc-gh.vc-pl th.vc-mf{ grid-column:2/4; text-align:center; }
+  .page table.numcollapse.vc-asym td.pl-grp:not(.pl-start),
+  .page table.numcollapse.vc-asym .vc-gh.vc-pl th:not(.vc-mf){ grid-column:4; }
 }
