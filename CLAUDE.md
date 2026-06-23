@@ -19,6 +19,23 @@ a 10th-grade Latin class with limited grammar background.
 - **Work in reviewable increments** with verification between them, not one
   giant rewrite. For large changes, propose the plan before executing.
 
+## Local preview & verification
+This edition is one very large HTML page (~3,000 lines, hundreds of paradigm
+tables and inline SVGs). The preview **screenshot** tool reliably times out on
+it — a capture performance limit, not a page error (console stays clean), and
+scrolling to an element first doesn't help. Don't burn turns retrying it.
+
+Verify **quantitatively** instead (more precise anyway): `preview_eval` for
+`scrollWidth` / `getBoundingClientRect()` positions and to reconstruct the
+rendered reading order; `preview_inspect` for computed styles. Prove
+content-neutral changes by diffing parsed content (text length, element counts,
+positions) at the relevant breakpoints — never by eye.
+
+Related: the static server (`.claude/launch.json` → `static`) usually needs a
+`preview_start` at session start, and the browser caches the page/CSS — force a
+fresh load via `index.html?v=<ts>` and by re-setting each stylesheet `<link>`
+href with a `?t=<ts>` query.
+
 ## Hard rules
 - **Content-neutral refactors must be provably content-neutral.** When a change
   is supposed to alter only structure/location/styling (e.g. CSS separation,
