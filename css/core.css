@@ -391,6 +391,9 @@ table.grid.paradigm{margin-left:auto;margin-right:auto}
    transparent to the grid, and the injected mood/voice labels are hidden. */
 .v4tblock{display:contents}
 .v4mh,.v4vh,.v4nl{display:none}
+/* injected per-table mood labels for the collapsed two-column conjugations
+   (.vconj.vstacked); hidden on desktop and in print, shown only on phones */
+.vml{display:none}
 
 
 

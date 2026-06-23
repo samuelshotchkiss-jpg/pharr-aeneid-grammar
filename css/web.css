@@ -176,19 +176,39 @@
   }
 
   /* Verb-conjugation blocks (.vconj) lock two fixed-width columns (16.5rem
-     each) that together exceed a phone. Scroll the WHOLE block as one unit so
-     the hoisted Ind./Subj. mood header (.vmoodrow) stays column-aligned with
-     the tense blocks below it as the reader pans. Let the locked grids keep
-     their natural max-content width and left-align them at a common origin;
-     the desktop centering would otherwise push the leftmost forms out of
-     reach. (.vconj4 already self-scrolls via core.css.) */
-  .page .vconj{
+     each) that together exceed a phone. Until a block is converted to the
+     collapsed layout below, scroll it as one unit (keeps the Ind./Subj. header
+     column-aligned with the tenses). (.vconj4 self-scrolls via core.css.) */
+  .page .vconj:not(.vstacked){
     overflow-x:auto;
     -webkit-overflow-scrolling:touch;
     align-items:flex-start;
   }
-  .page .vconj .vtense:not(.vt-free),
-  .page .vconj .vmoodrow{ max-width:none; justify-content:start; }
+  .page .vconj:not(.vstacked) .vtense:not(.vt-free),
+  .page .vconj:not(.vstacked) .vmoodrow{ max-width:none; justify-content:start; }
+
+  /* ---- collapsed two-column conjugations (.vconj.vstacked) ----
+     Each tense's Indicative | Subjunctive pair stacks into a single column
+     (Subjunctive under Indicative), and every mood table gets a labelled
+     header carrying its § badge (the act/pass tables hold no mood text of
+     their own, and the shared .vmoodrow is dropped). */
+  .vconj.vstacked{ align-items:stretch; }
+  .vconj.vstacked .vmoodrow{ display:none; }
+  .vconj.vstacked .vtense:not(.vt-free){ grid-template-columns:1fr; width:auto; max-width:100%; }
+  .vconj.vstacked .vtense:not(.vt-free) .vt-title,
+  .vconj.vstacked .vtense:not(.vt-free) .vt-gloss{ grid-column:1/-1; }
+  .vconj.vstacked .vtense:not(.vt-free) .vpair > div,
+  .vconj.vstacked .vtense:not(.vt-free) .vpair > div:nth-of-type(2){ grid-column:1; min-width:0; }
+  .vconj.vstacked .vml{
+    display:block; font-variant:small-caps; font-weight:700; letter-spacing:.03em;
+    font-size:.74rem; color:var(--term-deep); margin:.35rem 0 .12rem;
+  }
+  .vconj.vstacked .vml.subj{ color:var(--term-deep); }
+  .vconj.vstacked .vml .secbadge{
+    font-variant:normal; font-weight:700; font-size:.66rem; color:var(--accent);
+    background:#fff; border:1px solid var(--line); border-radius:.3rem;
+    padding:0 .24rem; margin-right:.26rem; letter-spacing:0; vertical-align:.06em;
+  }
 
   /* ---- four-column verb grids (habeō etc.): stack into two columns on a
      phone -- Indicative | Subjunctive, with the Active block over the Passive
