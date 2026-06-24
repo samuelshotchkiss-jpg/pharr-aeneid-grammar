@@ -374,4 +374,20 @@
   .page table.lemcollapse tr.pl-row td.numdata:not(.vc-l2){ order:6; }
   .page table.lemcollapse tr.sg-row td.vc-l2{ order:10; }
   .page table.lemcollapse tr.pl-row td.vc-l2{ order:13; }
+
+  /* §191-198 deponent synopsis: the four conjugations side by side ARE the
+     comparison, so don't collapse -- let it scroll (it already does) but pin
+     the case-label column so the row labels stay in view. The cells already
+     carry a solid background and nowrap, and the table is border-collapse
+     separate, so sticky works cleanly. */
+  .page table.synopsis td.syn-case,
+  .page table.synopsis th.syn-corner{ position:sticky; left:0; z-index:2; }
+
+  /* §205a defective-verbs table sits in the narrower editor panel; give the
+     panel a little more room on a phone and tighten the example-grid gutters +
+     header type so its five columns fit without scrolling. */
+  .page .edpanel{ padding-left:.65rem; padding-right:.65rem; }
+  .page table.grid.examplegrid td,
+  .page table.grid.examplegrid th{ padding-left:.28rem; padding-right:.28rem; }
+  .page table.grid.examplegrid thead th{ font-size:.76rem; }
 }
