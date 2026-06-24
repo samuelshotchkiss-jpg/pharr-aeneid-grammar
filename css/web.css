@@ -293,6 +293,14 @@
     order:0; grid-column:1/-1; text-align:center; font-weight:700;
     background:var(--head-blue); color:#fff; padding:.28rem;
   }
+  /* the headword band is dark blue, so its .hw/.gl tokens must go light --
+     core's white-forcing only covers thead/numband, not these injected bands
+     (mirrors core.css table.grid.paradigm thead th .hw/.gl). Covers both
+     .numcollapse and .lemcollapse headword bands. */
+  .page table.numcollapse .vc-hw td .hw,
+  .page table.lemcollapse .vc-hw td .hw{ color:#fff; }
+  .page table.numcollapse .vc-hw td .gl,
+  .page table.lemcollapse .vc-hw td .gl{ color:#dfeaf6; }
   .page table.numcollapse .vc-band td{
     grid-column:1/-1; font-variant:small-caps; font-weight:700; color:#fff;
     letter-spacing:.04em; padding:.16rem .5rem;
@@ -314,4 +322,56 @@
   .page table.numcollapse.vc-asym .vc-gh.vc-pl th.vc-mf{ grid-column:2/4; text-align:center; }
   .page table.numcollapse.vc-asym td.pl-grp:not(.pl-start),
   .page table.numcollapse.vc-asym .vc-gh.vc-pl th:not(.vc-mf){ grid-column:4; }
+
+  /* ---- by-lemma collapse for the row-banded one-ending adjective tables
+     (.lemcollapse, §82 fēlīx/recēns etc.) ---- These show two lemmas side by
+     side (case · l1 M.,F. · l1 N · l2 M.,F. · l2 N) with Singular/Plural as
+     row-bands. On a phone we stack the two lemmas: each gets its headword,
+     its Singular/Plural bands, and M.,F. · N columns. The second lemma's cells
+     carry .vc-l2 (the wbound cell and the one after it) plus a duplicated case
+     label; ordering routes them into the lower block. Order: l1 hw 0, Sg band
+     1, Sg hdr 2, Sg data 3, Pl band 4, Pl hdr 5, Pl data 6; l2 hw 7 … data 13. */
+  .page table.lemcollapse{
+    display:grid; grid-template-columns:max-content 1fr 1fr;
+    width:100%; box-shadow:0 0 0 2px var(--grid-frame);
+  }
+  .page table.lemcollapse thead{ display:none; }
+  .page table.lemcollapse tbody, .page table.lemcollapse tbody tr{ display:contents; }
+  .page table.lemcollapse .vc-hw, .page table.lemcollapse .vc-band,
+  .page table.lemcollapse .vc-gh{ display:contents; }
+  .page table.lemcollapse td.casecopy{ display:block; }
+  .page table.lemcollapse td, .page table.lemcollapse th{
+    display:block; border:1px solid var(--grid-rule); padding:.22rem .5rem;
+  }
+  .page table.lemcollapse td.wbound{ border-left:1px solid var(--grid-rule); }
+  .page table.lemcollapse td.vc-corner{ background:transparent; border:0; }
+  /* headword + number bands span the row */
+  .page table.lemcollapse .vc-hw td{
+    grid-column:1/-1; text-align:center; font-weight:700; padding:.28rem;
+    background:var(--head-blue); color:#fff;
+  }
+  .page table.lemcollapse .vc-hw.lc-l1 td{ order:0; }
+  .page table.lemcollapse .vc-hw.lc-l2 td{ order:7; margin-top:.5rem; }
+  .page table.lemcollapse .vc-band td,
+  .page table.lemcollapse tr.numband td{
+    grid-column:1/-1; font-variant:small-caps; font-weight:700; color:#fff;
+    letter-spacing:.04em; padding:.16rem .5rem;
+  }
+  .page table.lemcollapse tr.numband:not(.plural-start) td{ order:1; background:var(--head-blue); }
+  .page table.lemcollapse tr.numband.plural-start td{ order:4; background:var(--num-green-deep); }
+  .page table.lemcollapse .vc-band.lc-l2.lc-sg td{ order:8; background:var(--head-blue); }
+  .page table.lemcollapse .vc-band.lc-l2.lc-pl td{ order:11; background:var(--num-green-deep); }
+  /* M.,F. · N column headers per block */
+  .page table.lemcollapse .vc-gh th{ text-align:center; font-weight:700; background:var(--fill1); }
+  .page table.lemcollapse .vc-gh.lc-l1.lc-sg td, .page table.lemcollapse .vc-gh.lc-l1.lc-sg th{ order:2; }
+  .page table.lemcollapse .vc-gh.lc-l1.lc-pl td, .page table.lemcollapse .vc-gh.lc-l1.lc-pl th{ order:5; }
+  .page table.lemcollapse .vc-gh.lc-l2.lc-sg td, .page table.lemcollapse .vc-gh.lc-l2.lc-sg th{ order:9; }
+  .page table.lemcollapse .vc-gh.lc-l2.lc-pl td, .page table.lemcollapse .vc-gh.lc-l2.lc-pl th{ order:12; }
+  /* lemma-1 data = case + non-vc-l2 numdata; lemma-2 data = .vc-l2 cells */
+  .page table.lemcollapse tr.sg-row > td:first-child,
+  .page table.lemcollapse tr.sg-row td.numdata:not(.vc-l2){ order:3; }
+  .page table.lemcollapse tr.pl-row > td:first-child,
+  .page table.lemcollapse tr.pl-row td.numdata:not(.vc-l2){ order:6; }
+  .page table.lemcollapse tr.sg-row td.vc-l2{ order:10; }
+  .page table.lemcollapse tr.pl-row td.vc-l2{ order:13; }
 }
