@@ -6,7 +6,8 @@
        (h2.h2 + nested h3.h3) so it can never drift from the content.
      - Search bar that defaults to a dropdown mirror of the existing
        in-page Index (.idx entries, with their real links), and on Enter
-       runs a minimal inline full-text search of the section text.
+       runs a minimal inline full-text search over ALL visible document
+       text -- prose, tables, headings/titles, and editorial set-pieces.
    All injected nodes carry .no-print, so the print layer's existing
    `.no-print{display:none}` rule keeps them out of the PDF. Styling lives
    in css/web.css (media=screen). This file edits no shared content; it
@@ -163,51 +164,93 @@
   }
 
   /* =====================================================================
-     Enter search -- minimal inline full-text over the section text.
+     Enter search -- inline full-text over ALL visible document text:
+     prose (.sec), tables, headings/titles, editorial panels, and the verb /
+     scansion set-pieces. The document is flat under .page, so we index each
+     content block once. Tables are SIBLINGS of their .sec (not children), so
+     a .sec-only walk missed every paradigm and example grid -- this indexes
+     them by their own block and anchors each to the section it belongs to.
+
+     Anchor: a block's own id, else the nearest preceding sibling with an id
+     (the section anchor). Label: the current section's number (headings show
+     a "§" glyph, since they precede their sections). The dense back-of-book
+     Index (.indexcols) is left to the dropdown above, so it isn't re-indexed
+     here and can't flood the results.
+
+     textContent is viewport-independent, so a block is found whether it's in
+     its desktop or collapsed-mobile layout. The mobile layout adds a few
+     duplicate STRUCTURAL labels (case copies, § badges); those can only ever
+     repeat short labels, never the Latin/English content, so the index stays
+     clean. Built once at init (the content is static).
      5d: this whole results view is the placeholder the search page replaces.
      ===================================================================== */
-  function searchSections(page, query) {
+  function buildSearchIndex(page) {
+    var idx = [];
+    var ctxId = '', ctxLabel = '§', pendingId = '';
+    Array.prototype.forEach.call(page.children, function (node) {
+      if (node.classList && node.classList.contains('indexcols')) return; // dropdown covers it
+      var tag = node.tagName;
+      if (node.id) ctxId = node.id;
+      else if (pendingId) ctxId = pendingId;
+
+      // a bare anchor stub (span carrying an id but no text) anchors the next block
+      if (tag === 'SPAN' && node.id && !node.textContent.trim()) { pendingId = node.id; return; }
+
+      var text = node.textContent;
+      if (!text || !text.trim()) { pendingId = ''; return; }
+
+      if (/^H[1-4]$/.test(tag)) {                       // heading / title
+        ctxLabel = '§';                                 // headings precede their §s
+        idx.push({ id: node.id || ctxId, label: '§', text: text });
+      } else if (node.classList && node.classList.contains('sec')) {
+        var sn = node.querySelector('.sn');
+        var num = sn ? sn.textContent.replace(/[.\s]+$/, '') : ctxLabel;
+        ctxLabel = num;
+        idx.push({ id: node.id || pendingId || ctxId, label: num, text: text });
+      } else {                                          // table / panel / set-piece / other
+        idx.push({ id: node.id || ctxId, label: ctxLabel, text: text });
+      }
+      pendingId = '';
+    });
+    return idx;
+  }
+
+  function searchIndexFor(index, query) {
     var q = norm(query.trim());
     var res = [];
     if (!q) return res;
-    page.querySelectorAll('.sec').forEach(function (sec) {
-      var text = sec.textContent;
-      var hit = norm(text).indexOf(q);
-      if (hit === -1) return;
-      var id = sec.id;
-      if (!id) {
-        var stub = sec.previousElementSibling;   // some §s anchor via a stub span
-        if (stub && stub.id) id = stub.id;
-      }
-      var sn = sec.querySelector('.sn');
-      res.push({
-        id: id,
-        label: sn ? sn.textContent.replace(/[.\s]+$/, '') : '§',
-        snippet: makeSnippet(text, hit, q.length)
-      });
-    });
+    for (var i = 0; i < index.length; i++) {
+      var it = index[i];
+      var hit = norm(it.text).indexOf(q);
+      if (hit === -1) continue;
+      res.push({ id: it.id, label: it.label, snippet: makeSnippet(it.text, hit, q.length) });
+    }
     return res;
   }
 
   function makeSnippet(text, at, len) {
     var start = Math.max(0, at - 38), end = Math.min(text.length, at + len + 50);
+    // collapse whitespace in the CONTEXT only (table textContent runs cells
+    // together with newlines); the matched slice is shown verbatim. Done after
+    // slicing, so display tidying never shifts the match offsets.
+    var ws = function (s) { return s.replace(/\s+/g, ' '); };
     var frag = document.createDocumentFragment();
     if (start > 0) frag.appendChild(document.createTextNode('…'));
-    frag.appendChild(document.createTextNode(text.slice(start, at)));
+    frag.appendChild(document.createTextNode(ws(text.slice(start, at))));
     frag.appendChild(el('mark', { text: text.slice(at, at + len) }));
-    frag.appendChild(document.createTextNode(text.slice(at + len, end)));
+    frag.appendChild(document.createTextNode(ws(text.slice(at + len, end))));
     if (end < text.length) frag.appendChild(document.createTextNode('…'));
     return frag;
   }
 
-  function renderSearchResults(box, page, query) {
+  function renderSearchResults(box, index, query) {
     box.textContent = '';
-    var hits = searchSections(page, query);
+    var hits = searchIndexFor(index, query);
 
     var head = el('div', { class: 'nav-res-head' });
     head.textContent = hits.length
-      ? hits.length + ' section' + (hits.length === 1 ? '' : 's') + ' contain “' + query.trim() + '”'
-      : 'No section text matches “' + query.trim() + '”';
+      ? hits.length + ' result' + (hits.length === 1 ? '' : 's') + ' for “' + query.trim() + '”'
+      : 'No text matches “' + query.trim() + '”';
     box.appendChild(head);
 
     var CAP = 40;
@@ -221,7 +264,7 @@
       box.appendChild(row);
     });
     if (hits.length > CAP) {
-      box.appendChild(el('div', { class: 'nav-dd-more', text: '+' + (hits.length - CAP) + ' more sections' }));
+      box.appendChild(el('div', { class: 'nav-dd-more', text: '+' + (hits.length - CAP) + ' more results' }));
     }
 
     // 5d: the search page ("all instances") opens from here.
@@ -277,6 +320,7 @@
     document.body.appendChild(backdrop);
 
     var entries = collectIndex(page);
+    var searchIndex = buildSearchIndex(page);   // built once; content is static
 
     /* wiring ------------------------------------------------------------ */
     openBtn.addEventListener('click', function () { setCollapsed(false); input.focus(); });
@@ -297,7 +341,7 @@
         e.preventDefault();
         if (!input.value.trim()) return;
         dropdown.hidden = true;
-        renderSearchResults(results, page, input.value);
+        renderSearchResults(results, searchIndex, input.value);
         results.hidden = false;
       } else if (e.key === 'Escape') {
         closeOverlays();
