@@ -390,4 +390,16 @@
   .page table.grid.examplegrid td,
   .page table.grid.examplegrid th{ padding-left:.28rem; padding-right:.28rem; }
   .page table.grid.examplegrid thead th{ font-size:.76rem; }
+
+  /* §52 (comes / pēs / caput, three mute-stem nouns side by side): keep them
+     adjacent so the masculine vs neuter comparison stays visible and let it
+     scroll, with the case-label column pinned. (A by-lemma collapse can't give
+     comes its own wide columns and pēs+caput their own narrow ones in a single
+     table -- stacked blocks share column widths -- so sticky-scroll it is.)
+     The paradigm case column is transparent, so give it a solid background. */
+  .page table.stickycol td:first-child,
+  .page table.stickycol th:first-child{
+    position:sticky; left:0; z-index:2;
+    background:var(--fill2); border-right:2px solid var(--grid-frame);
+  }
 }
