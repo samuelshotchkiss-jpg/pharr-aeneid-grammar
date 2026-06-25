@@ -113,16 +113,70 @@
      We read the existing .idx entries (single source) and clone the
      matches so their real #sNN links keep working.
      ===================================================================== */
-  /* Latin forms use a non-breaking hyphen (U+2011) so endings like "-ōnis"
-     never wrap mid-form; fold it back to "-" for matching so a typed hyphen
-     still finds them. Length-preserving, so search hit offsets stay valid. */
-  function norm(s) { return s.toLowerCase().replace(/‑/g, '-'); }
+  /* =====================================================================
+     Search normalisation -- maps what the user TYPES onto what's INDEXED.
+     Two rules, applied per language because Latin carries its own markup
+     (.la words/examples + .hw headwords/lemmas), distinct from English:
+       - diacritic-neutral EVERYWHERE: macrons/breves/accents are stripped,
+         so a student who can't type "puellā" still finds it as "puella".
+       - i<->j and u<->v equivalent only in LATIN runs: editions differ on the
+         semivowels, so "iubeo"/"jubeo" and "uides"/"vides" all hit the Latin
+         "jubeō"/"vidēs" -- while English "voice" vs "joice" stay distinct.
+     Every mapping is single-char -> single-char (the source uses precomposed
+     macrons -- verified), so folds are length-preserving: a hit offset in a
+     folded string still points at the matching slice of the raw text.
+     The non-breaking hyphen (U+2011) in Latin endings folds to "-" so a typed
+     "-ōnis" still matches. .la / .hw mark the Latin runs the i/j,u/v rule rides.
+     ===================================================================== */
+  var DIACRITIC = {
+    'ā':'a','ă':'a','â':'a','ä':'a','á':'a','à':'a','ã':'a',
+    'ē':'e','ĕ':'e','ê':'e','ë':'e','é':'e','è':'e',
+    'ī':'i','ĭ':'i','î':'i','ï':'i','í':'i','ì':'i',
+    'ō':'o','ŏ':'o','ô':'o','ö':'o','ó':'o','ò':'o','õ':'o',
+    'ū':'u','ŭ':'u','û':'u','ü':'u','ú':'u','ù':'u',
+    'ȳ':'y','ŷ':'y','ÿ':'y','ý':'y'
+  };
+  function foldChar(c, latin) {
+    c = c.toLowerCase();
+    if (DIACRITIC[c]) c = DIACRITIC[c];
+    else if (c === '‑') c = '-';                 // U+2011 -> hyphen-minus
+    if (latin) { if (c === 'j') c = 'i'; else if (c === 'v') c = 'u'; }
+    return c;
+  }
+  function foldStr(s, latin) {
+    var out = '';
+    for (var i = 0; i < s.length; i++) out += foldChar(s[i], latin);
+    return out;
+  }
+  // Is this text node inside Latin-language markup (so the i/j, u/v rule rides)?
+  function inLatin(node) {
+    return !!(node.parentElement && node.parentElement.closest('.la, .hw'));
+  }
+  // Fold an element's text into {raw, eng, lat}, char-aligned. eng folds
+  // diacritics only; lat additionally folds i/j & u/v, but only in Latin runs.
+  function foldElement(elm) {
+    var raw = '', eng = '', lat = '';
+    var w = document.createTreeWalker(elm, NodeFilter.SHOW_TEXT, null, false);
+    var n;
+    while ((n = w.nextNode())) {
+      var t = n.nodeValue, latin = inLatin(n);
+      for (var i = 0; i < t.length; i++) {
+        var c = t[i];
+        raw += c;
+        eng += foldChar(c, false);
+        lat += foldChar(c, latin);
+      }
+    }
+    return { raw: raw, eng: eng, lat: lat };
+  }
 
   function collectIndex(page) {
     var out = [];
     page.querySelectorAll('.indexcols .idx').forEach(function (p) {
       var lemma = (p.querySelector('.lemma') || p).textContent.trim();
-      out.push({ lemma: lemma, key: norm(lemma), all: norm(p.textContent), node: p });
+      // key = the headword (Latin/topic), so allow the i/j,u/v fold; all = the
+      // whole entry, diacritic-fold only (it mixes Latin forms and English).
+      out.push({ lemma: lemma, key: foldStr(lemma, true), all: foldStr(p.textContent, false), node: p });
     });
     return out;
   }
@@ -131,20 +185,21 @@
 
   function renderDropdown(box, entries, q) {
     box.textContent = '';
-    var query = norm(q.trim());
+    var qt = q.trim();
+    var qEng = foldStr(qt, false), qLat = foldStr(qt, true);
     var matches = entries.filter(function (e) {
-      return !query || e.key.indexOf(query) !== -1 || e.all.indexOf(query) !== -1;
+      return !qt || e.key.indexOf(qLat) !== -1 || e.all.indexOf(qEng) !== -1;
     });
 
     if (!matches.length) {
-      box.appendChild(el('div', { class: 'nav-dd-empty', text: query
-        ? 'No index entry matches “' + q.trim() + '”. Press Enter to search the full text.'
+      box.appendChild(el('div', { class: 'nav-dd-empty', text: qt
+        ? 'No index entry matches “' + qt + '”. Press Enter to search the full text.'
         : 'The index is empty.' }));
       return;
     }
 
     var head = el('div', { class: 'nav-dd-head' });
-    head.textContent = query
+    head.textContent = qt
       ? matches.length + ' index match' + (matches.length === 1 ? '' : 'es')
       : 'Index · ' + entries.length + ' entries — type to filter, or Enter to search the text';
     box.appendChild(head);
@@ -198,17 +253,18 @@
 
       var text = node.textContent;
       if (!text || !text.trim()) { pendingId = ''; return; }
+      var f = foldElement(node);                         // {raw, eng, lat}, char-aligned
 
-      if (/^H[1-4]$/.test(tag)) {                       // heading / title
-        ctxLabel = '§';                                 // headings precede their §s
-        idx.push({ id: node.id || ctxId, label: '§', text: text });
+      if (/^H[1-4]$/.test(tag)) {                        // heading / title
+        ctxLabel = '§';                                  // headings precede their §s
+        idx.push({ id: node.id || ctxId, label: '§', raw: f.raw, eng: f.eng, lat: f.lat });
       } else if (node.classList && node.classList.contains('sec')) {
         var sn = node.querySelector('.sn');
         var num = sn ? sn.textContent.replace(/[.\s]+$/, '') : ctxLabel;
         ctxLabel = num;
-        idx.push({ id: node.id || pendingId || ctxId, label: num, text: text });
-      } else {                                          // table / panel / set-piece / other
-        idx.push({ id: node.id || ctxId, label: ctxLabel, text: text });
+        idx.push({ id: node.id || pendingId || ctxId, label: num, raw: f.raw, eng: f.eng, lat: f.lat });
+      } else {                                           // table / panel / set-piece / other
+        idx.push({ id: node.id || ctxId, label: ctxLabel, raw: f.raw, eng: f.eng, lat: f.lat });
       }
       pendingId = '';
     });
@@ -216,14 +272,17 @@
   }
 
   function searchIndexFor(index, query) {
-    var q = norm(query.trim());
+    var qt = query.trim();
     var res = [];
-    if (!q) return res;
+    if (!qt) return res;
+    var qEng = foldStr(qt, false), qLat = foldStr(qt, true);
     for (var i = 0; i < index.length; i++) {
       var it = index[i];
-      var hit = norm(it.text).indexOf(q);
+      // English path keeps v/j distinct; Latin path treats i/j & u/v as one.
+      var hit = it.eng.indexOf(qEng);
+      if (hit === -1) hit = it.lat.indexOf(qLat);
       if (hit === -1) continue;
-      res.push({ id: it.id, label: it.label, snippet: makeSnippet(it.text, hit, q.length) });
+      res.push({ id: it.id, label: it.label, snippet: makeSnippet(it.raw, hit, qt.length) });
     }
     return res;
   }
