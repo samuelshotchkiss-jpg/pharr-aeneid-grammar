@@ -46,7 +46,14 @@
                              /\banswered\s+the\s+question\b/gi],
     'foot':                 [/\bfeet\s+high\b/gi],      // measurement, not metre
     'voice':                [/\bvoice\s+of\s+the\s+people\b/gi],
-    'conditional sentence': [/\bcondition\s+at\s+the\s+time\b/gi]
+    'conditional sentence': [/\bcondition\s+at\s+the\s+time\b/gi],
+    // "Part." is the participle abbreviation in the conjugation tables, but
+    // "part" is also a common noun. Suppress the abbreviation match where the
+    // ordinary word is meant: Pharr's "principal parts", the partitive
+    // "part(s) of ...", and adverbial "in part".
+    'participle':           [/\bprincipal\s+parts?\b/gi,
+                             /\bparts?\s+of\b/gi,
+                             /\bin\s+part\b/gi]
   };
 
   // Extra surface forms to match for a canonical term, beyond JSON variants.

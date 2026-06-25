@@ -257,7 +257,7 @@
   },
   {
     "term": "singular",
-    "variants": "",
+    "variants": "sg.; sing.",
     "domain": "nominal",
     "parent": "number",
     "pharr_defines": true,
@@ -271,7 +271,7 @@
   },
   {
     "term": "plural",
-    "variants": "",
+    "variants": "pl.",
     "domain": "nominal",
     "parent": "number",
     "pharr_defines": true,
@@ -302,7 +302,7 @@
   },
   {
     "term": "nominative",
-    "variants": "",
+    "variants": "Nom.",
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -316,7 +316,7 @@
   },
   {
     "term": "genitive",
-    "variants": "",
+    "variants": "Gen.",
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -330,7 +330,7 @@
   },
   {
     "term": "dative",
-    "variants": "dative of agent; dative of interest; dative of advantage; dative of possession; dative of reference",
+    "variants": "dative of agent; dative of interest; dative of advantage; dative of possession; dative of reference; Dat.",
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -344,7 +344,7 @@
   },
   {
     "term": "accusative",
-    "variants": "accusative and infinitive",
+    "variants": "accusative and infinitive; Acc.",
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -358,7 +358,7 @@
   },
   {
     "term": "ablative",
-    "variants": "ablative absolute; ablative of means; ablative of agent; ablative of cause; ablative of manner; ablative of respect; ablative of separation; ablative of comparison; ablative of degree of difference",
+    "variants": "ablative absolute; ablative of means; ablative of agent; ablative of cause; ablative of manner; ablative of respect; ablative of separation; ablative of comparison; ablative of degree of difference; Abl.",
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -372,7 +372,7 @@
   },
   {
     "term": "vocative",
-    "variants": "",
+    "variants": "Voc.",
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -496,7 +496,7 @@
   },
   {
     "term": "neuter",
-    "variants": "",
+    "variants": "neut.",
     "domain": "nominal",
     "parent": "gender",
     "pharr_defines": false,
@@ -564,7 +564,7 @@
   },
   {
     "term": "feminine",
-    "variants": "",
+    "variants": "fem.",
     "domain": "nominal",
     "parent": "gender",
     "pharr_defines": false,
@@ -581,7 +581,7 @@
   },
   {
     "term": "masculine",
-    "variants": "",
+    "variants": "masc.",
     "domain": "nominal",
     "parent": "gender",
     "pharr_defines": false,
@@ -796,7 +796,7 @@
   },
   {
     "term": "present",
-    "variants": "",
+    "variants": "Pres.",
     "domain": "verb",
     "parent": "tense",
     "pharr_defines": true,
@@ -1174,7 +1174,7 @@
   },
   {
     "term": "indicative",
-    "variants": "",
+    "variants": "Ind.",
     "domain": "verb",
     "parent": "mood",
     "pharr_defines": true,
@@ -1188,7 +1188,7 @@
   },
   {
     "term": "subjunctive",
-    "variants": "jussive; hortatory; optative; deliberative; potential",
+    "variants": "jussive; hortatory; optative; deliberative; potential; Subj.",
     "domain": "verb",
     "parent": "mood",
     "pharr_defines": true,
@@ -1202,7 +1202,7 @@
   },
   {
     "term": "imperative",
-    "variants": "",
+    "variants": "Imv.",
     "domain": "verb",
     "parent": "mood",
     "pharr_defines": true,
@@ -1230,7 +1230,7 @@
   },
   {
     "term": "imperfect",
-    "variants": "",
+    "variants": "Imperf.",
     "domain": "verb",
     "parent": "tense",
     "pharr_defines": true,
@@ -1244,7 +1244,7 @@
   },
   {
     "term": "future",
-    "variants": "",
+    "variants": "Fut.",
     "domain": "verb",
     "parent": "tense",
     "pharr_defines": true,
@@ -1258,7 +1258,7 @@
   },
   {
     "term": "perfect",
-    "variants": "",
+    "variants": "Perf.",
     "domain": "verb",
     "parent": "tense",
     "pharr_defines": true,
@@ -1272,7 +1272,7 @@
   },
   {
     "term": "pluperfect",
-    "variants": "",
+    "variants": "Pluperf.",
     "domain": "verb",
     "parent": "tense",
     "pharr_defines": true,
@@ -1286,7 +1286,7 @@
   },
   {
     "term": "future perfect",
-    "variants": "",
+    "variants": "Fut. perf.",
     "domain": "verb",
     "parent": "tense",
     "pharr_defines": true,
@@ -1376,7 +1376,7 @@
   },
   {
     "term": "participle",
-    "variants": "participles",
+    "variants": "participles; Part.",
     "domain": "pos",
     "parent": "",
     "pharr_defines": false,
@@ -1393,7 +1393,7 @@
   },
   {
     "term": "infinitive",
-    "variants": "infinitives",
+    "variants": "infinitives; Inf.",
     "domain": "verb",
     "parent": "",
     "pharr_defines": false,
