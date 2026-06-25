@@ -103,6 +103,37 @@
 .toc-i2 > a{ font-size:.86rem; color:var(--muted); padding:.16rem .4rem .16rem .9rem; border-left:2px solid var(--line); margin-left:.45rem; }
 .toc-i2 > a:hover{ border-left-color:var(--accent); }
 
+/* ---- §5d search page (modal "all instances" results) ----------------- */
+.search-page{ position:fixed; inset:0; z-index:80; display:flex; }
+.search-page[hidden]{ display:none; }
+.sp-backdrop{ position:absolute; inset:0; background:rgba(15,25,45,.45); }
+.sp-panel{ position:relative; margin:auto; width:min(680px,94vw); max-height:88vh;
+  display:flex; flex-direction:column; background:#fff; border-radius:12px;
+  box-shadow:0 12px 48px rgba(15,25,45,.35); overflow:hidden; }
+.sp-head{ display:flex; align-items:flex-start; gap:.6rem; padding:.8rem 1rem; border-bottom:1px solid var(--line); }
+.sp-head-text{ flex:1 1 auto; min-width:0; }
+.sp-title{ font-weight:700; color:var(--head); font-size:1.04rem; }
+.sp-count{ font-size:.82rem; color:var(--muted); margin-top:.15rem; }
+.sp-close{ flex:0 0 auto; cursor:pointer; width:2rem; height:2rem; font-size:1.25rem; line-height:1;
+  border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--muted); }
+.sp-close:hover{ background:var(--fill1); color:var(--ink); }
+.sp-body{ overflow:auto; padding:.5rem .65rem 1rem; }
+.sp-variants{ font-size:.78rem; color:var(--muted); font-style:italic; padding:.25rem .4rem .55rem; }
+.sp-group{ margin:.3rem 0 .65rem; }
+.sp-group-head{ display:flex; align-items:center; gap:.5rem; width:100%; text-align:left; cursor:pointer;
+  background:var(--fill1); border:1px solid var(--line); border-radius:7px; padding:.32rem .55rem;
+  color:var(--head); font-weight:700; font-size:.92rem; }
+.sp-group-head:hover{ background:var(--fill2); }
+.sp-group-count{ margin-left:auto; font-weight:400; font-size:.8rem; color:var(--muted); }
+.sp-occ{ display:block; width:100%; text-align:left; cursor:pointer; font:inherit; font-size:.86rem;
+  color:var(--ink); background:none; border:0; border-left:2px solid var(--line);
+  margin:.18rem 0 .18rem .55rem; padding:.26rem .55rem; border-radius:0 5px 5px 0; }
+.sp-occ:hover{ background:var(--fill2); border-left-color:var(--accent); }
+.sp-occ mark{ background:#ffe08a; color:inherit; padding:0 1px; border-radius:2px; }
+.sp-empty{ color:var(--muted); padding:1.2rem; text-align:center; }
+body.sp-open{ overflow:hidden; }                 /* lock background scroll while open */
+::highlight(pharr-occ){ background:#ffe08a; color:#1c2430; }   /* the jumped-to occurrence */
+
 /* ---- jump-to flash on the target section ----------------------------- */
 .nav-flash{ animation:navFlash 1.6s ease-out; }
 @keyframes navFlash{

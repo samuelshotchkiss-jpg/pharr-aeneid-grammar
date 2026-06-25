@@ -13,15 +13,20 @@
    in css/web.css (media=screen). This file edits no shared content; it
    only augments the DOM at runtime.
 
-   5d hook: the Enter-search results are intentionally minimal/inline. The
-   future "all instances" search page (5d) will replace renderSearchResults()
-   / wire the `.nav-allinstances` affordance -- search for "5d:" below.
+   The search bar's Enter and the future grammatical tooltips' "all instances"
+   link share one target: the §5d search page (window.PharrSearch, below). It
+   lists every occurrence of a query, or of a term's whole variant set (variants
+   resolved from data/glossary.json), grouped by section and navigable to each
+   exact occurrence. Deep-linkable via #find=<text> and #all=<term-slug>.
    ========================================================================= */
 (function () {
   'use strict';
 
   var MOBILE_Q = '(max-width: 820px)';
   var STORE_KEY = 'pharr-nav-collapsed';
+
+  // shared state (assigned in init, used by the §5d search-page functions)
+  var searchIndex = null, searchPage = null, spTitle = null, spCount = null, spBody = null;
 
   function mql() { return window.matchMedia(MOBILE_Q); }
   function isMobile() { return mql().matches; }
@@ -257,34 +262,70 @@
 
       if (/^H[1-4]$/.test(tag)) {                        // heading / title
         ctxLabel = '§';                                  // headings precede their §s
-        idx.push({ id: node.id || ctxId, label: '§', raw: f.raw, eng: f.eng, lat: f.lat });
+        idx.push({ el: node, id: node.id || ctxId, label: '§', raw: f.raw, eng: f.eng, lat: f.lat });
       } else if (node.classList && node.classList.contains('sec')) {
         var sn = node.querySelector('.sn');
         var num = sn ? sn.textContent.replace(/[.\s]+$/, '') : ctxLabel;
         ctxLabel = num;
-        idx.push({ id: node.id || pendingId || ctxId, label: num, raw: f.raw, eng: f.eng, lat: f.lat });
+        idx.push({ el: node, id: node.id || pendingId || ctxId, label: num, raw: f.raw, eng: f.eng, lat: f.lat });
       } else {                                           // table / panel / set-piece / other
-        idx.push({ id: node.id || ctxId, label: ctxLabel, raw: f.raw, eng: f.eng, lat: f.lat });
+        idx.push({ el: node, id: node.id || ctxId, label: ctxLabel, raw: f.raw, eng: f.eng, lat: f.lat });
       }
       pendingId = '';
     });
     return idx;
   }
 
-  function searchIndexFor(index, query) {
-    var qt = query.trim();
-    var res = [];
-    if (!qt) return res;
-    var qEng = foldStr(qt, false), qLat = foldStr(qt, true);
-    for (var i = 0; i < index.length; i++) {
-      var it = index[i];
-      // English path keeps v/j distinct; Latin path treats i/j & u/v as one.
-      var hit = it.eng.indexOf(qEng);
-      if (hit === -1) hit = it.lat.indexOf(qLat);
-      if (hit === -1) continue;
-      res.push({ id: it.id, label: it.label, snippet: makeSnippet(it.raw, hit, qt.length) });
+  /* =====================================================================
+     5d -- "all instances" search. Reuses the §5b folding + per-block index:
+     finds EVERY occurrence (not just the first per block) of a query, or of a
+     term's whole variant set, and groups them by section. Two callers share
+     it -- the nav search bar (free text) and the tooltips' "all instances"
+     link (a term + its glossary variants). See window.PharrSearch below.
+     ===================================================================== */
+  function isWordChar(c) { return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'); }
+
+  // all offsets of needle in hay; wholeWord requires non-letter edges (folded
+  // text is lowercase ascii, so [a-z0-9] is the word class).
+  function findHits(hay, needle, wholeWord, out) {
+    if (!needle) return;
+    var from = 0, k, n = needle.length;
+    while ((k = hay.indexOf(needle, from)) !== -1) {
+      var ok = !wholeWord ||
+        ((k === 0 || !isWordChar(hay[k - 1])) &&
+         (k + n >= hay.length || !isWordChar(hay[k + n])));
+      if (ok) out.push({ start: k, len: n });
+      from = k + 1;
     }
-    return res;
+  }
+
+  // every occurrence of any folded query in one block, overlaps/dups merged
+  function occurrencesIn(it, qfolds, wholeWord) {
+    var hits = [];
+    qfolds.forEach(function (q) {
+      findHits(it.eng, q.eng, wholeWord, hits);   // English path (v/j distinct)
+      findHits(it.lat, q.lat, wholeWord, hits);   // Latin path (i/j, u/v merged)
+    });
+    if (!hits.length) return hits;
+    hits.sort(function (a, b) { return a.start - b.start || b.len - a.len; });
+    var merged = [], end = -1;
+    hits.forEach(function (h) { if (h.start >= end) { merged.push(h); end = h.start + h.len; } });
+    return merged;
+  }
+
+  function searchAll(index, queries, wholeWord) {
+    var qfolds = [];
+    (queries || []).forEach(function (q) {
+      var t = (q || '').trim();
+      if (t) qfolds.push({ eng: foldStr(t, false), lat: foldStr(t, true) });
+    });
+    var groups = [], total = 0;
+    if (!qfolds.length) return { groups: groups, total: total };
+    for (var i = 0; i < index.length; i++) {
+      var occ = occurrencesIn(index[i], qfolds, wholeWord);
+      if (occ.length) { groups.push({ entry: index[i], occ: occ }); total += occ.length; }
+    }
+    return { groups: groups, total: total };
   }
 
   function makeSnippet(text, at, len) {
@@ -302,32 +343,162 @@
     return frag;
   }
 
-  function renderSearchResults(box, index, query) {
-    box.textContent = '';
-    var hits = searchIndexFor(index, query);
-
-    var head = el('div', { class: 'nav-res-head' });
-    head.textContent = hits.length
-      ? hits.length + ' result' + (hits.length === 1 ? '' : 's') + ' for “' + query.trim() + '”'
-      : 'No text matches “' + query.trim() + '”';
-    box.appendChild(head);
-
-    var CAP = 40;
-    hits.slice(0, CAP).forEach(function (h) {
-      var row = el('a', { class: 'nav-res-item', href: h.id ? '#' + h.id : '#' });
-      row.appendChild(el('span', { class: 'nav-res-num', text: h.label }));
-      var snip = el('span', { class: 'nav-res-snip' });
-      snip.appendChild(h.snippet);
-      row.appendChild(snip);
-      if (h.id) row.addEventListener('click', function (e) { goTo(h.id, e); });
-      box.appendChild(row);
-    });
-    if (hits.length > CAP) {
-      box.appendChild(el('div', { class: 'nav-dd-more', text: '+' + (hits.length - CAP) + ' more results' }));
+  /* ---- navigate to one exact occurrence inside its block -------------- */
+  // build a DOM Range for [start, start+len) of a block's raw text. The raw
+  // string was concatenated from the same SHOW_TEXT walk, so offsets line up.
+  function rangeAt(blockEl, start, len) {
+    var w = document.createTreeWalker(blockEl, NodeFilter.SHOW_TEXT, null, false);
+    var n, pos = 0, r = document.createRange(), started = false;
+    while ((n = w.nextNode())) {
+      var L = n.nodeValue.length;
+      if (!started && start < pos + L) { r.setStart(n, start - pos); started = true; }
+      if (started && start + len <= pos + L) { r.setEnd(n, start + len - pos); return r; }
+      pos += L;
     }
+    if (started && n) { r.setEnd(n, n.nodeValue.length); return r; }
+    return null;
+  }
 
-    // 5d hook: the future "all instances" search page will open from here.
-    // No user-facing placeholder until that thread exists.
+  function highlightRange(range) {
+    if (window.CSS && CSS.highlights && window.Highlight) {       // no DOM mutation
+      try {
+        CSS.highlights.set('pharr-occ', new Highlight(range.cloneRange()));
+        window.setTimeout(function () { try { CSS.highlights.delete('pharr-occ'); } catch (e) {} }, 2400);
+        return true;
+      } catch (e) {}
+    }
+    return false;
+  }
+
+  function goToOccurrence(blockEl, start, len) {
+    if (isMobile()) setCollapsed(true);
+    var range = rangeAt(blockEl, start, len);
+    if (!range) { if (blockEl.id) goTo(blockEl.id); return; }
+    var rect = range.getBoundingClientRect();
+    var top = window.scrollY + rect.top - Math.max(64, Math.round(window.innerHeight * 0.32));
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    if (!highlightRange(range)) {                                 // fallback: flash the block
+      blockEl.classList.remove('nav-flash'); void blockEl.offsetWidth; blockEl.classList.add('nav-flash');
+      window.setTimeout(function () { blockEl.classList.remove('nav-flash'); }, 1600);
+    }
+  }
+
+  /* ---- render the search page ----------------------------------------- */
+  function groupLabel(lbl) { return /^\d/.test(lbl) ? '§' + lbl : lbl; }
+
+  function renderSearchPage(label, queries, wholeWord) {
+    var res = searchAll(searchIndex, queries, wholeWord);
+    spTitle.textContent = (wholeWord ? 'All instances of “' : 'Search: “') + label + '”';
+    spCount.textContent = res.total
+      ? res.total + ' occurrence' + (res.total === 1 ? '' : 's') + ' in ' +
+        res.groups.length + ' section' + (res.groups.length === 1 ? '' : 's')
+      : 'No occurrences found.';
+    spBody.textContent = '';
+    spBody.scrollTop = 0;
+
+    if (wholeWord && queries.length > 1) {
+      spBody.appendChild(el('div', { class: 'sp-variants', text: 'Forms searched: ' + queries.join(', ') }));
+    }
+    res.groups.forEach(function (g) {
+      var it = g.entry, grp = el('div', { class: 'sp-group' });
+      var gh = el('button', { class: 'sp-group-head', type: 'button' }, [
+        el('span', { class: 'sp-group-num', text: groupLabel(it.label) }),
+        el('span', { class: 'sp-group-count', text: g.occ.length + '×' })
+      ]);
+      if (it.id) gh.addEventListener('click', function () { closeSearchPage(); goTo(it.id); });
+      grp.appendChild(gh);
+      g.occ.forEach(function (o) {
+        var row = el('button', { class: 'sp-occ', type: 'button' });
+        row.appendChild(makeSnippet(it.raw, o.start, o.len));
+        row.addEventListener('click', function () { closeSearchPage(); goToOccurrence(it.el, o.start, o.len); });
+        grp.appendChild(row);
+      });
+      spBody.appendChild(grp);
+    });
+    if (!res.total) {
+      spBody.appendChild(el('div', { class: 'sp-empty', text: 'Nothing in the text matches “' + label + '”.' }));
+    }
+  }
+
+  function openSearchPage(label, queries, wholeWord, hash) {
+    if (!searchPage) return;
+    renderSearchPage(label, queries, wholeWord);
+    searchPage.hidden = false;
+    document.body.classList.add('sp-open');
+    if (hash) { try { history.replaceState(null, '', '#' + hash); } catch (e) {} }
+  }
+  function closeSearchPage() {
+    if (!searchPage) return;
+    searchPage.hidden = true;
+    document.body.classList.remove('sp-open');
+    if (/^#(find|all)=/.test(location.hash)) {
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    }
+  }
+
+  /* ---- term database (variant source) + public entry points ----------- */
+  var TERMS = null, TERMS_PROMISE = null;
+  function loadTerms() {
+    if (TERMS) return Promise.resolve(TERMS);
+    if (TERMS_PROMISE) return TERMS_PROMISE;
+    TERMS_PROMISE = fetch('data/glossary.json')
+      .then(function (r) { return r.json(); })
+      .then(function (a) { TERMS = Array.isArray(a) ? a : []; return TERMS; })
+      .catch(function () { TERMS = []; return TERMS; });
+    return TERMS_PROMISE;
+  }
+  // a term's full match set = the canonical term + its ';'-split variants
+  // (editorial parentheticals like "(in Pharr's broad sense)" stripped).
+  function variantSet(entry) {
+    var out = [entry.term];
+    if (entry.variants) {
+      entry.variants.split(';').forEach(function (v) {
+        v = v.replace(/\s*\([^)]*\)/g, '').trim();
+        if (v) out.push(v);
+      });
+    }
+    return out;
+  }
+  function resolveTerm(s) {
+    var key = (s || '').trim().toLowerCase();
+    if (!key || !TERMS) return null;
+    for (var i = 0; i < TERMS.length; i++) {
+      var e = TERMS[i];
+      if (e.term.toLowerCase() === key || slug(e.term) === key) return e;
+      var vs = variantSet(e);
+      for (var j = 1; j < vs.length; j++) { if (vs[j].toLowerCase() === key) return e; }
+    }
+    return null;
+  }
+
+  /* Public contract shared by the nav bar (§5b) and the tooltips (§5c). */
+  window.PharrSearch = {
+    // Free text (substring, Latin-aware). Used by the nav search bar.
+    openQuery: function (text) {
+      var t = (text || '').trim();
+      if (t) openSearchPage(t, [t], false, 'find=' + encodeURIComponent(t));
+    },
+    // "All instances" of a term. `term` is the canonical `term` string from
+    // glossary.json (case-insensitive; a variant or the term-slug also
+    // resolves). Variants are resolved here from the JSON; whole-word match.
+    // Returns Promise<boolean> (true when the term was found in the JSON).
+    openTerm: function (term) {
+      return loadTerms().then(function () {
+        var e = resolveTerm(term);
+        if (e) { openSearchPage(e.term, variantSet(e), true, 'all=' + slug(e.term)); return true; }
+        var lit = String(term || '').trim();
+        if (lit) openSearchPage(lit, [lit], true, null);   // literal fallback
+        return false;
+      });
+    },
+    close: closeSearchPage
+  };
+
+  // Deep links: #find=<text> (free) and #all=<term-slug> (term all-instances).
+  function handleSearchHash() {
+    var h = location.hash || '';
+    if (/^#find=/.test(h)) window.PharrSearch.openQuery(decodeURIComponent(h.slice(6)));
+    else if (/^#all=/.test(h)) window.PharrSearch.openTerm(decodeURIComponent(h.slice(5)));
   }
 
   /* ---- panel open/close state ----------------------------------------- */
@@ -343,9 +514,7 @@
 
   function closeOverlays() {
     var dd = document.getElementById('nav-dropdown');
-    var rs = document.getElementById('nav-results');
     if (dd) dd.hidden = true;
-    if (rs) rs.hidden = true;
   }
 
   /* ---- build & inject -------------------------------------------------- */
@@ -363,7 +532,6 @@
       el('button', { class: 'nav-min', type: 'button', 'aria-label': 'Hide navigation panel', title: 'Hide panel', html: '&laquo;' })
     ]);
     var dropdown = el('div', { class: 'nav-dropdown no-print', id: 'nav-dropdown', hidden: true });
-    var results = el('div', { class: 'nav-results no-print', id: 'nav-results', hidden: true });
 
     // Go-to-§ box: type a section number, jump straight there.
     var gotoInput = el('input', {
@@ -382,18 +550,34 @@
     var toc = buildToc(page);
 
     panel = el('aside', { class: 'navpanel no-print', id: 'navpanel', 'aria-label': 'Navigation' }, [
-      searchWrap, dropdown, results, gotoBox, toc
+      searchWrap, dropdown, gotoBox, toc
     ]);
     openBtn = el('button', { class: 'nav-open no-print', id: 'nav-open', type: 'button',
       'aria-label': 'Show navigation panel', title: 'Navigation', 'aria-controls': 'navpanel', html: '&#9776;' });
     backdrop = el('div', { class: 'nav-backdrop no-print', id: 'nav-backdrop' });
 
+    // §5d search page (modal results overlay), hidden until a search opens it.
+    spTitle = el('div', { class: 'sp-title', id: 'sp-title' });
+    spCount = el('div', { class: 'sp-count', id: 'sp-count' });
+    spBody = el('div', { class: 'sp-body', id: 'sp-body' });
+    var spClose = el('button', { class: 'sp-close', type: 'button', 'aria-label': 'Close search results', html: '&times;' });
+    var spPanel = el('div', { class: 'sp-panel', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'sp-title' }, [
+      el('div', { class: 'sp-head' }, [el('div', { class: 'sp-head-text' }, [spTitle, spCount]), spClose]),
+      spBody
+    ]);
+    var spBackdrop = el('div', { class: 'sp-backdrop' });
+    searchPage = el('div', { class: 'search-page no-print', id: 'search-page', hidden: true }, [spBackdrop, spPanel]);
+
     document.body.appendChild(panel);
     document.body.appendChild(openBtn);
     document.body.appendChild(backdrop);
+    document.body.appendChild(searchPage);
 
     var entries = collectIndex(page);
-    var searchIndex = buildSearchIndex(page);   // built once; content is static
+    searchIndex = buildSearchIndex(page);       // built once; content is static
+
+    spClose.addEventListener('click', closeSearchPage);
+    spBackdrop.addEventListener('click', closeSearchPage);
 
     /* wiring ------------------------------------------------------------ */
     openBtn.addEventListener('click', function () { setCollapsed(false); input.focus(); });
@@ -411,7 +595,6 @@
     });
 
     function showDropdown() {
-      results.hidden = true;
       renderDropdown(dropdown, entries, input.value);
       dropdown.hidden = false;
     }
@@ -424,8 +607,7 @@
         e.preventDefault();
         if (!input.value.trim()) return;
         dropdown.hidden = true;
-        renderSearchResults(results, searchIndex, input.value);
-        results.hidden = false;
+        window.PharrSearch.openQuery(input.value);   // §5d page
       } else if (e.key === 'Escape') {
         closeOverlays();
         input.blur();
@@ -445,10 +627,15 @@
       else if (!panel.contains(e.target)) closeOverlays();
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && isMobile() && !document.body.classList.contains('nav-collapsed')) {
-        setCollapsed(true);
-      }
+      if (e.key !== 'Escape') return;
+      if (searchPage && !searchPage.hidden) { closeSearchPage(); return; }
+      if (isMobile() && !document.body.classList.contains('nav-collapsed')) setCollapsed(true);
     });
+
+    // deep links: open the search page from #find=… / #all=… on load and on
+    // later hash changes (set silently via replaceState, so no feedback loop).
+    window.addEventListener('hashchange', handleSearchHash);
+    handleSearchHash();
 
     /* initial state ----------------------------------------------------- */
     function applyMode() {
