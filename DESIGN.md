@@ -200,7 +200,13 @@ The term JSON is appended as a glossary at the **end** of the PDF.
 3. **[done]** Web: navigation panel (5a) + search bar dropdown behavior (5b) —
    `js/nav.js` + web-layer CSS; ToC derived from the live headings.
 4. Web: grammatical tooltips (5c) — includes editor rulings on polysemy.
-5. Web: search page (5d).
+   Opens the §5d page via `window.PharrSearch.openTerm(term)` (see below).
+5. **[done]** Web: search page (5d) — `window.PharrSearch` modal; all
+   occurrences of a query or a term's variant set, grouped by section and
+   navigable to each occurrence. Shared by the nav bar (5b) and the tooltips
+   (5c). Contract: `openQuery(text)` / `openTerm(term)` (term = canonical
+   `term` string from `glossary.json`; variants resolved there); deep links
+   `#find=<text>` and `#all=<term-slug>`.
 6. Print: paged-media CSS + color translation (6b, 6c).
 7. Print: glossary rendering from JSON (6d).
 8. Current page-count conversion (6a) — independent and tiny; run anytime.
