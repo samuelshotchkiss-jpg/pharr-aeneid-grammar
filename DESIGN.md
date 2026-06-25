@@ -222,8 +222,15 @@ The term JSON is appended as a glossary at the **end** of the PDF.
    web / print layers split and linked.
 3. **[done]** Web: navigation panel (5a) + search bar dropdown behavior (5b) —
    `js/nav.js` + web-layer CSS; ToC derived from the live headings.
-4. Web: grammatical tooltips (5c) — includes editor rulings on polysemy.
-   Opens the §5d page via `window.PharrSearch.openTerm(term)` (see below).
+4. **[done]** Web: grammatical tooltips (5c) — `js/tooltips.js`, runtime
+   web-layer (no content-core edits); glossary-driven detection (first
+   occurrence per section per link-key, distinct variants get their own link
+   bar the subjunctive sub-uses), editor-ruled polysemy stoplist, popup with
+   definition + §-location links + "all instances". Headings/titles and table
+   cells are eligible; Latin/glosses/section-nums/back-index/anchors are not.
+   Opens the §5d page via `window.PharrSearch.openTerm(term)`. (Follow-up:
+   add label abbreviations — Nom./Subj./sg. … — to glossary `variants` so
+   abbreviated paradigm-cell labels resolve.)
 5. **[done]** Web: search page (5d) — `window.PharrSearch` modal; all
    occurrences of a query or a term's variant set, grouped by section and
    navigable to each occurrence. Shared by the nav bar (5b) and the tooltips
