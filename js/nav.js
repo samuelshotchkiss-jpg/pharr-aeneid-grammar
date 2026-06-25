@@ -267,9 +267,8 @@
       box.appendChild(el('div', { class: 'nav-dd-more', text: '+' + (hits.length - CAP) + ' more results' }));
     }
 
-    // 5d: the search page ("all instances") opens from here.
-    box.appendChild(el('div', { class: 'nav-allinstances',
-      text: 'A full “all instances” search page is coming (§5d).' }));
+    // 5d hook: the future "all instances" search page will open from here.
+    // No user-facing placeholder until that thread exists.
   }
 
   /* ---- panel open/close state ----------------------------------------- */

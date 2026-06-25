@@ -67,7 +67,10 @@
   margin-bottom:.3rem;
 }
 .nav-dd-empty{ font-size:.85rem; color:var(--muted); padding:.4rem .3rem; }
-.nav-dd-item{ margin:.1rem 0; padding:.18rem .3rem; border-radius:5px; font-size:.85rem; }
+/* cloned index entries keep their hanging indent (lemma flush, continuation
+   lines indented) but contained: padding-left must exceed the negative
+   text-indent so the first line never escapes the dropdown's left edge. */
+.nav-dd-item{ margin:.1rem 0; padding:.18rem .35rem .18rem 1.2rem; text-indent:-.85rem; border-radius:5px; font-size:.85rem; }
 .nav-dd-item:hover{ background:var(--fill2); }
 .nav-dd-item .lemma{ font-weight:700; }
 .nav-dd-more{ font-size:.78rem; color:var(--muted); padding:.35rem .3rem 0; font-style:italic; }
@@ -77,7 +80,6 @@
 .nav-res-num{ flex:0 0 auto; font-weight:700; color:var(--accent-deep); min-width:2.2rem; }
 .nav-res-snip{ font-size:.82rem; color:var(--muted); }
 .nav-res-snip mark, .nav-dd-item mark{ background:#ffe9a8; color:inherit; padding:0 1px; border-radius:2px; }
-.nav-allinstances{ font-size:.78rem; color:var(--muted); font-style:italic; padding:.45rem .3rem .2rem; border-top:1px dashed var(--line); margin-top:.35rem; }
 
 /* ---- table of contents ---------------------------------------------- */
 .nav-toc{ flex:1 1 auto; overflow:auto; padding-right:.2rem; }
