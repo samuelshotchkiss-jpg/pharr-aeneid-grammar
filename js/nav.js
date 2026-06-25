@@ -441,7 +441,12 @@
   function loadTerms() {
     if (TERMS) return Promise.resolve(TERMS);
     if (TERMS_PROMISE) return TERMS_PROMISE;
-    TERMS_PROMISE = fetch('data/glossary.json')
+    // 'no-cache' = always revalidate against the server. The static dev server
+    // sends no Cache-Control, so a plain fetch is heuristically cached and a
+    // glossary.json edit silently fails to show up on reload. Revalidating keeps
+    // the term data (and so variant resolution) current; it's a tiny file, and
+    // a 304 when unchanged is cheap.
+    TERMS_PROMISE = fetch('data/glossary.json', { cache: 'no-cache' })
       .then(function (r) { return r.json(); })
       .then(function (a) { TERMS = Array.isArray(a) ? a : []; return TERMS; })
       .catch(function () { TERMS = []; return TERMS; });
