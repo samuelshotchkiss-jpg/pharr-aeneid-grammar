@@ -81,6 +81,18 @@
 .nav-res-snip{ font-size:.82rem; color:var(--muted); }
 .nav-res-snip mark, .nav-dd-item mark{ background:#ffe9a8; color:inherit; padding:0 1px; border-radius:2px; }
 
+/* ---- go-to-§ box ----------------------------------------------------- */
+.nav-goto{ flex:0 0 auto; background:var(--fill1); border:1px solid var(--line); border-radius:8px; padding:.4rem .5rem; }
+.nav-goto-row{ display:flex; align-items:center; gap:.4rem; }
+.nav-goto-label{ font-size:.84rem; font-weight:700; color:var(--head); white-space:nowrap; }
+.nav-goto-input{ width:4.6rem; flex:0 0 auto; font:inherit; font-size:.92rem; text-align:center;
+  padding:.32rem .4rem; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); }
+.nav-goto-input:focus{ outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent); }
+.nav-goto-btn{ margin-left:auto; font:inherit; font-size:.82rem; font-weight:700; cursor:pointer;
+  padding:.32rem .7rem; border:1px solid var(--accent); border-radius:6px; background:var(--accent); color:#fff; }
+.nav-goto-btn:hover{ background:var(--accent-deep); border-color:var(--accent-deep); }
+.nav-goto-msg{ font-size:.78rem; color:var(--warn); margin:.3rem .1rem 0; }
+
 /* ---- table of contents ---------------------------------------------- */
 .nav-toc{ flex:1 1 auto; overflow:auto; padding-right:.2rem; }
 .nav-toc ul{ list-style:none; margin:0; padding:0; }

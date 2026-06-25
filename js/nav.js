@@ -364,10 +364,25 @@
     ]);
     var dropdown = el('div', { class: 'nav-dropdown no-print', id: 'nav-dropdown', hidden: true });
     var results = el('div', { class: 'nav-results no-print', id: 'nav-results', hidden: true });
+
+    // Go-to-§ box: type a section number, jump straight there.
+    var gotoInput = el('input', {
+      type: 'text', id: 'nav-goto-input', class: 'nav-goto-input',
+      inputmode: 'numeric', placeholder: 'e.g. 290', autocomplete: 'off',
+      'aria-label': 'Section number to jump to'
+    });
+    var gotoMsg = el('div', { class: 'nav-goto-msg', id: 'nav-goto-msg', role: 'status', 'aria-live': 'polite', hidden: true });
+    var gotoForm = el('form', { class: 'nav-goto-row', id: 'nav-goto-form' }, [
+      el('label', { class: 'nav-goto-label', for: 'nav-goto-input', html: 'Go to &sect;' }),
+      gotoInput,
+      el('button', { class: 'nav-goto-btn', type: 'submit', text: 'Go' })
+    ]);
+    var gotoBox = el('div', { class: 'nav-goto no-print', id: 'nav-goto' }, [gotoForm, gotoMsg]);
+
     var toc = buildToc(page);
 
     panel = el('aside', { class: 'navpanel no-print', id: 'navpanel', 'aria-label': 'Navigation' }, [
-      searchWrap, dropdown, results, toc
+      searchWrap, dropdown, results, gotoBox, toc
     ]);
     openBtn = el('button', { class: 'nav-open no-print', id: 'nav-open', type: 'button',
       'aria-label': 'Show navigation panel', title: 'Navigation', 'aria-controls': 'navpanel', html: '&#9776;' });
@@ -384,6 +399,16 @@
     openBtn.addEventListener('click', function () { setCollapsed(false); input.focus(); });
     searchWrap.querySelector('.nav-min').addEventListener('click', function () { setCollapsed(true); });
     backdrop.addEventListener('click', function () { setCollapsed(true); });
+
+    // go-to-§: a digit run is the section; "34c" -> 34, "§290"/"s290" -> 290.
+    gotoForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var m = (gotoInput.value || '').match(/\d+/);
+      if (!m) { gotoMsg.textContent = 'Type a section number, e.g. 290.'; gotoMsg.hidden = false; return; }
+      var id = 's' + m[0];
+      if (document.getElementById(id)) { gotoMsg.hidden = true; goTo(id); }
+      else { gotoMsg.textContent = 'There’s no §' + m[0] + ' here.'; gotoMsg.hidden = false; }
+    });
 
     function showDropdown() {
       results.hidden = true;
