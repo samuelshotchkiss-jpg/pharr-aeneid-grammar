@@ -131,6 +131,8 @@
 .sp-occ:hover{ background:var(--fill2); border-left-color:var(--accent); }
 .sp-occ mark{ background:#ffe08a; color:inherit; padding:0 1px; border-radius:2px; }
 .sp-empty{ color:var(--muted); padding:1.2rem; text-align:center; }
+.sp-error{ margin:.6rem; padding:.7rem .85rem; border:1px solid var(--edborder); border-left:4px solid var(--warn);
+  border-radius:7px; background:var(--edbg-soft); color:var(--ink); font-size:.9rem; }
 body.sp-open{ overflow:hidden; }                 /* lock background scroll while open */
 ::highlight(pharr-occ){ background:#ffe08a; color:#1c2430; }   /* the jumped-to occurrence */
 

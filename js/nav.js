@@ -436,8 +436,20 @@
     }
   }
 
+  // shown when a term lookup is asked for but the term database failed to load
+  function showTermsNotLoaded(label) {
+    if (!searchPage) return;
+    spTitle.textContent = label ? 'All instances of “' + label + '”' : 'All instances';
+    spCount.textContent = '';
+    spBody.textContent = '';
+    spBody.appendChild(el('div', { class: 'sp-error',
+      text: 'The term list didn’t load, so this term’s forms can’t be looked up. Try reloading the page.' }));
+    searchPage.hidden = false;
+    document.body.classList.add('sp-open');
+  }
+
   /* ---- term database (variant source) + public entry points ----------- */
-  var TERMS = null, TERMS_PROMISE = null;
+  var TERMS = null, TERMS_PROMISE = null, TERMS_OK = false;
   function loadTerms() {
     if (TERMS) return Promise.resolve(TERMS);
     if (TERMS_PROMISE) return TERMS_PROMISE;
@@ -445,11 +457,14 @@
     // sends no Cache-Control, so a plain fetch is heuristically cached and a
     // glossary.json edit silently fails to show up on reload. Revalidating keeps
     // the term data (and so variant resolution) current; it's a tiny file, and
-    // a 304 when unchanged is cheap.
+    // a 304 when unchanged is cheap. TERMS_OK records whether the load actually
+    // succeeded (it can fail: file:// blocks the fetch, the file is missing or
+    // malformed, the server is down) so a term search can say so plainly rather
+    // than silently returning nothing.
     TERMS_PROMISE = fetch('data/glossary.json', { cache: 'no-cache' })
-      .then(function (r) { return r.json(); })
-      .then(function (a) { TERMS = Array.isArray(a) ? a : []; return TERMS; })
-      .catch(function () { TERMS = []; return TERMS; });
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (a) { TERMS = Array.isArray(a) ? a : []; TERMS_OK = TERMS.length > 0; return TERMS; })
+      .catch(function () { TERMS = []; TERMS_OK = false; return TERMS; });
     return TERMS_PROMISE;
   }
   // a term's full match set = the canonical term + its ';'-split variants
@@ -489,6 +504,7 @@
     // Returns Promise<boolean> (true when the term was found in the JSON).
     openTerm: function (term) {
       return loadTerms().then(function () {
+        if (!TERMS_OK) { showTermsNotLoaded(String(term || '').trim()); return false; }
         var e = resolveTerm(term);
         if (e) { openSearchPage(e.term, variantSet(e), true, 'all=' + slug(e.term)); return true; }
         var lit = String(term || '').trim();
