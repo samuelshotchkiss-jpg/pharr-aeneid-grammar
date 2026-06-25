@@ -15,3 +15,8 @@ Thumbs.db
 
 # --- Claude Code local settings (machine-specific) ---
 .claude/settings.local.json
+
+# --- Claude Code per-session worktrees (if ever enabled) ---
+# Not used today (parallel sessions share the main checkout); ignored so the
+# isolated copies never show up as untracked files in the main folder.
+.claude/worktrees/

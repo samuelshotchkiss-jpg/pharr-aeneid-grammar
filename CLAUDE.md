@@ -10,12 +10,21 @@ both an interactive web page and a print PDF from a **single source**. Audience:
 a 10th-grade Latin class with limited grammar background.
 
 ## How we work
-- **One focused work stream per session.** Do the one task, then stop. Between
-  tasks the user runs `/clear`; the next session starts fresh and reads this
-  file + DESIGN.md. Don't try to carry multiple features in one session.
-- **Commit is the handoff.** State passes to the next session through committed
-  files and clear commit messages, not through conversation history. Commit at
-  meaningful points; the user commits before clearing.
+- **One focused work stream per session.** Each session does one task (a single
+  build thread), then stops. Don't carry multiple features in one session.
+- **Parallel sessions, one per thread — not `/clear` between tasks.** Different
+  dimensions of the project run in separate Claude Code sessions, switched from
+  the desktop sidebar (Ctrl+Tab). Each keeps its own context and its own saved
+  transcript, so a thread can be picked up whenever it's relevant. Starting a
+  session reads this file + DESIGN.md, so each one is self-orienting.
+- **Shared `main` is the common ground.** Sessions share this one working folder
+  and commit straight to `main`; there is no per-session branch to merge. Because
+  the folder is shared, don't edit the same files in two live sessions at once —
+  keep concurrent threads on non-overlapping files, and commit promptly so a
+  switched-to session starts from a clean, current tree. (Git worktrees would add
+  true simultaneous isolation if that's ever needed; not in use today.)
+- **Commit is the handoff.** State passes between sessions through committed files
+  and clear commit messages, not conversation history. Commit at meaningful points.
 - **Work in reviewable increments** with verification between them, not one
   giant rewrite. For large changes, propose the plan before executing.
 

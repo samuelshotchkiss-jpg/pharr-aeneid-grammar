@@ -176,8 +176,12 @@ The term JSON is appended as a glossary at the **end** of the PDF.
   content comparison, not raw-file comparison — raw files are *meant* to
   differ on a refactor.)
 - **One focused work stream per conversation.** Decompose work into
-  thread-sized tasks in dependency order; feed one per conversation. A "layer"
-  may be several threads (the web layer alone is nav / tooltips / search).
+  thread-sized tasks in dependency order; run one per session. A "layer" may be
+  several threads (the web layer alone is nav / tooltips / search). Threads run
+  as separate, parallel Claude Code sessions — switched from the desktop sidebar,
+  each with its own transcript — rather than `/clear`-ing one chat between them.
+  All sessions share one working folder and commit to `main`, so keep concurrent
+  threads on non-overlapping files and commit at meaningful points.
 - **Work in reviewable increments with verification between them**, not one
   giant rewrite.
 - **Don't rebuild what exists.** Preserve established class names and the
