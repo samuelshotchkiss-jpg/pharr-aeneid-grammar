@@ -195,13 +195,24 @@ The term JSON is appended as a glossary at the **end** of the PDF.
 ## 8. Build order (dependency-ordered; each its own thread)
 
 1. **[done]** Project setup + structure recommendation.
-2. CSS separation (content-neutral foundational refactor).
-3. Web: navigation panel (5a) + search bar dropdown behavior (5b).
+2. **[done]** CSS separation (content-neutral foundational refactor) — core /
+   web / print layers split and linked.
+3. **[done]** Web: navigation panel (5a) + search bar dropdown behavior (5b) —
+   `js/nav.js` + web-layer CSS; ToC derived from the live headings.
 4. Web: grammatical tooltips (5c) — includes editor rulings on polysemy.
 5. Web: search page (5d).
 6. Print: paged-media CSS + color translation (6b, 6c).
 7. Print: glossary rendering from JSON (6d).
 8. Current page-count conversion (6a) — independent and tiny; run anytime.
+
+**In progress (emergent — not in the original order): Mobile / responsive
+legibility.** A screen-only pass (≤820px) that collapses the wide paradigm
+tables and multi-column conjugations, adds sticky case-label columns, and fits
+oversized tables so the page reads without horizontal panning on phones. It
+began as the §5a "must stay legible on mobile" requirement and grew into its own
+thread; it edits `index.html` table markup plus core/web CSS (and touches
+`js/nav.js`). Status and specifics live in the **"Mobile:"** commit series, not
+here.
 
 Deferred / future: a possible student-facing rewrite of Pharr's own
 (sometimes sparse or old-fashioned) definitions; any further content passes.
