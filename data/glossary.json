@@ -2154,7 +2154,7 @@
   },
   {
     "term": "apposition",
-    "variants": "appositive",
+    "variants": "appositive; appositional",
     "domain": "syntax",
     "parent": "",
     "pharr_defines": false,

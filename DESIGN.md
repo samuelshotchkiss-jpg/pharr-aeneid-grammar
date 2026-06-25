@@ -92,6 +92,29 @@ note decision and rationale. A single `definition` field holds whichever
 definition applies, distinguished by `definition_source`; Pharr entries are
 read-only. This JSON feeds **both** the web tooltips and the printed glossary.
 
+**Variants.** A term's `variants` field is a **semicolon-separated** list of
+the forms that count as the same term (e.g. `appositive; appositional`). The
+web layer's match set for a term is its `term` plus those variants; this is the
+single source for "what counts as the same term" in term-search and tooltips.
+
+**Delivery / loading [settled].** Two distinct things power search, and only
+one needs this file:
+- The **full-text index** (free-text search + the §5d results page) is built at
+  load time from the live document — no data file, no fetch — so it works
+  whether the page is opened as a file or served.
+- The **term database** (`data/glossary.json`) is loaded by the web layer for
+  the term-aware features (`openTerm` "all instances", and the §5c tooltips).
+  It is `fetch`ed with `cache:'no-cache'` (so an edit shows up on reload), which
+  means the edition **must be served over http(s)** — browsers block `fetch` of
+  a local file, so a `file://` open has a working frame but no term lookups. A
+  failed load (file://, missing/malformed file, server down, or a script-blocking
+  browser extension) surfaces a plain "term list didn't load" notice rather than
+  empty results. If the edition ever needs to run as loose double-click files,
+  switch loading to a generated `data/glossary.js` sidecar
+  (`window.PHARR_GLOSSARY`, included via `<script>`, with `fetch` as fallback) —
+  keeps the JSON canonical, adds a small regenerate-on-edit build step. The
+  loader contract itself (`window.PharrSearch`) is in §8 / the search-page thread.
+
 ---
 
 ## 5. Web layer **[feature specs settled; implementation per build threads]**
