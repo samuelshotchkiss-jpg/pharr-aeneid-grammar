@@ -153,14 +153,14 @@
     "variants": "cases",
     "domain": "nominal",
     "parent": "",
-    "pharr_defines": true,
-    "definition_source": "Pharr",
-    "definition": "Latin has seven cases",
+    "pharr_defines": false,
+    "definition_source": "editor",
+    "definition": "Case is the form a noun, pronoun, or adjective takes to show its job in the sentence — whether it is the subject, the direct object, a possessor, and so on. Latin words change their endings to mark case, and Latin has seven: nominative, genitive, dative, accusative, ablative, vocative, and locative.",
     "definition_location": "§30",
     "first_appearance": "§22",
     "insertion_point": "§22",
     "in_term_span": false,
-    "notes": "enumerative definition"
+    "notes": "reclassified Pharr->editor in glossary cleanup Phase 2: Pharr's §30 entry was an enumerative definition — a bare count that never says what case is; rewritten as a real definition with the seven cases kept as a trailing aid. Original Pharr definition: 'Latin has seven cases'."
   },
   {
     "term": "ultima",
@@ -437,14 +437,14 @@
     "variants": "declensions",
     "domain": "nominal",
     "parent": "",
-    "pharr_defines": true,
-    "definition_source": "Pharr",
-    "definition": "There are five declensions in Latin, characterized by the final letter of their stems (the stem characteristic)",
+    "pharr_defines": false,
+    "definition_source": "editor",
+    "definition": "A declension is one of the classes into which Latin nouns are grouped according to how they form their endings; all the nouns in a declension share the same set of case endings. There are five declensions, told apart by the final letter of the noun's stem (the stem characteristic).",
     "definition_location": "§31",
     "first_appearance": "§31",
     "insertion_point": "§31",
     "in_term_span": true,
-    "notes": "enumerative definition"
+    "notes": "reclassified Pharr->editor in glossary cleanup Phase 2: Pharr's §31 entry under-defined the term, giving the count and the distinguishing feature without saying a declension is a class of nouns sharing one set of endings; rewritten as a real definition keeping the count and stem-characteristic detail. Original Pharr definition: 'There are five declensions in Latin, characterized by the final letter of their stems (the stem characteristic)'."
   },
   {
     "term": "consonant declension",
@@ -1219,14 +1219,14 @@
     "variants": "tenses",
     "domain": "verb",
     "parent": "",
-    "pharr_defines": true,
-    "definition_source": "Pharr",
-    "definition": "There are six tenses in Latin: present, imperfect, future, perfect, pluperfect, and future perfect",
+    "pharr_defines": false,
+    "definition_source": "editor",
+    "definition": "Tense is the form of a verb that shows the time of its action — present, past, or future — and whether the action is going on, finished, or yet to be completed. Latin has six tenses: present, imperfect, future, perfect, pluperfect, and future perfect.",
     "definition_location": "§351",
     "first_appearance": "§115",
     "insertion_point": "§115",
     "in_term_span": false,
-    "notes": "enumerative definition"
+    "notes": "reclassified Pharr->editor in glossary cleanup Phase 2: Pharr's §351 entry was an enumerative definition that lists the six tenses without saying what tense is; rewritten as a real definition with the enumeration kept as a trailing aid. Original Pharr definition: 'There are six tenses in Latin: present, imperfect, future, perfect, pluperfect, and future perfect'."
   },
   {
     "term": "imperfect",
