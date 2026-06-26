@@ -17,11 +17,12 @@ By default the page is loaded over file:// -- the print layer needs no server,
 since the JS-driven features that require http(s) (tooltips, glossary fetch)
 are screen-only and hidden in print. Pass --url to render a served copy instead.
 
-Page numbers: Chromium ignores CSS `@page` margin boxes (the `@bottom-center`
-counter in print.css), so the running page number is supplied here via the
-print API's footer template, sitting in the CSS-defined bottom margin. The CSS
-rule is kept deliberately -- harmless under Chromium, correct for any paged
-engine that does honor margin boxes.
+Page numbers: modern (new-headless) Chromium DOES honor CSS `@page` margin
+boxes, so the running page number comes straight from print.css
+(`@bottom-center{content:counter(page)}`) -- no print-API footer template (an
+earlier assumption that Chromium ignored margin boxes was wrong, and a footer
+template here just double-printed the number). Keeping it in CSS is also
+single-source-clean and correct for any other paged engine.
 """
 from __future__ import annotations
 
@@ -30,16 +31,6 @@ import pathlib
 import sys
 
 from playwright.sync_api import sync_playwright
-
-# Centered grey page number, matching the intent of print.css @bottom-center
-# (Arial 9pt, #888). Chromium substitutes the .pageNumber / .totalPages spans.
-FOOTER_TEMPLATE = (
-    '<div style="width:100%;text-align:center;font-family:Arial,sans-serif;'
-    'font-size:9pt;color:#888;margin:0 0.72in;">'
-    '<span class="pageNumber"></span></div>'
-)
-# An (almost) empty header keeps Chromium from drawing its default date/title.
-HEADER_TEMPLATE = '<div style="width:100%"></div>'
 
 
 def render(source: str, out_path: pathlib.Path, *, is_url: bool) -> None:
@@ -54,10 +45,7 @@ def render(source: str, out_path: pathlib.Path, *, is_url: bool) -> None:
             path=str(out_path),
             print_background=True,        # tints, gradients, box-shadow frames
             prefer_css_page_size=True,    # honor @page size:Letter + margins
-            display_header_footer=True,
-            header_template=HEADER_TEMPLATE,
-            footer_template=FOOTER_TEMPLATE,
-        )
+        )                                 # page numbers via print.css @bottom-center
         browser.close()
     print(f"wrote {out_path}  ({out_path.stat().st_size:,} bytes)")
 

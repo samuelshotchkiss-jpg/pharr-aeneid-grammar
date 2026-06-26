@@ -11,3 +11,8 @@
 playwright==1.60.0
 pyee==13.0.1
 greenlet==3.5.2
+
+# Verification / page-count (DESIGN.md §6a): read the rendered PDF's page count
+# and rasterize pages to confirm break quality + repeated table headers.
+pypdfium2==5.10.1
+Pillow==12.2.0

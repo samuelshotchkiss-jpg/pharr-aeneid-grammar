@@ -15,11 +15,23 @@
   html{font-size:10.6pt}
   body{background:#fff}
   .page{max-width:none;margin:0;padding:0;box-shadow:none}
-  h2.h2{break-after:avoid}
+  /* §6b major sections start fresh; headings never orphan at a page bottom.
+     The first h2 yields a clean front page (title + "How to read this edition"). */
+  h2.h2{break-after:avoid;break-before:page}
   h3.h3,h4.h4{break-after:avoid}
   table.grid,.casetable,.scanrow,.callout,.note,.editnote,.edpanel,.edbox,.classlist,.braceitem{break-inside:avoid}
   .ppsys .pptense,.ppgrid{break-inside:avoid}
   .sec{break-inside:auto}
+  /* Long breakable tables (notably the deponent synopsis, taller than a page):
+     let the table paginate, never split a row, and let Chromium repeat the
+     <thead> on each continuation page (§6b clean row-breaks + repeated headers).
+     The blanket break-inside:avoid above would otherwise pin it whole. */
+  table.grid.synopsis{break-inside:auto}
+  table.grid tr,table.synopsis tr,.casetable tr,table.vgrid tr{break-inside:avoid}
+  /* keep a synopsis mood-subhead with at least its first form row */
+  table.synopsis .syn-sechead{break-after:avoid}
+  /* prose: no single orphan/widow line stranded at a page edge */
+  p,.sec,.subrules .sub{orphans:2;widows:2}
   .no-print{display:none}
   .indexcols{column-count:2}
 }
