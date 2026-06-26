@@ -23,3 +23,133 @@
   .no-print{display:none}
   .indexcols{column-count:2}
 }
+
+/* =========================================================================
+   §6c COLOUR TRANSLATION + PRINT TYPOGRAPHY   (approved Phase-2 specimen)
+   Two jobs (DESIGN.md §6c):
+   (1) Translate FUNCTIONAL colour. The screen's role colours (Latin blue,
+       term magenta, headword green) and the tables' singular/plural blue/green
+       banding collapse into near-identical greys when desaturated, so each
+       distinction is re-encoded on a non-colour channel instead:
+         .la  -> bold ROMAN        .hw -> bold ITALIC (short tokens)
+         .term-> bold SMALL-CAPS    .gl -> italic
+       and table banding -> tonal STEPS + heavier boundary rules + the existing
+       reversed Sg./Pl. labels. (All-sans, no serif; italics kept to short
+       spans -- equity evidence: long italic runs hurt dyslexic readers.)
+   (2) PRESERVE the editorial voice. Ochre is KEPT (for colour output) AND
+       backed by a non-colour channel so it survives a grayscale photocopy:
+       a generated "EDITOR'S NOTE"/"EDITOR" label + the left bar (editor =
+       solid + labelled; Pharr's own note = DOUBLE rule + unlabelled). Inline
+       .ed adds a dotted underline. Labels are ::before generated content --
+       presentation only, no markup/content change (single-source intact).
+   media="print" means none of this reaches the screen edition.
+   ========================================================================= */
+@media print{
+  /* ---- inline roles: all-sans, split by case x style x weight ---- */
+  .la{color:#000;font-weight:700;font-style:normal}
+  .hw{color:#000;font-weight:700;font-style:italic}
+  .term{color:#000;font-weight:700;font-variant:small-caps;letter-spacing:.05em}
+  .gl{color:#3a3a3a;font-style:italic}
+  .noneform{color:#6f6f6f;font-style:italic}
+  /* Latin is recoloured green inside plural cells on screen -> black in print */
+  table.grid.paradigm td.pl-grp .la,
+  table.grid.paradigm tr.pl-row td.numdata .la{color:#000}
+
+  /* ---- headings: neutral ink; reversed h2 bar goes dark-neutral ---- */
+  h1.h1,h3.h3,h4.h4{color:#000}
+  h2.h2{background:#222;color:#fff}
+  h3.h3{border-bottom-color:#333}
+
+  /* ---- editorial voice (ours): KEEP ochre + add redundant label/bar ---- */
+  .ed{border-bottom:1px dotted #b89a2e}            /* dotted underline = the non-colour cue */
+  .edpanel{position:relative;border-left-width:6px;padding-top:1.55rem}
+  .edpanel::before{content:"EDITOR'S NOTE";position:absolute;top:.42rem;left:1.15rem;
+    font-variant:small-caps;font-weight:800;letter-spacing:.12em;font-size:.62rem;color:var(--edink)}
+  .edbox{position:relative;font-style:normal;border-left-width:5px;padding-top:1.25rem}
+  .edbox::before{content:"EDITOR";position:absolute;top:.34rem;left:.8rem;
+    font-variant:small-caps;font-weight:800;letter-spacing:.12em;font-size:.58rem;color:var(--edink)}
+
+  /* ---- Pharr's own note: NOT ochre, unlabelled, DOUBLE-rule signature ---- */
+  .editnote{background:#f4f4f4;border-color:#999;border-left:5px double #777;color:var(--ink)}
+  .editnote b{color:#000}
+
+  /* ---- paradigm tables: neutral dark headers/bands + tonal Sg./Pl. steps ---- */
+  table.grid.paradigm thead th,
+  table.grid.paradigm thead th.pl-thead,
+  table.grid.paradigm thead th.sg-hdr,
+  table.grid.paradigm thead th.pl-hdr,
+  .numgroup thead .numhdr,
+  .numgroup thead .numhdr.pl-start{background:#2b2b2b;color:#fff;border-color:#2b2b2b}
+  table.grid.paradigm thead th.cornerhead{background:#fff;color:#000;border-color:#bdbdbd}
+  table.grid.paradigm tr.numband td,
+  table.grid.paradigm tr.numband.plural-start td{background:#4a4a4a;color:#fff;border-color:#2b2b2b}
+  /* singular/plural body banding -> tonal steps (replaces blue/green rgba tints) */
+  table.grid.paradigm tbody td.sg-grp,
+  table.grid.paradigm tr.sg-row td.numdata{background:#fff}
+  table.grid.paradigm tbody td.pl-grp,
+  table.grid.paradigm tr.pl-row td.numdata{background:#ececec}
+  table.grid.paradigm tbody tr:nth-child(even) td.sg-grp,
+  table.grid.paradigm tr.sg-row:nth-of-type(even) td.numdata{background:#f6f6f6}
+  table.grid.paradigm tbody tr:nth-child(even) td.pl-grp,
+  table.grid.paradigm tr.pl-row:nth-of-type(even) td.numdata{background:#e3e3e3}
+  /* neuter: faint tint + dotted inner edge as a non-hue marker */
+  td.neut,th.neut{background:#f0f0f0;box-shadow:inset 0 0 0 1px #c4c4c4}
+  /* generic grid zebra (blue-tinted on screen) -> neutral */
+  table.grid tbody tr:nth-child(even){background:#f7f7f7}
+
+  /* the Seven Cases set-piece */
+  .casetable caption{background:#2b2b2b;color:#fff}
+  .casetable caption .ct-sub{color:#dcdcdc}
+  .casetable tr:nth-child(even){background:#f7f7f7}
+  .casetable td.caselabel{background:#f0f0f0;border-right-color:#333}
+  .casetable td.caselabel .case{color:#000}
+
+  /* example / syntactic grids: term-magenta frame -> neutral */
+  table.grid.examplegrid{border-left-color:#555}
+  table.grid.examplegrid tbody tr:nth-child(even){background:#f5f5f5}
+
+  /* verb grids (2-col + 4-col) */
+  table.vgrid th{background:#ececec;color:#000}
+  table.vgrid td.pers{background:#f2f2f2;color:#333}
+  table.vgrid.act{border-left-color:#555}
+  table.vgrid.pass{border-left-color:#333}
+  .vconj4 .v4grid{border-left-color:#555}
+  .vconj4 .v4cell.v4pl,.vconj4 .v4colstack.v4pl .v4cell,
+  .vconj4 .v4colstack.v4pl,.vconj4 .v4peri.v4pl{background:#ececec}
+  .vconj4 .v4grp.v4pl,.vconj4 .v4grp.v4firstpl{background:#e3e3e3}
+  .vconj .vt-peri .vperi-row.vperi-pl{background:#ececec}
+
+  /* callouts / Pharr rule-notes: coloured left rules -> neutral */
+  .callout{background:#f5f5f5;border-left-color:#555}
+  .note{background:#f4f4f4;border-left-color:#555;color:var(--ink)}
+
+  /* ---- synopsis: de-tint (approved); 4 classes carried by label + rule ---- */
+  table.synopsis .syn-chdr,
+  table.synopsis .syn-c0.syn-chdr,table.synopsis .syn-c1.syn-chdr,
+  table.synopsis .syn-c2.syn-chdr,table.synopsis .syn-c3.syn-chdr{background:#2b2b2b;color:#fff}
+  table.synopsis .syn-c0.syn-vhdr,table.synopsis .syn-c1.syn-vhdr,
+  table.synopsis .syn-c2.syn-vhdr,table.synopsis .syn-c3.syn-vhdr{background:#f2f2f2}
+  table.synopsis .syn-c0.syn-vhdr .la,table.synopsis .syn-c1.syn-vhdr .la,
+  table.synopsis .syn-c2.syn-vhdr .la,table.synopsis .syn-c3.syn-vhdr .la{color:#000}
+  table.synopsis .syn-c0.syn-form,table.synopsis .syn-c1.syn-form,
+  table.synopsis .syn-c2.syn-form,table.synopsis .syn-c3.syn-form{background:#fff}
+  table.synopsis tr:nth-child(even) .syn-form{background:#f7f7f7}
+  table.synopsis .syn-c0.syn-form .la,table.synopsis .syn-c1.syn-form .la,
+  table.synopsis .syn-c2.syn-form .la,table.synopsis .syn-c3.syn-form .la{color:#000}
+  table.synopsis .syn-sechead td{background:#ececec;color:#000}
+
+  /* ---- SVG braces + scansion marks: colour -> near-black (shape carries meaning) ---- */
+  :root{--markink:#1a1a1a}
+  .braceitem .bsvg svg path,
+  .ppgrid .ppbrace svg path,
+  .vconj4 .v4peri .ppbrace svg path,
+  .vconj .vt-peri .vperi .ppbrace svg path{stroke:#222}
+  .ppsys{background:#f5f5f5;border-left-color:#555}
+  .scan,.scanlat{color:#000}
+
+  /* section badges + inline pills: neutral (catch the many variants) */
+  .secbadge,.rownum,.inlinebadge{color:#000 !important;background:#eee !important;border-color:#999 !important}
+
+  /* links print as ink (xref underline already stripped in core) */
+  a{color:var(--ink)}
+}

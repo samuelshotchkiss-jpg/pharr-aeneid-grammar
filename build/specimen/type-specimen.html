@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pharr Aeneid — Print Type Specimen (grayscale proof)</title>
+<!--
+  PHASE-2 PROPOSAL ONLY. This is a standalone specimen of the proposed PRINT
+  typography (DESIGN.md §6c). Nothing here is applied to index.html yet. Every
+  text class is re-encoded through non-colour channels — family, weight,
+  italic/roman, small-caps, letter-spacing, rules/labels — so the classes stay
+  mutually distinguishable in grayscale (incl. a B&W photocopy). On approval,
+  these rules port into css/print.css; the editorial labels are generated with
+  ::before (presentation only), never added markup, to preserve single-source.
+-->
+<style>
+  :root{
+    --serif: Georgia, 'Times New Roman', Times, serif;
+    --sans: 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
+    --ink:#1a1a1a;
+  }
+  body{font-family:var(--sans); color:var(--ink); line-height:1.5;
+        max-width:60rem; margin:0 auto; padding:1.6rem 2rem 3rem; background:#fff;}
+  .sheet-h{font-family:var(--sans); font-weight:800; font-size:1.5rem; letter-spacing:.01em; margin:0 0 .2rem;}
+  .sheet-sub{color:#555; font-size:.9rem; margin:0 0 1.4rem;}
+  .grp{margin:1.5rem 0; border-top:1px solid #ccc; padding-top:.7rem;}
+  .grp > h2{font-family:var(--sans); font-variant:small-caps; letter-spacing:.08em;
+            font-weight:700; font-size:.82rem; color:#444; margin:0 0 .7rem;}
+  .lbl{display:inline-block; min-width:13rem; font-family:var(--sans); font-size:.72rem;
+       color:#777; font-variant:small-caps; letter-spacing:.06em; vertical-align:baseline;}
+  .specrow{margin:.5rem 0; padding-left:.2rem;}
+  .specrow .lbl{vertical-align:top;}
+  .channels{font-family:var(--sans); font-size:.68rem; color:#999; font-style:italic;}
+
+  /* =====================================================================
+     PROPOSED PRINT TYPOGRAPHY  (the actual proposal under review)
+     ===================================================================== */
+
+  /* --- inline roles: all-sans split by CASE × STYLE × WEIGHT ---
+     (serif dropped on the equity evidence; italics kept to SHORT spans only,
+     per Rello & Baeza-Yates: long italic runs hurt dyslexic readers.) */
+  /* Latin examples: sans, roman, bold (the default emphasis) */
+  .la{font-family:var(--sans); font-weight:700; font-style:normal; color:#000;}
+  /* Headword / lemma: sans, ITALIC, bold — short tokens only (lemmas) */
+  .hw{font-family:var(--sans); font-weight:700; font-style:italic; color:#000;}
+  /* Grammatical term: sans, bold, SMALL-CAPS + tracked (case is the channel
+     that separates it from roman-bold Latin in grayscale) */
+  .term{font-family:var(--sans); font-weight:700; font-style:normal;
+        font-variant:small-caps; letter-spacing:.06em; color:#000;}
+  /* English gloss: sans, italic, normal, a touch lighter */
+  .gl{font-family:var(--sans); font-weight:400; font-style:italic; color:#3a3a3a;}
+  /* Missing form: sans italic, grey, always bracketed in content */
+  .noneform{font-family:var(--sans); font-weight:400; font-style:italic; color:#6f6f6f;}
+  /* Inline editorial aside: italic + faint dotted underline = the redundant
+     non-colour "editor" signal (links lose their underline in print, so a
+     dotted underline is free to mean 'editor' here). [DECISION FLAGGED] */
+  .ed{font-family:var(--sans); font-style:italic; color:#2a2a2a;
+      border-bottom:1px dotted #8a8a8a;}
+
+  /* --- headings --- */
+  h1.h1{font-family:var(--sans); font-weight:800; font-size:1.7rem; letter-spacing:.01em;
+        color:#000; margin:.2rem 0;}
+  h2.h2{font-family:var(--sans); font-weight:700; font-size:1.12rem; letter-spacing:.04em;
+        color:#fff; background:#222; padding:.32rem .6rem; border-radius:3px; margin:1rem 0 .5rem;}
+  h3.h3{font-family:var(--sans); font-weight:700; font-size:1rem; color:#000;
+        border-bottom:2px solid #333; padding-bottom:.12rem; margin:1rem 0 .4rem;}
+  h4.h4{font-family:var(--sans); font-weight:700; font-size:.9rem; font-variant:small-caps;
+        letter-spacing:.05em; color:#000; margin:.8rem 0 .3rem;}
+
+  /* --- editorial voice (ours): ochre→grey + REDUNDANT label + heavy bar --- */
+  .edpanel{position:relative; background:#eeeeee; border:1px solid #111;
+           border-left:7px solid #111; border-radius:4px; padding:1.4rem 1.1rem .9rem;
+           margin:1rem 0; color:var(--ink);}
+  .edpanel::before{content:"EDITOR'S NOTE"; position:absolute; top:.35rem; left:1.1rem;
+           font-family:var(--sans); font-variant:small-caps; font-weight:800;
+           letter-spacing:.12em; font-size:.66rem; color:#111;}
+  .edpanel .edpanel-h{font-family:var(--sans); font-weight:800; font-size:1rem; margin:0 0 .4rem;}
+  /* roman (not italic): the bar + "EDITOR" label carry the voice, so we avoid a
+     multi-sentence italic run (Rello & Baeza-Yates). Italic stays for SHORT spans. */
+  .edbox{position:relative; background:#f5f5f5; border:1px solid #555; border-left:5px solid #333;
+         border-radius:3px; padding:1.25rem .9rem .55rem; margin:.8rem 0; font-style:normal;
+         color:var(--ink); font-size:.94rem;}
+  .edbox::before{content:"EDITOR"; position:absolute; top:.3rem; left:.9rem;
+         font-family:var(--sans); font-style:normal; font-variant:small-caps; font-weight:800;
+         letter-spacing:.12em; font-size:.62rem; color:#333;}
+  .edbox b{font-style:normal; font-weight:700;}
+
+  /* --- Pharr's own note: NOT ochre, NOT labelled; double rule = its signature,
+         upright text. Distinct from the editor's box in pure B&W. --- */
+  .editnote{background:#f4f4f4; border:1px solid #999; border-left:5px double #777;
+            border-radius:3px; padding:.6rem .85rem; margin:.8rem 0; font-size:.94rem;
+            color:var(--ink); font-style:normal;}
+  .editnote b{font-weight:700;}
+
+  /* --- paradigm table: colour→tone + rules + labels --- */
+  table.grid{border-collapse:collapse; margin:.6rem 0; font-size:.9rem; font-family:var(--sans);}
+  table.grid.paradigm{border:1.5px solid #333;}
+  table.grid.paradigm th, table.grid.paradigm td{border:1px solid #bdbdbd; padding:.22rem .6rem; text-align:left;}
+  table.grid.paradigm thead th{background:#2b2b2b; color:#fff; font-weight:700;
+        font-variant:small-caps; letter-spacing:.04em;}
+  .case{font-variant:small-caps; font-weight:700; letter-spacing:.04em; color:#000;}
+  /* number band rows carry the Sg./Pl. label (tone + reversed small-caps) */
+  tr.numband td{background:#4a4a4a; color:#fff; font-variant:small-caps; font-weight:700;
+        letter-spacing:.06em; font-size:.78rem; padding:.1rem .6rem;}
+  tr.plural-start td{border-top:3px solid #333;}
+  /* singular vs plural BODY banding: a clear tonal STEP, not a hue */
+  td.sg-grp{background:#ffffff;}
+  td.pl-grp{background:#ededed;}
+  tr:nth-child(even) td.sg-grp{background:#f6f6f6;}
+  tr:nth-child(even) td.pl-grp{background:#e3e3e3;}
+  td.pl-grp{border-left:3px solid #333;}     /* heavier rule at the sg|pl boundary */
+  /* neuter: faint tint + dotted inner edge as a non-hue marker */
+  td.neut{background:#f0f0f0; box-shadow:inset 0 0 0 1px #c4c4c4; }
+
+  /* --- synopsis: 4 classes by LABEL + RULE WEIGHT, not 4 bg hues --- */
+  table.synopsis{border-collapse:separate; border-spacing:0; border:1.5px solid #333;
+        font-size:.86rem; font-family:var(--sans);}
+  table.synopsis th, table.synopsis td{padding:.2rem .6rem; text-align:left;}
+  table.synopsis .syn-chdr{background:#2b2b2b; color:#fff; font-variant:small-caps;
+        font-weight:700; letter-spacing:.05em; text-align:center;}
+  table.synopsis .syn-case{font-variant:small-caps; font-weight:700; color:#333;
+        font-size:.76rem; background:#f2f2f2; border-right:1px solid #999;}
+  table.synopsis .syn-form{background:#fff; border-top:1px solid #ddd;}
+  table.synopsis tr:nth-child(even) .syn-form{background:#f7f7f7;}
+  table.synopsis .syn-c0{border-left:3px solid #333;}        /* heavier rule = class boundary */
+  table.synopsis .syn-c1, table.synopsis .syn-c2, table.synopsis .syn-c3{border-left:2px solid #888;}
+  table.synopsis .syn-form .la{font-family:var(--sans); font-weight:700; color:#000;}
+
+  /* --- fg/bg tonal-separation probe strip --- */
+  .probe{display:flex; flex-wrap:wrap; gap:.5rem; margin:.4rem 0;}
+  .probe .chip{padding:.5rem .7rem; border:1px solid #999; border-radius:3px; font-size:.85rem;}
+  .chip-cap{font-family:var(--sans); font-size:.62rem; color:#888; display:block;
+        font-variant:small-caps; letter-spacing:.06em; margin-top:.2rem;}
+  .pl-bg{background:#ededed;}
+  .ed-bg{background:#eeeeee;}
+  .neut-bg{background:#f0f0f0;}
+  .hdr-bg{background:#2b2b2b;}
+  .hdr-bg .la, .hdr-bg .case, .hdr-bg span{color:#fff !important;}
+</style>
+</head>
+<body>
+  <div class="sheet-h">Print Type Specimen — Grayscale Proof</div>
+  <p class="sheet-sub">Pharr <i>Aeneid</i> grammar · proposed print typography (DESIGN.md §6c) · every class re-encoded through non-colour channels.</p>
+
+  <!-- ============ INLINE ROLES ============ -->
+  <div class="grp">
+    <h2>Inline roles — all-sans split by case × style × weight</h2>
+    <div class="specrow"><span class="lbl">Latin (.la)</span><span class="la">puella, mēnsa, rēx, bellum gerēbant</span> &nbsp;<span class="channels">sans · roman · bold</span></div>
+    <div class="specrow"><span class="lbl">Headword (.hw)</span><span class="hw">puella, -ae, f.</span> &nbsp;<span class="channels">sans · italic · bold</span></div>
+    <div class="specrow"><span class="lbl">Term (.term)</span><span class="term">ablative absolute</span> &nbsp;<span class="channels">sans · small-caps · bold · tracked</span></div>
+    <div class="specrow"><span class="lbl">Gloss (.gl)</span><span class="gl">they were waging war</span> &nbsp;<span class="channels">sans · italic · normal</span></div>
+    <div class="specrow"><span class="lbl">Missing form (.noneform)</span><span class="noneform">[none]</span> &nbsp;<span class="channels">sans · italic · grey · bracketed</span></div>
+    <div class="specrow"><span class="lbl">Inline editor (.ed)</span><span class="ed">— but note Pharr glosses over the deponent here</span> &nbsp;<span class="channels">sans · italic · dotted underline</span></div>
+    <div class="specrow" style="margin-top:.9rem;">
+      <span class="lbl">In running prose</span>
+      <div style="display:inline-block; max-width:42rem; vertical-align:top;">The <span class="term">ablative absolute</span> — e.g. <span class="la">urbe captā</span> <span class="gl">the city having been captured</span> — uses the lemma <span class="hw">capiō, -ere</span>; the passive form here is <span class="noneform">[none]</span> in Pharr's table. <span class="ed">It's worth asking why.</span></div>
+    </div>
+  </div>
+
+  <!-- ============ HEADINGS ============ -->
+  <div class="grp">
+    <h2>Headings (h1–h4)</h2>
+    <h1 class="h1">Grammatical Appendix</h1>
+    <h2 class="h2">Nouns; Declension</h2>
+    <h3 class="h3">First Declension</h3>
+    <h4 class="h4">Gender Rules</h4>
+  </div>
+
+  <!-- ============ EDITORIAL VOICE vs PHARR ============ -->
+  <div class="grp">
+    <h2>Editorial voice (ours) vs. Pharr's own note — redundant, non-colour</h2>
+    <div class="edpanel">
+      <div class="edpanel-h">How to read a paradigm</div>
+      <p style="margin:.3rem 0;">Read down each column, not across. The <span class="term">case</span> labels on the left tell you a word's job in the sentence.</p>
+    </div>
+    <div class="edbox">A quick aside: <b>deponent</b> verbs look passive but mean active — <span class="la">sequor</span> <span class="gl">I follow</span>, not <i>I am followed</i>.</div>
+    <div class="editnote"><b>Note.</b> In Pharr's original text, the perfect system is presented before the participles. This edition keeps his order.</div>
+  </div>
+
+  <!-- ============ PARADIGM TABLE ============ -->
+  <div class="grp">
+    <h2>Paradigm table — singular/plural + neuter as tone, rule &amp; label</h2>
+    <table class="grid paradigm">
+      <thead><tr><th>Case</th><th>Masc.</th><th>Fem.</th><th class="neut">Neut.</th></tr></thead>
+      <tbody>
+        <tr class="numband"><td colspan="4">Singular</td></tr>
+        <tr><td class="case">Nom.</td><td class="sg-grp"><span class="la">bonus</span></td><td class="sg-grp"><span class="la">bona</span></td><td class="sg-grp neut"><span class="la">bonum</span></td></tr>
+        <tr><td class="case">Gen.</td><td class="sg-grp"><span class="la">bonī</span></td><td class="sg-grp"><span class="la">bonae</span></td><td class="sg-grp neut"><span class="la">bonī</span></td></tr>
+        <tr><td class="case">Acc.</td><td class="sg-grp"><span class="la">bonum</span></td><td class="sg-grp"><span class="la">bonam</span></td><td class="sg-grp neut"><span class="la">bonum</span></td></tr>
+        <tr class="numband plural-start"><td colspan="4">Plural</td></tr>
+        <tr><td class="case">Nom.</td><td class="pl-grp"><span class="la">bonī</span></td><td class="pl-grp"><span class="la">bonae</span></td><td class="pl-grp neut"><span class="la">bona</span></td></tr>
+        <tr><td class="case">Gen.</td><td class="pl-grp"><span class="la">bonōrum</span></td><td class="pl-grp"><span class="la">bonārum</span></td><td class="pl-grp neut"><span class="la">bonōrum</span></td></tr>
+        <tr><td class="case">Acc.</td><td class="pl-grp"><span class="la">bonōs</span></td><td class="pl-grp"><span class="la">bonās</span></td><td class="pl-grp neut"><span class="la">bona</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ SYNOPSIS (4-class) ============ -->
+  <div class="grp">
+    <h2>Synopsis — 4 conjugation classes by label + rule weight (not 4 hues)</h2>
+    <table class="synopsis">
+      <thead>
+        <tr><th class="syn-case" style="background:#f2f2f2;border-bottom:1px solid #333;">&nbsp;</th>
+            <th class="syn-chdr syn-c0">II</th><th class="syn-chdr syn-c1">III</th>
+            <th class="syn-chdr syn-c2">III (-iō)</th><th class="syn-chdr syn-c3">IV</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="syn-case">Pres.</td>
+            <td class="syn-form syn-c0"><span class="la">monet</span></td>
+            <td class="syn-form syn-c1"><span class="la">regit</span></td>
+            <td class="syn-form syn-c2"><span class="la">capit</span></td>
+            <td class="syn-form syn-c3"><span class="la">audit</span></td></tr>
+        <tr><td class="syn-case">Perf.</td>
+            <td class="syn-form syn-c0"><span class="la">monuit</span></td>
+            <td class="syn-form syn-c1"><span class="la">rēxit</span></td>
+            <td class="syn-form syn-c2"><span class="la">cēpit</span></td>
+            <td class="syn-form syn-c3"><span class="la">audīvit</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ FG/BG TONAL PROBE ============ -->
+  <div class="grp">
+    <h2>Foreground/background tonal-separation probe</h2>
+    <div class="probe">
+      <div class="chip pl-bg"><span class="la">bonōrum</span><span class="chip-cap">Latin on plural tone</span></div>
+      <div class="chip ed-bg"><span class="ed">editor on panel tone</span><span class="chip-cap">.ed on .edpanel</span></div>
+      <div class="chip neut-bg"><span class="la">bonum</span><span class="chip-cap">Latin on neuter tint</span></div>
+      <div class="chip hdr-bg"><span class="la">SINGULAR</span><span class="chip-cap">reversed header</span></div>
+      <div class="chip"><span class="term">term</span> · <span class="gl">gloss</span> · <span class="hw">lemma</span> · <span class="la">Latin</span><span class="chip-cap">all four, white ground</span></div>
+    </div>
+  </div>
+</body>
+</html>

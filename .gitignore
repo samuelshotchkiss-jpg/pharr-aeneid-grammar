@@ -1,6 +1,7 @@
 # --- Build / output artifacts ---
 /build/out/
 *.pdf
+/build/specimen/*.png
 
 # --- Python virtual environment (PDF pipeline: Playwright) ---
 .venv/
