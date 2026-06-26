@@ -2,6 +2,9 @@
 /build/out/
 *.pdf
 
+# --- Python virtual environment (PDF pipeline: Playwright) ---
+.venv/
+
 # --- Node (for the future PDF pipeline) ---
 node_modules/
 package-lock.json

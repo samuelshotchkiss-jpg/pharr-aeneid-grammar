@@ -1,0 +1,13 @@
+# PDF pipeline dependencies (DESIGN.md §6 print layer).
+# Install into the project venv:
+#   py -m venv .venv
+#   .venv/Scripts/python -m pip install -r requirements.txt
+#   .venv/Scripts/python -m playwright install chromium
+#
+# The print PDF is rendered by headless Chromium driven by Playwright, so the
+# single shared core.css renders identically to the screen edition it was
+# authored against (DESIGN.md §2). pyee/greenlet are Playwright's own deps,
+# pinned here for a reproducible build.
+playwright==1.60.0
+pyee==13.0.1
+greenlet==3.5.2
