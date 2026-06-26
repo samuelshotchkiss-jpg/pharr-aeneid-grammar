@@ -66,6 +66,15 @@
   //  identical popup). Editor ruling: the subjunctive sub-uses.
   var SHARE_HEADWORD_KEY = { 'subjunctive': 1 };
 
+  // Two-voice popup: when an entry carries an optional `editor_expansion`
+  // (a student-facing gloss on Pharr's laconic definition), the popup shows
+  // Pharr's text first, then this in the editor's ochre voice. Forward-
+  // compatible -- a no-op until entries gain the field. Tooltips are digital
+  // only, so the print-grayscale redundancy rule (DESIGN.md §6c) does not
+  // apply here; ochre alone is fine. (Label is the editor's to rename.)
+  var ED_EXPANSION_FIELD = 'editor_expansion';
+  var ED_EXPANSION_LABEL = 'In plainer terms';
+
   /* =======================================================================
      Small helpers
      ======================================================================= */
@@ -264,7 +273,7 @@
   /* =======================================================================
      PHASE 2 -- display (the popup)
      ======================================================================= */
-  var pop, popTermEl, popSrcEl, popDefEl, popLinksEl, openAnchor = null;
+  var pop, popTermEl, popSrcEl, popDefEl, popEdEl, popLinksEl, openAnchor = null;
 
   function buildPopup() {
     pop = document.createElement('div');
@@ -283,9 +292,10 @@
     head.appendChild(popTermEl); head.appendChild(popSrcEl); head.appendChild(close);
 
     popDefEl = document.createElement('p'); popDefEl.className = 'gloss-pop-def';
+    popEdEl = document.createElement('div'); popEdEl.className = 'gloss-pop-ed'; popEdEl.hidden = true;
     popLinksEl = document.createElement('div'); popLinksEl.className = 'gloss-pop-links';
 
-    pop.appendChild(head); pop.appendChild(popDefEl); pop.appendChild(popLinksEl);
+    pop.appendChild(head); pop.appendChild(popDefEl); pop.appendChild(popEdEl); pop.appendChild(popLinksEl);
     document.body.appendChild(pop);
   }
 
@@ -312,6 +322,19 @@
               entry.definition_source === 'Pharr' ? 'Pharr' : '';
     popSrcEl.textContent = src;
     popDefEl.textContent = entry.definition || '(no definition recorded)';
+
+    // Optional editor's expansion of Pharr's terse definition (ochre voice).
+    var exp = (entry[ED_EXPANSION_FIELD] || '').trim();
+    popEdEl.textContent = '';
+    if (exp) {
+      var lbl = document.createElement('b'); lbl.className = 'gloss-pop-ed-label';
+      lbl.textContent = ED_EXPANSION_LABEL;
+      popEdEl.appendChild(lbl);
+      popEdEl.appendChild(document.createTextNode(' ' + exp));
+      popEdEl.hidden = false;
+    } else {
+      popEdEl.hidden = true;
+    }
 
     popLinksEl.textContent = '';
     var loc = secDigits(entry.definition_location), ins = secDigits(entry.insertion_point);

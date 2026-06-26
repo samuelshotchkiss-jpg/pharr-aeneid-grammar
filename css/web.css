@@ -512,6 +512,24 @@ body.sp-open{ overflow:hidden; }                 /* lock background scroll while
 }
 .gloss-pop-close:hover{ color: var(--term-deep); }
 .gloss-pop-def{ margin:0; }
+/* Editor's expansion of Pharr's terse definition: the ochre editorial voice,
+   mirroring .edbox. Digital-only (tooltips aren't printed), so ochre carries
+   the distinction without a redundant non-colour channel. */
+.gloss-pop-ed{
+  margin-top:.7rem;
+  background: var(--edbg-soft);
+  border:1px solid var(--edborder);
+  border-left:4px solid var(--edrule);
+  border-radius:6px;
+  padding:.5rem .7rem;
+  color: var(--edink);
+  font-style: italic; line-height:1.5;
+}
+.gloss-pop-ed[hidden]{ display:none; }
+.gloss-pop-ed-label{
+  font-style:normal; font-weight:700; color: var(--edink);
+  margin-right:.15rem;
+}
 .gloss-pop-links{
   display:flex; flex-wrap:wrap; gap:.35rem .8rem;
   margin-top:.7rem; padding-top:.55rem;
