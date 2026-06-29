@@ -45,6 +45,15 @@ Related: the static server (`.claude/launch.json` → `static`) usually needs a
 fresh load via `index.html?v=<ts>` and by re-setting each stylesheet `<link>`
 href with a `?t=<ts>` query.
 
+## Tooling (Node / dependencies)
+- **JS tooling runs on Node (now installed).** The validator and parser are
+  runnable directly; prefer running JS checks via Node over reimplementing them
+  elsewhere. `js/defmarkup.js` is UMD (`module.exports` under CommonJS), so it can
+  be `require`d straight from a Node one-liner.
+- **Be sparing with npm dependencies.** This is a student-facing project; each
+  dependency is third-party code in the toolchain. Prefer dependency-free
+  scripts; add a package only when it clearly earns its place.
+
 ## Hard rules
 - **Content-neutral refactors must be provably content-neutral.** When a change
   is supposed to alter only structure/location/styling (e.g. CSS separation,
