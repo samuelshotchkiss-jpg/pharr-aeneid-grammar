@@ -208,8 +208,8 @@
     "term": "question",
     "variants": "questions",
     "subclasses": [
-      { "name": "direct question", "section": "" },
-      { "name": "indirect question", "section": "" }
+      { "name": "direct question", "section": "§347" },
+      { "name": "indirect question", "section": "§349" }
     ],
     "domain": "syntax",
     "parent": "",
@@ -336,11 +336,11 @@
     "term": "dative",
     "variants": "Dat.",
     "subclasses": [
-      { "name": "dative of agent", "section": "" },
-      { "name": "dative of interest", "section": "" },
-      { "name": "dative of advantage", "section": "" },
-      { "name": "dative of possession", "section": "" },
-      { "name": "dative of reference", "section": "" }
+      { "name": "dative of agent", "section": "§302" },
+      { "name": "dative of interest", "section": "§301" },
+      { "name": "dative of advantage", "section": "§301" },
+      { "name": "dative of possession", "section": "§299" },
+      { "name": "dative of reference", "section": "§301" }
     ],
     "domain": "case",
     "parent": "case",
@@ -371,15 +371,15 @@
     "term": "ablative",
     "variants": "Abl.",
     "subclasses": [
-      { "name": "ablative absolute", "section": "" },
-      { "name": "ablative of means", "section": "" },
-      { "name": "ablative of agent", "section": "" },
-      { "name": "ablative of cause", "section": "" },
-      { "name": "ablative of manner", "section": "" },
-      { "name": "ablative of respect", "section": "" },
-      { "name": "ablative of separation", "section": "" },
-      { "name": "ablative of comparison", "section": "" },
-      { "name": "ablative of degree of difference", "section": "" }
+      { "name": "ablative absolute", "section": "§343" },
+      { "name": "ablative of means", "section": "§331" },
+      { "name": "ablative of agent", "section": "§333" },
+      { "name": "ablative of cause", "section": "§332" },
+      { "name": "ablative of manner", "section": "§328" },
+      { "name": "ablative of respect", "section": "§325" },
+      { "name": "ablative of separation", "section": "§340" },
+      { "name": "ablative of comparison", "section": "§327" },
+      { "name": "ablative of degree of difference", "section": "§335" }
     ],
     "domain": "case",
     "parent": "case",
@@ -1212,11 +1212,11 @@
     "term": "subjunctive",
     "variants": "Subj.",
     "subclasses": [
-      { "name": "jussive", "section": "" },
-      { "name": "hortatory", "section": "" },
-      { "name": "optative", "section": "" },
-      { "name": "deliberative", "section": "" },
-      { "name": "potential", "section": "" }
+      { "name": "jussive", "section": "§254" },
+      { "name": "hortatory", "section": "§254" },
+      { "name": "optative", "section": "§253" },
+      { "name": "deliberative", "section": "§348" },
+      { "name": "potential", "section": "§252" }
     ],
     "domain": "verb",
     "parent": "mood",
