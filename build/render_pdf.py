@@ -27,10 +27,32 @@ single-source-clean and correct for any other paged engine.
 from __future__ import annotations
 
 import argparse
+import json
 import pathlib
 import sys
 
 from playwright.sync_api import sync_playwright
+
+# Repo root (parent of build/), so data/JS paths resolve regardless of cwd.
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+
+def _append_glossary(page) -> None:
+    """Build the print glossary (DESIGN.md §6d) from data/glossary.json and
+    append it to the end of the page, in the live Chromium render path.
+
+    Print-only: this runs only here, so index.html / the web edition are
+    untouched. Definitions render through the SAME shared parser the web tooltip
+    uses (js/defmarkup.js), so the two cannot drift -- and that parser thus runs
+    in the actual print path. Content comes solely from glossary.json.
+    """
+    data = json.loads((ROOT / "data" / "glossary.json").read_text(encoding="utf-8"))
+    # defmarkup.js is already loaded by index.html; re-add defensively so the
+    # build also works against any HTML that doesn't include it.
+    page.add_script_tag(path=str(ROOT / "js" / "defmarkup.js"))
+    page.add_script_tag(path=str(ROOT / "build" / "glossary_print.js"))
+    stats = page.evaluate("(data) => window.PharrBuildPrintGlossary(data)", data)
+    print(f"glossary: {stats['entries']} entries + {stats['sees']} cross-references")
 
 
 def render(source: str, out_path: pathlib.Path, *, is_url: bool) -> None:
@@ -41,6 +63,7 @@ def render(source: str, out_path: pathlib.Path, *, is_url: bool) -> None:
         page = browser.new_page()
         # wait until network is idle so deferred scripts settle before printing.
         page.goto(target, wait_until="networkidle")
+        _append_glossary(page)
         page.pdf(
             path=str(out_path),
             print_background=True,        # tints, gradients, box-shadow frames

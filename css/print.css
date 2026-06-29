@@ -226,3 +226,60 @@
   /* links print as ink (xref underline already stripped in core) */
   a{color:var(--ink)}
 }
+
+/* =========================================================================
+   §6d  PRINT GLOSSARY   (appended at the back of the PDF)
+   The glossary DOM is built at render time from data/glossary.json by
+   build/glossary_print.js (run by build/render_pdf.py), through the shared
+   defmarkup parser. It exists ONLY in the print render, so these rules need no
+   screen counterpart. Two jobs mirror §6c: (1) editorial vs Pharr definitions
+   are distinguished on a REDUNDANT, grayscale-safe channel -- an "Editor"
+   label word + an ochre left bar, never colour alone; (2) § cross-references
+   read as plain ink on paper yet stay live internal links in the on-screen PDF.
+   Pagination (§6b): the section starts on a fresh page and no entry splits or
+   strands its headword.
+   ========================================================================= */
+@media print{
+  .glossary{break-before:page}
+  .g-title{break-after:avoid}
+  .g-intro{font-size:.84rem;color:#444;line-height:1.4;max-width:34em;margin:.35rem 0 1.15rem}
+  .g-list{font-size:.93rem}
+
+  /* one entry never splits across pages, and its headword never strands */
+  .g-entry{break-inside:avoid;orphans:2;widows:2;margin:0 0 .62rem}
+  .g-head{break-after:avoid;line-height:1.3}
+  .g-term{font-weight:700;color:#000}
+  .g-alt{font-style:italic;font-weight:400;color:#555}
+  .g-def{margin-top:.04rem;line-height:1.4}
+  .g-def .la{color:#000;font-weight:700}                 /* match §6c inline roles */
+  .g-def .term{color:#000;font-weight:700;font-variant:small-caps;letter-spacing:.05em}
+
+  /* source + primary-location tag: the WORD ("Editor"/"Pharr") carries the
+     distinction in grayscale; § beside it is a live link. */
+  .g-src{font-variant:small-caps;letter-spacing:.04em;font-size:.74rem;font-weight:600;
+    color:#6a6a6a;margin-left:.55em;white-space:nowrap}
+  .g-src .g-sec{color:inherit}
+
+  /* EDITORIAL entry: ochre ink on the label + a solid ochre left bar. The bar
+     and the label together are the non-colour redundancy (DESIGN.md §6c). */
+  .g-entry.g-editorial{border-left:3px solid var(--edrule);padding-left:.6rem}
+  .g-src.g-ed{color:var(--edink)}
+  .g-src.g-ed .g-sec{color:var(--edink)}
+
+  /* subclasses: named uses, each a live § link (e.g. ablative of means §331) */
+  .g-subs{margin-top:.2rem;font-size:.86rem;line-height:1.45;color:#333}
+  .g-subs-h{font-style:italic;color:#555}
+  .g-sub{color:var(--ink);white-space:nowrap}
+  .g-sub-sec{color:#666}
+
+  /* "see" cross-references interfiled alphabetically */
+  .g-see{break-inside:avoid;margin:0 0 .5rem;line-height:1.3}
+  .g-see-term{font-weight:600;color:#222}
+  .g-see-word{font-style:italic;color:#666}
+  .g-see-to{font-weight:600;color:#000}
+
+  /* every glossary link prints as ink, no underline -- reads as text, but the
+     PDF keeps the internal anchor so it stays clickable on screen */
+  .glossary a{color:var(--ink);text-decoration:none}
+}
+
