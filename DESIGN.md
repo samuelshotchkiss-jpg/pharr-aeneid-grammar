@@ -158,10 +158,10 @@ search). Shows all occurrences of a term and its variants in the text.
 ## 6. Print layer **[approach settled; page-break tuning open]**
 
 ### 6a. Page count
-Was 77 pages at last conversion; much has been added since, and the glossary
-will push it over. 100 pages is a **soft** target (color-printing cost;
-not intimidating students), **not a hard cap** — the glossary is worth
-exceeding it. Get the current number as an early, independent step.
+Was 77 pages at last conversion; **now 99** (pre-glossary, as of the print-layer
+build). 100 pages is a **soft** target (color-printing cost; not intimidating
+students), **not a hard cap** — the glossary (§6d) is worth exceeding it.
+Recount anytime by reading the rendered PDF's page total (`pypdfium2`).
 
 ### 6b. Pagination via CSS paged media
 - `break-inside: avoid` to keep tables and titled boxes from splitting.
@@ -237,9 +237,12 @@ The term JSON is appended as a glossary at the **end** of the PDF.
    (5c). Contract: `openQuery(text)` / `openTerm(term)` (term = canonical
    `term` string from `glossary.json`; variants resolved there); deep links
    `#find=<text>` and `#all=<term-slug>`.
-6. Print: paged-media CSS + color translation (6b, 6c).
+6. **[done]** Print: paged-media CSS + color translation (6b, 6c) —
+   Playwright/Chromium pipeline (`build/render_pdf.py`), grayscale-safe
+   all-sans typography with the editorial voice redundantly encoded, and
+   paged-media break rules (section breaks, repeated table headers).
 7. Print: glossary rendering from JSON (6d).
-8. Current page-count conversion (6a) — independent and tiny; run anytime.
+8. **[done]** Current page-count conversion (6a) — 99 pages (pre-glossary).
 
 **In progress (emergent — not in the original order): Mobile / responsive
 legibility.** A screen-only pass (≤820px) that collapses the wide paradigm
