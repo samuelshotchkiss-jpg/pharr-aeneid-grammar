@@ -4,7 +4,8 @@
    PURPOSE (DESIGN.md §6d, build order item 7)
    -------------------------------------------
    The single term database (data/glossary.json) is rendered as an alphabetical
-   glossary appended to the END of the print PDF. This module runs in the
+   glossary placed after the body text and BEFORE the back-of-book index (the
+   reference glossary precedes the locator index). This module runs in the
    Chromium PAGE context during the PDF render (build/render_pdf.py injects it
    after load and calls window.PharrBuildPrintGlossary). It is PRINT-ONLY: the
    web edition's index.html never loads it, so the screen output is untouched.
@@ -302,11 +303,17 @@
     });
     sec.appendChild(list);
 
-    // append at the very end of the document, inside .page so it inherits the
-    // page's width/typography (the back-index is the last child of .page today).
-    var host = (opts.host && doc.querySelector(opts.host)) ||
-               doc.querySelector('.page') || doc.body;
-    host.appendChild(sec);
+    // Place the glossary AFTER the body text but BEFORE the back-of-book index
+    // (editor's ruling: the reference glossary precedes the locator index). The
+    // index opens with <h2 id="index">, a child of .page, so inserting before it
+    // keeps the glossary inside .page (inheriting its width/typography). Falls
+    // back to appending at the end of .page if that anchor is ever absent.
+    var anchor = doc.getElementById(opts.beforeId || 'index');
+    if (anchor && anchor.parentNode) {
+      anchor.parentNode.insertBefore(sec, anchor);
+    } else {
+      (doc.querySelector('.page') || doc.body).appendChild(sec);
+    }
 
     return {
       entries: entries.length,

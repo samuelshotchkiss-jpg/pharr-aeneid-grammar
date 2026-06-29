@@ -39,7 +39,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 def _append_glossary(page) -> None:
     """Build the print glossary (DESIGN.md §6d) from data/glossary.json and
-    append it to the end of the page, in the live Chromium render path.
+    insert it before the back-of-book index, in the live Chromium render path.
 
     Print-only: this runs only here, so index.html / the web edition are
     untouched. Definitions render through the SAME shared parser the web tooltip

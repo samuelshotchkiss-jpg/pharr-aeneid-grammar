@@ -203,7 +203,10 @@ The print stylesheet has **two distinct jobs**, not a blanket desaturation:
   **redundantly encoded** and never depends on color alone.
 
 ### 6d. Glossary
-The term JSON is appended as a glossary at the **end** of the PDF.
+The term JSON is rendered as a glossary in the back matter, placed **after the
+body text and before the back-of-book index** (the reference glossary precedes
+the locator index). Built print-only at render time from `data/glossary.json`
+through the shared mini-markup parser; see the glossary build thread.
 
 ---
 
