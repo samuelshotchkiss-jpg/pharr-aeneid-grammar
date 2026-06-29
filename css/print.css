@@ -228,7 +228,7 @@
 }
 
 /* =========================================================================
-   §6d  PRINT GLOSSARY   (appended at the back of the PDF)
+   §6d  PRINT GLOSSARY   (back matter: after the figures section, before the index)
    The glossary DOM is built at render time from data/glossary.json by
    build/glossary_print.js (run by build/render_pdf.py), through the shared
    defmarkup parser. It exists ONLY in the print render, so these rules need no
@@ -236,11 +236,11 @@
    are distinguished on a REDUNDANT, grayscale-safe channel -- an "Editor"
    label word + an ochre left bar, never colour alone; (2) § cross-references
    read as plain ink on paper yet stay live internal links in the on-screen PDF.
-   Pagination (§6b): the section starts on a fresh page and no entry splits or
-   strands its headword.
+   Pagination (§6b): it flows out of Pharr's preceding figures glossary (no
+   forced page break, per the edition's continuous-flow rule) and no entry
+   splits or strands its headword.
    ========================================================================= */
 @media print{
-  .glossary{break-before:page}
   .g-title{break-after:avoid}
   .g-intro{font-size:.84rem;color:#444;line-height:1.4;max-width:34em;margin:.35rem 0 1.15rem}
   .g-list{font-size:.93rem}

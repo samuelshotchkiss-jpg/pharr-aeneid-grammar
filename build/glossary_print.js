@@ -287,11 +287,12 @@
 
     var intro = doc.createElement('p');
     intro.className = 'g-intro';
+    // Note on the excluded rhetorical figures is no longer needed: this glossary
+    // now flows directly out of Pharr's "Figures of Syntax and Rhetoric" section,
+    // so their separate treatment is evident from the adjacent context.
     intro.textContent =
       'Definitions marked “Editor” were written for this edition; the ' +
-      'rest are Pharr’s own. A section mark (§) is a live link into the ' +
-      'text. Pharr’s rhetorical figures (§§411–447) form their ' +
-      'own glossary in the body and are not repeated here.';
+      'rest are Pharr’s own. A section mark (§) is a live link into the text.';
     sec.appendChild(intro);
 
     var list = doc.createElement('div');
