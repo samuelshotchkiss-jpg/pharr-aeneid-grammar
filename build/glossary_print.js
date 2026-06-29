@@ -235,27 +235,37 @@
     // Sorted keys of the real entries, for the pointer-adjacency test (b).
     var entryKeys = entries.map(function (e) { return norm(e.term); }).sort(cmp);
 
-    // A pointer is "adjacent" to its headword when NO OTHER entry sorts strictly
-    // between the variant and the headword -- i.e. scanning the alphabet you'd
-    // reach the headword without passing another entry, so the pointer is noise.
-    function adjacentToEntry(varKey, entryKey) {
-      var lo = cmp(varKey, entryKey) <= 0 ? varKey : entryKey;
-      var hi = cmp(varKey, entryKey) <= 0 ? entryKey : varKey;
-      return !entryKeys.some(function (k) {
-        return cmp(k, lo) > 0 && cmp(k, hi) < 0;   // an entry lies between them
-      });
+    // True when NO entry sorts strictly between two keys -- they are immediate
+    // alphabetical neighbours with nothing of their own to scan past.
+    function noEntryBetween(k1, k2) {
+      var lo = cmp(k1, k2) <= 0 ? k1 : k2;
+      var hi = cmp(k1, k2) <= 0 ? k2 : k1;
+      return !entryKeys.some(function (k) { return cmp(k, lo) > 0 && cmp(k, hi) < 0; });
     }
 
     // Build a unified alphabetical sequence: definition entries + "see" rows.
-    // Every entry shows its full label set (a); a variant gets a "see" row only
-    // when it does NOT sit immediately beside its headword (b).
+    // Every entry shows its full label set (a). A variant earns a "see" row only
+    // when it sorts AWAY from its headword (b: an entry sorts between them) -- and
+    // when several of one entry's pointers cluster together (mutually adjacent,
+    // nothing between them), only the shortest survives, so look-alike phrase
+    // forms collapse to their general lemma (e.g. "contracted perfects" /
+    // "contracted verb forms" fold into "contracted"), while genuinely distant
+    // siblings (direct object / indirect object) each keep their pointer.
     var items = [];
     entries.forEach(function (e) {
       var ek = norm(e.term);
       items.push({ key: ek, kind: 'entry', entry: e });
-      candidateVariants(e).forEach(function (v) {
-        if (!adjacentToEntry(norm(v), ek))
-          items.push({ key: norm(v), kind: 'see', label: v, entry: e });
+
+      var ptrs = candidateVariants(e)
+        .filter(function (v) { return !noEntryBetween(norm(v), ek); })
+        .sort(function (a, b) { return a.length - b.length || cmp(norm(a), norm(b)); });
+      var kept = [];
+      ptrs.forEach(function (v) {
+        if (!kept.some(function (k) { return noEntryBetween(norm(v), norm(k)); }))
+          kept.push(v);
+      });
+      kept.forEach(function (v) {
+        items.push({ key: norm(v), kind: 'see', label: v, entry: e });
       });
     });
     items.sort(function (a, b) {
