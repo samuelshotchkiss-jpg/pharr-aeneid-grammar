@@ -46,3 +46,15 @@ build/            PDF pipeline. [planned]
 - **Content-neutral refactors must be provably content-neutral**: the rendered
   page is identical before and after; only structure/location changes.
 - Work in **reviewable increments** with verification between them.
+
+## Licensing
+
+This repository combines three bodies of material under three terms — see
+[`COPYRIGHT.md`](COPYRIGHT.md) for the full breakdown:
+
+- **Pharr's grammatical text** (1930) — **public domain**.
+- **Editorial content** we added (notes, glossary definitions, design prose,
+  `index.html`, `data/glossary.json`, docs) — **CC BY-NC-SA 4.0**
+  ([`LICENSE-CONTENT`](LICENSE-CONTENT)).
+- **Code and toolchain** (`css/`, `js/`, `build/`) — **GPL-3.0**
+  ([`LICENSE-CODE`](LICENSE-CODE)).
