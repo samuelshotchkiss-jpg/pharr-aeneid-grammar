@@ -56,5 +56,5 @@ This repository combines three bodies of material under three terms — see
 - **Editorial content** we added (notes, glossary definitions, design prose,
   `index.html`, `data/glossary.json`, docs) — **CC BY-NC-SA 4.0**
   ([`LICENSE-CONTENT`](LICENSE-CONTENT)).
-- **Code and toolchain** (`css/`, `js/`, `build/`) — **GPL-3.0**
+- **Code and toolchain** (`css/`, `js/`, `build/`) — **AGPL-3.0**
   ([`LICENSE-CODE`](LICENSE-CODE)).

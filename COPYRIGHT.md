@@ -24,14 +24,20 @@ Files in this bucket:
   text plus our editorial prose; the edition as a whole is licensed as content,
   not code. (Pharr's portions remain public domain in their own right.)
 - `data/glossary.json` — the grammatical term definitions and editor expansions.
-- `DESIGN.md`, `README.md`, and this file — project documentation.
+- The project's Markdown documentation (e.g. `DESIGN.md`, `README.md`,
+  `PROJECT-STATUS.md`, and this file).
 
 Summary: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-## 3. Code and toolchain — GPL-3.0
+## 3. Code and toolchain — AGPL-3.0
 
 The presentation and behavior layers, and the build tooling, are licensed under
-the **GNU General Public License, version 3** (see [`LICENSE-CODE`](LICENSE-CODE)).
+the **GNU Affero General Public License, version 3** (see
+[`LICENSE-CODE`](LICENSE-CODE)). The Affero clause adds the network-use
+provision: anyone who runs a modified version of this code as a hosted service
+must offer their users the corresponding source. (For this project's
+client-side CSS/JS that is already largely true — the browser receives the
+source — but the AGPL makes it an explicit, durable obligation.)
 
 Files in this bucket:
 
@@ -41,8 +47,8 @@ Files in this bucket:
 
 ## A note on combining the two licenses
 
-CC BY-NC-SA 4.0 and GPL-3.0 are not compatible *within a single file*. In this
+CC BY-NC-SA 4.0 and AGPL-3.0 are not compatible *within a single file*. In this
 project they never share a file: content lives in HTML/JSON/Markdown, code lives
 in CSS/JS/Python. If you extract material, keep that boundary — reuse the code
-under GPL-3.0 and the content under CC BY-NC-SA 4.0, and attribute Pharr's
+under AGPL-3.0 and the content under CC BY-NC-SA 4.0, and attribute Pharr's
 underlying text as public domain.
