@@ -93,9 +93,25 @@ definition applies, distinguished by `definition_source`; Pharr entries are
 read-only. This JSON feeds **both** the web tooltips and the printed glossary.
 
 **Variants.** A term's `variants` field is a **semicolon-separated** list of
-the forms that count as the same term (e.g. `appositive; appositional`). The
-web layer's match set for a term is its `term` plus those variants; this is the
-single source for "what counts as the same term" in term-search and tooltips.
+the forms that count as the same term (e.g. `appositive; appositional`,
+plus paradigm abbreviations like `Nom.`/`Subj.`). The web layer's match set for
+a term is its `term` plus those variants; this is the single source for "what
+counts as the same term" in term-search and tooltips.
+
+**Subclasses.** Some entries also carry a `subclasses` field: a list of
+`{name, section}` objects naming the specific constructions/uses that fall under
+the headword (e.g. the ablative's *ablative of means* §331, the subjunctive's
+*jussive* §254). A structural pass split these **out of** `variants`, so
+`variants` now means *true variants only* (alternate forms that are the same
+term for matching) while `subclasses` holds the named sub-constructions with
+their own § locations. The web tooltip (§5c) renders an entry's subclasses as a
+clickable list after the definition, each linking to its section. Subclasses are
+**not** separately term-matched in the body text: where the headword is part of
+the phrase (*ablative* of means) it is already clickable, and every body
+occurrence of a subjunctive sub-use (*jussive*, *hortatory*, …) sits beside a
+clickable *subjunctive* — so the popup list is the single discovery path (ruled
+in the §5c tooltip thread). Removing a string from `variants` to `subclasses` therefore
+also drops its standalone clickability — intended for *accusative and infinitive*.
 
 **Delivery / loading [settled].** Two distinct things power search, and only
 one needs this file:
@@ -140,8 +156,11 @@ get a popup showing that term's full glossary definition.
 - Generously sized while keeping the rest of the page visible; **scrolls** if
   the definition is long.
 - The definition includes: a link to Pharr's definition location (if he defines
-  the term), a link to the editorial insertion point (if we defined it), and an
-  option to open a search showing **all instances** of the term and its variants.
+  the term), a link to the editorial insertion point (if we defined it), an
+  optional editor's expansion of a terse Pharr definition (`editor_expansion`,
+  ochre voice), a clickable list of the entry's `subclasses` (each linking to
+  its § section), and an option to open a search showing **all instances** of
+  the term and its variants.
 - **Polysemy is a judgment problem [open — needs editor rulings]:** many
   grammatical terms are also ordinary English words ("voice," "mood," "case,"
   "person," "number," "perfect"). Auto-linking every occurrence will produce
