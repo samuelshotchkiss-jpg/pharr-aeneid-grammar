@@ -122,6 +122,29 @@
   }
   function secDigits(loc) { var m = (loc || '').match(/\d+/); return m ? m[0] : ''; }
 
+  // Render JSON-sourced definition text through the shared mini-markup parser
+  // (js/defmarkup.js): [[term]] / <<Latin>> become known-safe class spans built
+  // from text nodes -- JSON text is NEVER innerHTML'd (DESIGN.md §4; CLAUDE.md).
+  // Backstop per the build prompt: malformed markup fails LOUDLY (console + a
+  // visible inline error) rather than silently mis-rendering authored content.
+  // The standalone validator (build/validate_markup.py) is the primary guard.
+  function setMarkup(el, str) {
+    el.textContent = '';
+    el.classList.remove('gloss-markup-error');
+    str = str || '';
+    if (!str) return;
+    var DM = window.PharrDefMarkup;
+    if (!DM || !DM.toFragment) { el.textContent = str; return; }  // parser absent
+    try {
+      el.appendChild(DM.toFragment(str, document));
+    } catch (err) {
+      if (window.console && console.error)
+        console.error('[defmarkup] ' + (err && err.message) + '\n  in: ' + str);
+      el.classList.add('gloss-markup-error');
+      el.textContent = '⚠ definition markup error: ' + (err && err.message);
+    }
+  }
+
   /* =======================================================================
      PHASE 1 -- detection
      ======================================================================= */
@@ -323,7 +346,8 @@
     var src = entry.definition_source === 'editor' ? "Editor's note" :
               entry.definition_source === 'Pharr' ? 'Pharr' : '';
     popSrcEl.textContent = src;
-    popDefEl.textContent = entry.definition || '(no definition recorded)';
+    if (entry.definition) setMarkup(popDefEl, entry.definition);
+    else { popDefEl.classList.remove('gloss-markup-error'); popDefEl.textContent = '(no definition recorded)'; }
 
     // Optional editor's expansion of Pharr's terse definition (ochre voice).
     var exp = (entry[ED_EXPANSION_FIELD] || '').trim();
@@ -332,7 +356,12 @@
       var lbl = document.createElement('b'); lbl.className = 'gloss-pop-ed-label';
       lbl.textContent = ED_EXPANSION_LABEL;
       popEdEl.appendChild(lbl);
-      popEdEl.appendChild(document.createTextNode(' ' + exp));
+      popEdEl.appendChild(document.createTextNode(' '));
+      // editor_expansion is JSON-sourced prose too: render it through the same
+      // mini-markup parser (into a span so a markup error scopes to this field).
+      var expSpan = document.createElement('span');
+      setMarkup(expSpan, exp);
+      popEdEl.appendChild(expSpan);
       popEdEl.hidden = false;
     } else {
       popEdEl.hidden = true;

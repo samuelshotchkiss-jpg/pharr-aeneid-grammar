@@ -512,6 +512,10 @@ body.sp-open{ overflow:hidden; }                 /* lock background scroll while
 }
 .gloss-pop-close:hover{ color: var(--term-deep); }
 .gloss-pop-def{ margin:0; }
+/* Backstop signal when a definition's mini-markup is malformed: the renderer
+   shows the parser's error here instead of mis-rendering (the validator is the
+   primary guard). Authoring-time only -- clean content never sees this. */
+.gloss-markup-error{ color:#b00020; font-style:italic; }
 /* Editor's expansion of Pharr's terse definition: the ochre editorial voice,
    mirroring .edbox. Digital-only (tooltips aren't printed), so ochre carries
    the distinction without a redundant non-colour channel. */

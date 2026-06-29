@@ -64,6 +64,38 @@ href with a `?t=<ts>` query.
   editorial/term systems; extend rather than duplicate.
 - **Cross-references use § numbers, not page numbers.**
 
+## Definition mini-markup (glossary.json)
+Definition text in `data/glossary.json` is **student-facing and is never
+rendered as HTML.** To style terms and Latin inside a definition, the JSON uses
+a controlled sentinel notation that the renderer interprets, building DOM via
+`createElement`/`textContent` only. Arbitrary HTML in a definition renders as
+literal characters and can never execute (`<b>x</b>` shows those eight
+characters). **One grammar, one parser:** `js/defmarkup.js` is the single
+implementation, shared by the web tooltip and the (future) print glossary, and
+executed by the validator — so the renderers and the checker can't drift.
+
+- **Sigils (flat — spans do *not* nest):**
+  - `[[direct object]]` → `<span class="term">` (grammatical term)
+  - `<<cum>>` → `<span class="la">` (Latin)
+  - Only the *doubled* forms are structural; a lone `<` `>` `[` `]` is literal
+    text (so stray `<` stays literal, never HTML).
+  - **No link syntax, by design.** Links stay structured data in dedicated
+    fields (`definition_location`, `insertion_point`, `subclasses`, …). Any
+    future link need gets a considered field, never an inline sentinel.
+  - Add a class later by adding one row to `SIGILS` in `js/defmarkup.js`.
+- **Escape rule:** a backslash makes the next character literal, so it can't be
+  part of a sigil: `\[ \] \< \> \\` → `[ ] < > \`. To write a literal doubled
+  sigil, escape it: `\[\[` → `[[`, `\<\<` → `<<`. A trailing backslash is
+  malformed.
+- **Markup-bearing fields:** `definition` and `editor_expansion` (prose).
+  Structured fields (subclass names, etc.) are plain text.
+- **Errors are typos to catch, not input to absorb.** Primary guard:
+  `.venv/Scripts/python build/validate_markup.py` scans the whole file and
+  reports every malformed/nested/mismatched/unterminated/empty sentinel with
+  term, field, and position (`--selftest` proves the parser). Run it after
+  editing definitions / before commit. Backstop: the web renderer fails loudly
+  (console error + visible `.gloss-markup-error`) rather than mis-rendering.
+
 ## Judgment-laden work: propose, don't impose
 For anything touching the editor's voice, scholarly stance, or ambiguous
 term-detection (notably tooltip **polysemy** — "voice," "mood," "case,"
@@ -75,6 +107,8 @@ and let the user rule. Don't auto-apply these.
 - `pharr_grammatical_terms_N.json` — single source for all term definitions;
   feeds both web tooltips and the printed glossary. Pharr's definitions are
   read-only.
+- `js/defmarkup.js` — the shared definition mini-markup parser (notation above).
+- `build/validate_markup.py` — standalone markup validator (runs that parser).
 - (HTML content core + CSS; web JS and print CSS layers as built.)
 
 ## Build order
