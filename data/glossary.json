@@ -206,7 +206,11 @@
   },
   {
     "term": "question",
-    "variants": "questions; direct question; indirect question",
+    "variants": "questions",
+    "subclasses": [
+      { "name": "direct question", "section": "" },
+      { "name": "indirect question", "section": "" }
+    ],
     "domain": "syntax",
     "parent": "",
     "pharr_defines": false,
@@ -330,7 +334,14 @@
   },
   {
     "term": "dative",
-    "variants": "dative of agent; dative of interest; dative of advantage; dative of possession; dative of reference; Dat.",
+    "variants": "Dat.",
+    "subclasses": [
+      { "name": "dative of agent", "section": "" },
+      { "name": "dative of interest", "section": "" },
+      { "name": "dative of advantage", "section": "" },
+      { "name": "dative of possession", "section": "" },
+      { "name": "dative of reference", "section": "" }
+    ],
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -344,7 +355,7 @@
   },
   {
     "term": "accusative",
-    "variants": "accusative and infinitive; Acc.",
+    "variants": "Acc.",
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -358,7 +369,18 @@
   },
   {
     "term": "ablative",
-    "variants": "ablative absolute; ablative of means; ablative of agent; ablative of cause; ablative of manner; ablative of respect; ablative of separation; ablative of comparison; ablative of degree of difference; Abl.",
+    "variants": "Abl.",
+    "subclasses": [
+      { "name": "ablative absolute", "section": "" },
+      { "name": "ablative of means", "section": "" },
+      { "name": "ablative of agent", "section": "" },
+      { "name": "ablative of cause", "section": "" },
+      { "name": "ablative of manner", "section": "" },
+      { "name": "ablative of respect", "section": "" },
+      { "name": "ablative of separation", "section": "" },
+      { "name": "ablative of comparison", "section": "" },
+      { "name": "ablative of degree of difference", "section": "" }
+    ],
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -1188,7 +1210,14 @@
   },
   {
     "term": "subjunctive",
-    "variants": "jussive; hortatory; optative; deliberative; potential; Subj.",
+    "variants": "Subj.",
+    "subclasses": [
+      { "name": "jussive", "section": "" },
+      { "name": "hortatory", "section": "" },
+      { "name": "optative", "section": "" },
+      { "name": "deliberative", "section": "" },
+      { "name": "potential", "section": "" }
+    ],
     "domain": "verb",
     "parent": "mood",
     "pharr_defines": true,
