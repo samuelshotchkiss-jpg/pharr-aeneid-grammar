@@ -74,40 +74,52 @@
     return a;
   }
 
-  /* ---- variant selection ------------------------------------------------ *
-     "True variant" display + "see" pointers. A variant earns a pointer only
-     when it is a genuinely different lemma that would sort AWAY from the
-     headword. We drop:
-       - abbreviations (contain ".")  -- Nom., sg., Perf.
-       - parenthetical annotations (contain "(") -- editorial notes, not lemmas
-       - inflectional near-dups of the term (plurals etc.) -- sort adjacent
-       - "term + space + word" forms -- also sort adjacent to the headword
-     and, among survivors, drop a later variant that is itself a near-dup
-     (plural) of an earlier kept one.                                        */
+  /* ---- variant handling ------------------------------------------------- *
+     Two independent decisions, deliberately NOT conflated:
 
-  function nearDup(t, v) {
-    t = norm(t); v = norm(v);
-    if (t === v) return true;
-    var a = t.length <= v.length ? t : v;
-    var b = t.length <= v.length ? v : t;
-    if (b.indexOf(a) === 0 && (b.length - a.length) <= 3) return true; // plural/inflection
-    if (a.length >= 4 && b.length >= 4 && a.slice(0, 4) === b.slice(0, 4) &&
-        Math.abs(a.length - b.length) <= 3) return true;
-    return false;
+     (a) ALTERNATE LABELS shown on the headword -- "(also ...)". Inclusive: we
+         list every listed variant EXCEPT noise that adds nothing to read:
+           - abbreviations (contain ".")            -- Nom., sg., Perf.
+           - parenthetical annotations (contain "(") -- editorial notes, not
+             clean lemmas (e.g. "infinitives (in Pharr's broad sense)")
+           - plurals / short inflections, of the headword OR of an already-kept
+             variant (so "substantive" stays but "substantives" / "nouns" go).
+         These survivors are candidateVariants(); the FULL set is shown in the
+         parenthesis -- so e.g. predicate substantive / attribute / nominative
+         all appear under "predicate noun".
+
+     (b) "see" POINTERS from a variant's own alphabetical slot. A pointer only
+         earns its place if it lands AWAY from its headword -- if scanning the
+         alphabet you'd hit the headword anyway, the pointer is noise. Concretely
+         (in build()): drop the pointer when NO other entry sorts between the
+         variant and its headword (immediate neighbours). So "substantive" (far
+         from "noun") keeps its pointer; "predicate substantive" (right beside
+         "predicate noun") and "concessive" (just before "concessive clause")
+         do not; "degrees of comparison" (entries intervene before "comparison")
+         does. This is purely positional -- no lemma is privileged over another.   */
+
+  // Plural / short-suffix relation: one string is a prefix of the other and at
+  // most 3 chars longer (case/cases, substantive/substantives, clause/clauses).
+  // NOT a 4-char-prefix fuzzy match -- that would wrongly fuse distinct sibling
+  // labels like "predicate attribute" and "predicate substantive".
+  function isInflection(a, b) {
+    a = norm(a); b = norm(b);
+    if (a === b) return true;
+    var s = a.length <= b.length ? a : b;
+    var l = a.length <= b.length ? b : a;
+    return l.indexOf(s) === 0 && (l.length - s.length) <= 3;
   }
 
-  function keptVariants(entry) {
-    var t = norm(entry.term);
+  function candidateVariants(entry) {
     var vs = String(entry.variants || '').split(';')
       .map(function (s) { return s.trim(); })
       .filter(Boolean)
-      .filter(function (v) { return v.indexOf('.') === -1; })
-      .filter(function (v) { return v.indexOf('(') === -1; })
-      .filter(function (v) { return !nearDup(entry.term, v); })
-      .filter(function (v) { return norm(v).indexOf(t + ' ') !== 0; });
+      .filter(function (v) { return v.indexOf('.') === -1; })          // abbreviations
+      .filter(function (v) { return v.indexOf('(') === -1; })          // annotations
+      .filter(function (v) { return !isInflection(entry.term, v); });  // plural of headword
     var out = [];
     vs.forEach(function (v) {
-      if (!out.some(function (k) { return nearDup(k, v); })) out.push(v);
+      if (!out.some(function (k) { return isInflection(k, v); })) out.push(v); // plural of a kept variant
     });
     return out;
   }
@@ -131,7 +143,7 @@
     term.textContent = entry.term;
     head.appendChild(term);
 
-    var alts = keptVariants(entry);
+    var alts = candidateVariants(entry);
     if (alts.length) {
       var alt = doc.createElement('span');
       alt.className = 'g-alt';
@@ -216,16 +228,38 @@
       return e && e.term && !EXCLUDE_DOMAINS[e.domain];
     });
 
+    var cmp = function (a, b) {
+      return a.localeCompare(b, 'en', { sensitivity: 'base' });
+    };
+
+    // Sorted keys of the real entries, for the pointer-adjacency test (b).
+    var entryKeys = entries.map(function (e) { return norm(e.term); }).sort(cmp);
+
+    // A pointer is "adjacent" to its headword when NO OTHER entry sorts strictly
+    // between the variant and the headword -- i.e. scanning the alphabet you'd
+    // reach the headword without passing another entry, so the pointer is noise.
+    function adjacentToEntry(varKey, entryKey) {
+      var lo = cmp(varKey, entryKey) <= 0 ? varKey : entryKey;
+      var hi = cmp(varKey, entryKey) <= 0 ? entryKey : varKey;
+      return !entryKeys.some(function (k) {
+        return cmp(k, lo) > 0 && cmp(k, hi) < 0;   // an entry lies between them
+      });
+    }
+
     // Build a unified alphabetical sequence: definition entries + "see" rows.
+    // Every entry shows its full label set (a); a variant gets a "see" row only
+    // when it does NOT sit immediately beside its headword (b).
     var items = [];
     entries.forEach(function (e) {
-      items.push({ key: norm(e.term), kind: 'entry', entry: e });
-      keptVariants(e).forEach(function (v) {
-        items.push({ key: norm(v), kind: 'see', label: v, entry: e });
+      var ek = norm(e.term);
+      items.push({ key: ek, kind: 'entry', entry: e });
+      candidateVariants(e).forEach(function (v) {
+        if (!adjacentToEntry(norm(v), ek))
+          items.push({ key: norm(v), kind: 'see', label: v, entry: e });
       });
     });
     items.sort(function (a, b) {
-      var c = a.key.localeCompare(b.key, 'en', { sensitivity: 'base' });
+      var c = cmp(a.key, b.key);
       return c !== 0 ? c : (a.kind === 'entry' ? -1 : 1);
     });
 
