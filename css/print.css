@@ -31,16 +31,36 @@
   table.grid tr,table.synopsis tr,.casetable tr,table.vgrid tr{break-inside:avoid}
   /* keep a synopsis mood-subhead with at least its first form row */
   table.synopsis .syn-sechead{break-after:avoid}
-  /* §6b TITLES STAY WITH THEIR BLOCK -- two gaps the heading rules miss:
-     (a) many "titles" are .sec paragraphs ending in a bold term (e.g. §92
-     "Irregular Comparison.", §113 "The Indefinite Pronoun") immediately
-     followed by a table -- keep the .sec with the block it introduces;
-     (b) verb-block internal labels (tense/voice/mood) must not sit alone at a
-     page bottom. (.v4tense etc. are grid items -- Chromium honours break-after
-     on them only partially; best effort per §6b.) */
-  .sec:has(+ table),.sec:has(+ .vconj),.sec:has(+ .vconj4),
-  .sec:has(+ .casetable),.sec:has(+ .ppsys),.sec:has(+ .classlist),
-  .sec:has(+ .infforms),.sec:has(+ .scanblock){break-after:avoid}
+  /* §6b TITLES & VERB-BLOCK INTROS STAY WITH THEIR TABLE.
+     A verb block is: h3/h4 title -> .note "Principal Parts" (or PP inline in
+     the title) -> invisible anchor-stub spans -> .vconj/.vconj4 table. The
+     anchor-stubs (cross-ref targets, useless on paper) both sit between the
+     intro and the table (defeating :has(+ table)) AND act as stray break
+     points -- so drop them from print layout. Then the editor's two rules:
+       (1) NEVER break after the title + principal parts. The intro's
+           break-after:avoid chain (h3/h4 -> .note -> table, now adjacent)
+           keeps the title + PP with the table's start; if the table won't fit
+           in the space left, the whole intro is pulled forward with it.
+       (2) Sub-conjugation breaks are fine SO LONG AS tense/voice/mood labels
+           stay with their forms -- hence break-after:avoid on those labels.
+     The 4-col grids (.vconj4: habeo/dico/audio) keep break-inside:avoid so they
+     are NOT split into an empty/overflowing frame: each starts whole on a fresh
+     page (some whitespace may precede it -- normal for a big table) and, when a
+     grid exceeds a page, breaks at a row boundary with its tense labels held by
+     break-after:avoid. (Their tense blocks are display:contents, so a single
+     tense can't be made individually unbreakable -- an occasional sg/pl split
+     within one tense is the residual, per §6b "don't over-invest".)
+     The 2-col verbs (.vconj) keep each tense whole via .vconj .vtense below.
+     Long example lists (e.g. §123 Compounds of sum) flow + split. */
+  .anchor-stub{display:none}
+  .vconj4,.vconj4 .v4grid{break-inside:avoid}
+  table.grid.examplegrid{break-inside:auto}
+  .note{break-after:avoid}
+  .sec:has(+ table),.sec:has(+ .anchor-stub + table),
+  .sec:has(+ .anchor-stub + .anchor-stub + table),
+  .sec:has(+ .vconj),.sec:has(+ .vconj4),.sec:has(+ .casetable),
+  .sec:has(+ .ppsys),.sec:has(+ .classlist),.sec:has(+ .infforms),
+  .sec:has(+ .scanblock){break-after:avoid}
   .vt-label,.vt-title,.vt-gloss,.vmoodrow,.vmood,.v4tense,.v4voice,.v4col,
   .ppsys-head,.pptense-label,.pptense-gloss,.iff-head,.clhead,
   .vcol-label,.ppcol-label,table.grid caption,.casetable caption{break-after:avoid}
