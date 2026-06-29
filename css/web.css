@@ -530,6 +530,24 @@ body.sp-open{ overflow:hidden; }                 /* lock background scroll while
   font-style:normal; font-weight:700; color: var(--edink);
   margin-right:.15rem;
 }
+/* Subclasses: the constructions/uses split out of variants in the JSON pass,
+   shown as a clickable list (each jumps to its § section). */
+.gloss-pop-sub{
+  margin-top:.7rem; padding-top:.55rem;
+  border-top:1px solid var(--edborder);
+  font-size:.86rem; line-height:1.5;
+}
+.gloss-pop-sub[hidden]{ display:none; }
+.gloss-pop-sub-label{
+  font-weight:700; color: var(--neutral-ink); margin-right:.35rem;
+}
+.gloss-pop-sub-item{
+  display:inline-block; margin:.1rem .55rem .1rem 0;
+  color: var(--accent); text-decoration:none; cursor:pointer;
+}
+.gloss-pop-sub-item:hover{ text-decoration:underline; color: var(--accent-deep); }
+span.gloss-pop-sub-item{ color: var(--neutral-ink); cursor:default; } /* no anchor */
+.gloss-pop-sub-sec{ color: var(--muted); font-size:.82em; }
 .gloss-pop-links{
   display:flex; flex-wrap:wrap; gap:.35rem .8rem;
   margin-top:.7rem; padding-top:.55rem;

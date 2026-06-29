@@ -61,11 +61,6 @@
   //  'scan'/'scans' do not occur.)
   var EXTRA_FORMS = { 'scansion': ['scanning'] };
 
-  // Terms whose distinct-looking variants must NOT earn their own link
-  // (they all resolve to the one entry, so a second link would just reopen the
-  //  identical popup). Editor ruling: the subjunctive sub-uses.
-  var SHARE_HEADWORD_KEY = { 'subjunctive': 1 };
-
   // Two-voice popup: when an entry carries an optional `editor_expansion`
   // (a student-facing gloss on Pharr's laconic definition), the popup shows
   // Pharr's text first, then this in the editor's ochre voice. Forward-
@@ -74,6 +69,12 @@
   // apply here; ochre alone is fine. (Label is the editor's to rename.)
   var ED_EXPANSION_FIELD = 'editor_expansion';
   var ED_EXPANSION_LABEL = 'In plainer terms';
+
+  // Subclasses: an entry's `subclasses` (list of {name, section}) are specific
+  // constructions/uses that were split out of `variants` in the JSON pass. The
+  // popup lists them after the definition, each linking to its section. (Label
+  // is the editor's to rename.)
+  var SUBCLASS_LABEL = 'Kinds';
 
   /* =======================================================================
      Small helpers
@@ -151,8 +152,7 @@
         var low = form.toLowerCase();
         if (seen[low]) return; seen[low] = 1;
         var key;
-        if (SHARE_HEADWORD_KEY[e.term]) key = e.term;
-        else if (form !== e.term && isDistinct(e.term, form)) key = e.term + '' + distinctKey(form);
+        if (form !== e.term && isDistinct(e.term, form)) key = e.term + '' + distinctKey(form);
         else key = e.term;
         list.push({ form: form, low: low, len: low.length, entry: e, key: key });
       });
@@ -273,7 +273,7 @@
   /* =======================================================================
      PHASE 2 -- display (the popup)
      ======================================================================= */
-  var pop, popTermEl, popSrcEl, popDefEl, popEdEl, popLinksEl, openAnchor = null;
+  var pop, popTermEl, popSrcEl, popDefEl, popEdEl, popSubEl, popLinksEl, openAnchor = null;
 
   function buildPopup() {
     pop = document.createElement('div');
@@ -293,9 +293,11 @@
 
     popDefEl = document.createElement('p'); popDefEl.className = 'gloss-pop-def';
     popEdEl = document.createElement('div'); popEdEl.className = 'gloss-pop-ed'; popEdEl.hidden = true;
+    popSubEl = document.createElement('div'); popSubEl.className = 'gloss-pop-sub'; popSubEl.hidden = true;
     popLinksEl = document.createElement('div'); popLinksEl.className = 'gloss-pop-links';
 
-    pop.appendChild(head); pop.appendChild(popDefEl); pop.appendChild(popEdEl); pop.appendChild(popLinksEl);
+    pop.appendChild(head); pop.appendChild(popDefEl); pop.appendChild(popEdEl);
+    pop.appendChild(popSubEl); pop.appendChild(popLinksEl);
     document.body.appendChild(pop);
   }
 
@@ -334,6 +336,38 @@
       popEdEl.hidden = false;
     } else {
       popEdEl.hidden = true;
+    }
+
+    // Subclasses: clickable list of constructions/uses, each linking to its §.
+    popSubEl.textContent = '';
+    var subs = Array.isArray(entry.subclasses) ? entry.subclasses : [];
+    if (subs.length) {
+      var slab = document.createElement('span'); slab.className = 'gloss-pop-sub-label';
+      slab.textContent = SUBCLASS_LABEL + ':';
+      popSubEl.appendChild(slab);
+      var slist = document.createElement('span'); slist.className = 'gloss-pop-sub-list';
+      subs.forEach(function (sc) {
+        if (!sc || !sc.name) return;
+        var id = 's' + secDigits(sc.section);
+        var hasAnchor = sc.section && document.getElementById(id);
+        var item = document.createElement(hasAnchor ? 'a' : 'span');
+        item.className = 'gloss-pop-sub-item';
+        item.appendChild(document.createTextNode(sc.name));
+        if (sc.section) {
+          var secEl = document.createElement('span'); secEl.className = 'gloss-pop-sub-sec';
+          secEl.textContent = ' ' + sc.section;
+          item.appendChild(secEl);
+        }
+        if (hasAnchor) {
+          item.href = '#' + id;
+          item.addEventListener('click', function (ev) { ev.preventDefault(); jumpTo(id); });
+        }
+        slist.appendChild(item);
+      });
+      popSubEl.appendChild(slist);
+      popSubEl.hidden = false;
+    } else {
+      popSubEl.hidden = true;
     }
 
     popLinksEl.textContent = '';
