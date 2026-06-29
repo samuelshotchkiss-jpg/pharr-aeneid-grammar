@@ -240,7 +240,9 @@ The term JSON is appended as a glossary at the **end** of the PDF.
 6. **[done]** Print: paged-media CSS + color translation (6b, 6c) —
    Playwright/Chromium pipeline (`build/render_pdf.py`), grayscale-safe
    all-sans typography with the editorial voice redundantly encoded, and
-   paged-media break rules (section breaks, repeated table headers).
+   paged-media break rules (titles kept with their tables, repeated table
+   headers, no forced section breaks). Print is fully neutral except the
+   editorial ochre, which is retained.
 7. Print: glossary rendering from JSON (6d).
 8. **[done]** Current page-count conversion (6a) — 99 pages (pre-glossary).
 

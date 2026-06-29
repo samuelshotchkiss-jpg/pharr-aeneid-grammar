@@ -15,9 +15,10 @@
   html{font-size:10.6pt}
   body{background:#fff}
   .page{max-width:none;margin:0;padding:0;box-shadow:none}
-  /* §6b major sections start fresh; headings never orphan at a page bottom.
-     The first h2 yields a clean front page (title + "How to read this edition"). */
-  h2.h2{break-after:avoid;break-before:page}
+  /* Headings never orphan at a page bottom. (Per editor: NO forced page break
+     before each major section -- continuous flow reads more like Pharr, and the
+     readability gain didn't justify the whitespace.) */
+  h2.h2{break-after:avoid}
   h3.h3,h4.h4{break-after:avoid}
   table.grid,.casetable,.scanrow,.callout,.note,.editnote,.edpanel,.edbox,.classlist,.braceitem{break-inside:avoid}
   .ppsys .pptense,.ppgrid{break-inside:avoid}
@@ -30,6 +31,20 @@
   table.grid tr,table.synopsis tr,.casetable tr,table.vgrid tr{break-inside:avoid}
   /* keep a synopsis mood-subhead with at least its first form row */
   table.synopsis .syn-sechead{break-after:avoid}
+  /* §6b TITLES STAY WITH THEIR BLOCK -- two gaps the heading rules miss:
+     (a) many "titles" are .sec paragraphs ending in a bold term (e.g. §92
+     "Irregular Comparison.", §113 "The Indefinite Pronoun") immediately
+     followed by a table -- keep the .sec with the block it introduces;
+     (b) verb-block internal labels (tense/voice/mood) must not sit alone at a
+     page bottom. (.v4tense etc. are grid items -- Chromium honours break-after
+     on them only partially; best effort per §6b.) */
+  .sec:has(+ table),.sec:has(+ .vconj),.sec:has(+ .vconj4),
+  .sec:has(+ .casetable),.sec:has(+ .ppsys),.sec:has(+ .classlist),
+  .sec:has(+ .infforms),.sec:has(+ .scanblock){break-after:avoid}
+  .vt-label,.vt-title,.vt-gloss,.vmoodrow,.vmood,.v4tense,.v4voice,.v4col,
+  .ppsys-head,.pptense-label,.pptense-gloss,.iff-head,.clhead,
+  .vcol-label,.ppcol-label,table.grid caption,.casetable caption{break-after:avoid}
+  .vconj .vtense{break-inside:avoid}
   /* prose: no single orphan/widow line stranded at a page edge */
   p,.sec,.subrules .sub{orphans:2;widows:2}
   .no-print{display:none}
@@ -57,6 +72,24 @@
    media="print" means none of this reaches the screen edition.
    ========================================================================= */
 @media print{
+  /* === Neutralise ALL functional colour to grey/black; the ONLY colour kept
+     in print is the editorial ochre (--edink/--edbg/--edbg-soft/--edrule/
+     --edborder, left untouched). Overriding the colour TOKENS here catches
+     every token-based use regardless of selector specificity -- including the
+     lingering blue "Singular" header band -- so the rules below need only the
+     few hard-coded (rgba/hex) colours. === */
+  :root{
+    --ink:#1a1a1a; --muted:#5b5b5b; --line:#cfcfcf; --grid-rule:#bdbdbd;
+    --neutral-ink:#1f1f1f; --noneink:#6f6f6f; --markink:#1a1a1a; --warn:#000;
+    --accent:#1a1a1a; --accent-deep:#000; --head:#1a1a1a; --head-blue:#2b2b2b;
+    --num-green:#444; --num-green-deep:#2b2b2b; --la-green:#000;
+    --term:#333; --term-deep:#000; --hwcol:#000;
+    --fill1:#ececec; --fill2:#f7f7f7; --fill3:#f0f0f0; --fillrule:#f5f5f5;
+    --syn-c0:#333;--syn-c0-deep:#2b2b2b;--syn-c0-bg:#f2f2f2;
+    --syn-c1:#333;--syn-c1-deep:#2b2b2b;--syn-c1-bg:#f2f2f2;
+    --syn-c2:#333;--syn-c2-deep:#2b2b2b;--syn-c2-bg:#f2f2f2;
+    --syn-c3:#333;--syn-c3-deep:#2b2b2b;--syn-c3-bg:#f2f2f2;
+  }
   /* ---- inline roles: all-sans, split by case x style x weight ---- */
   .la{color:#000;font-weight:700;font-style:normal}
   .hw{color:#000;font-weight:700;font-style:italic}
@@ -151,13 +184,21 @@
   table.synopsis .syn-sechead td{background:#ececec;color:#000}
 
   /* ---- SVG braces + scansion marks: colour -> near-black (shape carries meaning) ---- */
-  :root{--markink:#1a1a1a}
   .braceitem .bsvg svg path,
   .ppgrid .ppbrace svg path,
   .vconj4 .v4peri .ppbrace svg path,
   .vconj .vt-peri .vperi .ppbrace svg path{stroke:#222}
   .ppsys{background:#f5f5f5;border-left-color:#555}
   .scan,.scanlat{color:#000}
+
+  /* hard-coded (non-token) colour stragglers -> neutral */
+  table.grid.paradigm thead th .gl,table.grid.paradigm tr.numband td .gl{color:#dcdcdc}
+  table.grid.paradigm thead th .sn{color:#cfcfcf}
+  .scanblock{background:#f7f7f7;border-color:#e2e2e2;border-left-color:#555}
+  .vconj4 .v4cell.empty,.vconj4 .v4peri.empty,
+  .vconj4 .v4cell.v4pl.empty,.vconj4 .v4peri.v4pl.empty,
+  .vconj4 .v4colstack.v4pl .v4cell.empty{
+    background:repeating-linear-gradient(135deg,#fafafa,#fafafa 6px,#ededed 6px,#ededed 12px)}
 
   /* section badges + inline pills: neutral (catch the many variants) */
   .secbadge,.rownum,.inlinebadge{color:#000 !important;background:#eee !important;border-color:#999 !important}
