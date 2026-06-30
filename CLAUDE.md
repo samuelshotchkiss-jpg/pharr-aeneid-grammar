@@ -23,8 +23,15 @@ a 10th-grade Latin class with limited grammar background.
   keep concurrent threads on non-overlapping files, and commit promptly so a
   switched-to session starts from a clean, current tree. (Git worktrees would add
   true simultaneous isolation if that's ever needed; not in use today.)
-- **Commit is the handoff.** State passes between sessions through committed files
-  and clear commit messages, not conversation history. Commit at meaningful points.
+- **Commit is the handoff; push is publish + backup.** State passes between
+  local sessions through committed files and clear commit messages, not
+  conversation history (the sessions share this folder, so a local commit is
+  enough to hand off). `main` now also has a GitHub remote (`origin`):
+  **pushing to it auto-deploys the live site** (GitHub Pages, ~1 min) and is the
+  only offsite backup. So commit at meaningful points, and push when the tree is
+  in a coherent state. Because a push is *public*, don't push a knowingly-broken
+  intermediate state — or fix forward fast, since rebuilds are ~1 min. Repo and
+  live URL are in `PROJECT-STATUS.md`.
 - **Work in reviewable increments** with verification between them, not one
   giant rewrite. For large changes, propose the plan before executing.
 
@@ -113,6 +120,10 @@ and let the user rule. Don't auto-apply these.
 
 ## Key files
 - `DESIGN.md` — full system design and build order.
+- `PROJECT-STATUS.md` — plain-language status (hosting, repo + live URL,
+  licensing) for code-blind sessions.
+- `COPYRIGHT.md` — the three-way license split; `LICENSE-CONTENT` (CC BY-NC-SA
+  4.0) and `LICENSE-CODE` (AGPL-3.0) hold the full terms.
 - `pharr_grammatical_terms_N.json` — single source for all term definitions;
   feeds both web tooltips and the printed glossary. Pharr's definitions are
   read-only.

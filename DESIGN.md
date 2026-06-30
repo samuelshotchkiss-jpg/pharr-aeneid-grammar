@@ -215,7 +215,11 @@ through the shared mini-markup parser; see the glossary build thread.
 - **Version control by git**, not filename incrementing. Commit at meaningful
   points; use diffs as the record of what changed. (This replaces the old
   per-chat upload/download/rename workflow now that development is in Claude
-  Code against a persistent tree.)
+  Code against a persistent tree.) The tree now has a GitHub remote (`origin`),
+  and **pushing `main` auto-publishes the live site** (GitHub Pages) as well as
+  backing the work up offsite — so a local commit hands off between sessions,
+  and a push is the publish/backup step. Hosting + licensing details:
+  `PROJECT-STATUS.md` and `COPYRIGHT.md`.
 - **Content-neutral refactors must be provably content-neutral:** verify by
   diff that only structure/location changed, not rendered output. (Parsed-
   content comparison, not raw-file comparison — raw files are *meant* to

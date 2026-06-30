@@ -4,6 +4,10 @@ A modernized, accessible edition of the grammatical appendix to Clyde Pharr's
 *Vergil's Aeneid, Books I–VI* (1930, public domain), reset for advanced Latin
 students.
 
+**📖 Live edition:** https://samuelshotchkiss-jpg.github.io/pharr-aeneid-grammar/
+— served by GitHub Pages from this repo's `main` branch; a push auto-rebuilds it
+in about a minute.
+
 ## Goal: single source → two outputs
 
 One body of content produces two presentations, with no second copy of the text:
@@ -42,7 +46,9 @@ build/            PDF pipeline. [planned]
 ## Working conventions
 
 - **Version control replaces the old filename-increment workflow.** Revisions
-  are tracked by git history and diff, not by renaming files.
+  are tracked by git history and diff, not by renaming files. The repo lives on
+  GitHub; **pushing to `main` publishes the live site** (above) and is the
+  offsite backup — so push coherent states, not knowingly-broken ones.
 - **Content-neutral refactors must be provably content-neutral**: the rendered
   page is identical before and after; only structure/location changes.
 - Work in **reviewable increments** with verification between them.
