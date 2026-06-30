@@ -567,3 +567,13 @@ span.gloss-pop-sub-item{ color: var(--neutral-ink); cursor:default; } /* no anch
 .gloss-pop-links a:hover,
 .gloss-pop-links button:hover{ text-decoration:underline; color: var(--accent-deep); }
 .gloss-pop-allbtn{ font-weight:600; }
+
+/* ---- Footnotes: visible by default, collapsible by clicking the call ----
+   Progressive enhancement: with no JS the note is just an inline aside (and so
+   it always prints). js/footnotes.js adds the toggle; .is-collapsed hides the
+   note and the call shows a dotted box to invite re-opening. */
+.fn-call{ cursor:pointer; border-radius:3px; }
+.fn-call:hover::after{ background:var(--fill1); border-radius:3px; }
+.fn-call[aria-expanded="false"]::after{ outline:1px dotted var(--accent); outline-offset:1px; }
+.footnote{ transition:opacity .15s ease; }
+.footnote.is-collapsed{ display:none; }

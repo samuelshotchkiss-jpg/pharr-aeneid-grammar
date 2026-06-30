@@ -628,6 +628,38 @@ table.grid.paradigm tbody tr.pl-row td.numdata .la{color:var(--la-green)}
   padding:.6rem .85rem;margin:1rem 0;font-size:.9rem;color:var(--ink);line-height:1.5;break-inside:avoid}
 .editnote b{color:var(--accent-deep)}
 
+/* ---- Footnotes (Pharr's): in-text symbol call + block-anchored note ----
+   Single-source (DESIGN.md §2): one inline call on the anchor word + one note
+   block, authored once; only presentation diverges -- print rules it off as a
+   block-anchored note (the closest the Chromium PDF engine supports; it has no
+   true page-bottom footnotes), the web layer (web.css) makes it collapsible.
+   Markers are SYMBOLS (* | dagger | double-dagger), not numbers, so they read
+   as rare/exceptional against the heavy section-number traffic. Pharr's voice,
+   never ochre. Audience (student vs teacher) rides on data-fn-audience; the
+   teacher label word + the dotted left rule are a NON-COLOUR channel that
+   survives a grayscale photocopy (§6c), exactly as the editorial voice does. */
+@counter-style fn-symbols{system:fixed 1;symbols:"*" "\2020" "\2021" "\00A7" "\2016" "\00B6";suffix:""}
+.page{counter-reset:footnote}
+.fn-call{counter-increment:footnote;text-decoration:none}
+.fn-call::after{content:counter(footnote,fn-symbols);
+  font-size:.72em;vertical-align:super;line-height:0;
+  color:var(--accent);font-weight:600;padding:0 .12em}
+.footnote{font-size:.86rem;line-height:1.5;color:var(--ink);
+  margin:.6rem 0 .25rem;padding-top:.4rem;border-top:1px solid var(--line);
+  max-width:44em;break-inside:avoid}
+/* the note's opening symbol doubles as a back-link to the call */
+.footnote .fn-back{text-decoration:none;color:var(--accent);font-weight:700;margin-right:.45em}
+.footnote .fn-back::before{content:counter(footnote,fn-symbols)}
+/* teacher-facing: redundant non-colour channel = the label word + a dotted rule */
+.footnote[data-fn-audience="teacher"]{border-left:2px dotted var(--muted);
+  padding-left:.85rem;background:var(--fill2);border-radius:0 5px 5px 0}
+.footnote[data-fn-audience="teacher"]::before{content:"To the teacher";display:block;
+  font-variant:small-caps;letter-spacing:.07em;font-size:.7rem;font-weight:700;
+  color:var(--muted);margin-bottom:.18rem}
+/* screen-reader-only helper (names the otherwise symbol-only in-text call) */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
 .legend{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;margin:.6rem 0 0;font-size:.85rem}
 .legend span b{display:inline-block;margin-right:.3rem}
 

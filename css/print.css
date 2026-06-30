@@ -20,7 +20,7 @@
      readability gain didn't justify the whitespace.) */
   h2.h2{break-after:avoid}
   h3.h3,h4.h4{break-after:avoid}
-  table.grid,.casetable,.scanrow,.callout,.note,.editnote,.edpanel,.edbox,.classlist,.braceitem{break-inside:avoid}
+  table.grid,.casetable,.scanrow,.callout,.note,.editnote,.edpanel,.edbox,.classlist,.braceitem,.footnote{break-inside:avoid}
   .ppsys .pptense,.ppgrid{break-inside:avoid}
   .sec{break-inside:auto}
   /* Long breakable tables (notably the deponent synopsis, taller than a page):
