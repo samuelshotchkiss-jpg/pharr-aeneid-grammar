@@ -57,14 +57,24 @@
   .anchor-stub{display:none}
   .vconj4,.vconj4 .v4grid{break-inside:auto}
   .vconj4 .v4tblock{display:grid;grid-column:1 / 6;grid-template-columns:subgrid;break-inside:avoid}
-  /* When the grid breaks, close the fragment cleanly. By default (slice) a
-     fragmented grid container stretches to fill the page and its frame rules
-     (left accent, the active|passive divider, right edge) trail down through the
-     blank space with no bottom -- it reads as a sliced-off table. box-decoration-
-     break:clone makes Chromium size the fragment to its content and draw a full
-     border box on it, so the break shows a clean bottom rule with blank space
-     below, and the continuation opens with a clean top rule on the next page. */
-  .vconj4 .v4grid{-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  /* Close the grid cleanly where it breaks. The frame would otherwise live on
+     the grid CONTAINER, which spans the page break -- so at a break Chromium
+     reserves a row track for the next tense and trails the container's rules
+     (left accent, divider, right edge) down through that blank slack with no
+     bottom, reading as a sliced-off table. Move the frame onto the per-tense
+     boxes instead: each .v4tblock carries the left accent + right edge + a bottom
+     rule, so the last tense on a page frames itself and its closing rule hugs
+     the forms, with clean blank space below. The tense's bottom rule also
+     replaces the old inter-tense separator (.v4tense border-top), so the
+     unbroken look is unchanged. The header band keeps the frame via its own edge
+     cells. (#555 = the print-neutralised accent bar; var(--line) the frame.) */
+  .vconj4 .v4grid{border:0}
+  .vconj4 .v4tblock{border-left:3px solid #555;border-right:1px solid var(--line);
+    border-bottom:1px solid var(--line)}
+  .vconj4 .v4tense{border-top:0}
+  .vconj4 .v4voice{border-top:1px solid var(--line)}
+  .vconj4 .v4voice.corner,.vconj4 .v4col.corner{border-left:3px solid #555}
+  .vconj4 .v4voice.pass,.vconj4 .v4col:has(+ .v4tblock){border-right:1px solid var(--line)}
   /* voice/mood header band stays with the first tense, never strands at a page foot */
   .vconj4 .v4voice,.vconj4 .v4col{break-after:avoid}
   table.grid.examplegrid{break-inside:auto}
@@ -204,7 +214,7 @@
   table.vgrid td.pers{background:#f2f2f2;color:#333}
   table.vgrid.act{border-left-color:#555}
   table.vgrid.pass{border-left-color:#333}
-  .vconj4 .v4grid{border-left-color:#555}
+  /* (the 4-col left accent bar moved onto .v4tblock, in the pagination block) */
   .vconj4 .v4cell.v4pl,.vconj4 .v4colstack.v4pl .v4cell,
   .vconj4 .v4colstack.v4pl,.vconj4 .v4peri.v4pl{background:#ececec}
   .vconj4 .v4grp.v4pl,.vconj4 .v4grp.v4firstpl{background:#e3e3e3}
