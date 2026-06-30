@@ -43,28 +43,46 @@
            in the space left, the whole intro is pulled forward with it.
        (2) Sub-conjugation breaks are fine SO LONG AS tense/voice/mood labels
            stay with their forms -- hence break-after:avoid on those labels.
-     The 4-col grids (.vconj4: habeo/dico/audio) keep break-inside:avoid so they
-     are NOT split into an empty/overflowing frame: each starts whole on a fresh
-     page (some whitespace may precede it -- normal for a big table) and, when a
-     grid exceeds a page, breaks at a row boundary with its tense labels held by
-     break-after:avoid. (Their tense blocks are display:contents, so a single
-     tense can't be made individually unbreakable -- an occasional sg/pl split
-     within one tense is the residual, per §6b "don't over-invest".)
+     The 4-col grids (.vconj4: habeo/dico/audio) are taller than a page, so they
+     MUST break. The break is made to fall BETWEEN tenses (before a tense title),
+     never mid-tense (sg|pl): each tense block (.v4tblock) is display:contents on
+     screen -- transparent to the grid -- but in print becomes a real subgrid box
+     spanning all five columns, so break-inside:avoid can hold one whole tense
+     together while the grid (.v4grid) itself fragments at tense boundaries. A
+     little whitespace may precede the tense that didn't fit -- accepted, since a
+     clean Pluperfect beats a split one (§6b). The header rows (voice/mood) ride
+     with the first tense via break-after:avoid below.
      The 2-col verbs (.vconj) keep each tense whole via .vconj .vtense below.
      Long example lists (e.g. §123 Compounds of sum) flow + split. */
   .anchor-stub{display:none}
-  .vconj4,.vconj4 .v4grid{break-inside:avoid}
+  .vconj4,.vconj4 .v4grid{break-inside:auto}
+  .vconj4 .v4tblock{display:grid;grid-column:1 / 6;grid-template-columns:subgrid;break-inside:avoid}
+  /* voice/mood header band stays with the first tense, never strands at a page foot */
+  .vconj4 .v4voice,.vconj4 .v4col{break-after:avoid}
   table.grid.examplegrid{break-inside:auto}
   .note{break-after:avoid}
+  /* A verb-block intro .sec must not only stay with its table (break-after) but
+     also never split mid-prose and strand its heading at a page foot (the §125
+     Possum bug: title + two lines alone atop an otherwise-blank page). These
+     intros are short, so pinning them whole moves the whole intro to the table's
+     page instead of leaving a fragment behind. */
   .sec:has(+ table),.sec:has(+ .anchor-stub + table),
   .sec:has(+ .anchor-stub + .anchor-stub + table),
   .sec:has(+ .vconj),.sec:has(+ .vconj4),.sec:has(+ .casetable),
   .sec:has(+ .ppsys),.sec:has(+ .classlist),.sec:has(+ .infforms),
-  .sec:has(+ .scanblock){break-after:avoid}
+  .sec:has(+ .scanblock){break-after:avoid;break-inside:avoid}
   .vt-label,.vt-title,.vt-gloss,.vmoodrow,.vmood,.v4tense,.v4voice,.v4col,
   .ppsys-head,.pptense-label,.pptense-gloss,.iff-head,.clhead,
   .vcol-label,.ppcol-label,table.grid caption,.casetable caption{break-after:avoid}
   .vconj .vtense{break-inside:avoid}
+  /* .vconj is a CENTERED FLEX COLUMN on screen (core.css). Chromium fragments
+     flex containers poorly: it won't begin one in the leftover space at a page
+     foot, shoving the whole verb to the next page and stranding its §-intro on
+     an otherwise-blank page (the §125 Possum bug). In print, lay it out as a
+     normal block -- which fragments cleanly into leftover space -- and keep the
+     screen's centering with auto margins on the (capped-width) tense blocks. */
+  .vconj{display:block}
+  .vconj > .vtense,.vconj > .vmoodrow,.vconj > .vt-label{margin-left:auto;margin-right:auto}
   /* prose: no single orphan/widow line stranded at a page edge */
   p,.sec,.subrules .sub{orphans:2;widows:2}
   .no-print{display:none}

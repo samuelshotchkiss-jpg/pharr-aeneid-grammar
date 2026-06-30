@@ -374,7 +374,7 @@ table.grid.paradigm{margin-left:auto;margin-right:auto}
 .vconj4 .v4peri .ppaux{display:flex;flex-direction:column;justify-content:center;padding-left:.35rem}
 .vconj4 .v4peri .ppaux .auxline{margin:.04rem 0;line-height:1.2;white-space:nowrap}
 .vconj4 .v4peri .ppaux .auxline .la{font-weight:700;color:var(--accent);font-size:.86rem}
-@media print{.vconj4{overflow-x:visible}.vconj4 .v4grid{break-inside:avoid}}
+@media print{.vconj4{overflow-x:visible}}  /* break control lives in print.css */
 
 /* singular/plural distinction inside the shared four-column cells:
    plural rows get a slightly cooler shade + a heavier boundary above the first row */
