@@ -75,8 +75,15 @@
   .vconj4 .v4voice{border-top:1px solid var(--line)}
   .vconj4 .v4voice.corner,.vconj4 .v4col.corner{border-left:3px solid #555}
   .vconj4 .v4voice.pass,.vconj4 .v4col:has(+ .v4tblock){border-right:1px solid var(--line)}
-  /* voice/mood header band stays with the first tense, never strands at a page foot */
-  .vconj4 .v4voice,.vconj4 .v4col{break-after:avoid}
+  /* The voice (Active/Passive) and mood (Indicative/Subjunctive) header rows are
+     grid items, and Chromium honors NO avoid-break on grid items (neither
+     break-after on the header nor break-before on the first tense) -- so a header
+     row landing at a page foot cannot be pulled to its table; it just strands.
+     The only reliable lever is a FORCED break: start the whole verb (heading +
+     principal-parts note + grid) on a fresh page. That keeps the header leading
+     its first tense AND keeps the principal parts with the table (no break after
+     them). .v4lead marks the three 4-col conjugation headings in index.html. */
+  h3.h3.v4lead{break-before:page}
   table.grid.examplegrid{break-inside:auto}
   .note{break-after:avoid}
   /* A verb-block intro .sec must not only stay with its table (break-after) but
