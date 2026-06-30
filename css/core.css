@@ -632,7 +632,8 @@ table.grid.paradigm tbody tr.pl-row td.numdata .la{color:var(--la-green)}
    Single-source (DESIGN.md §2): one inline call on the anchor word + one note
    block, authored once; only presentation diverges -- print rules it off as a
    block-anchored note (the closest the Chromium PDF engine supports; it has no
-   true page-bottom footnotes), the web layer (web.css) makes it collapsible.
+   true page-bottom footnotes). The note is always visible in both outputs; the
+   in-text call is a plain anchor link to it (and the note's symbol links back).
    Markers are SYMBOLS (* | dagger | double-dagger), not numbers, so they read
    as rare/exceptional against the heavy section-number traffic. Pharr's voice,
    never ochre. Audience (student vs teacher) rides on data-fn-audience; the

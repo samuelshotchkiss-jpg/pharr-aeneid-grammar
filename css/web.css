@@ -568,12 +568,8 @@ span.gloss-pop-sub-item{ color: var(--neutral-ink); cursor:default; } /* no anch
 .gloss-pop-links button:hover{ text-decoration:underline; color: var(--accent-deep); }
 .gloss-pop-allbtn{ font-weight:600; }
 
-/* ---- Footnotes: visible by default, collapsible by clicking the call ----
-   Progressive enhancement: with no JS the note is just an inline aside (and so
-   it always prints). js/footnotes.js adds the toggle; .is-collapsed hides the
-   note and the call shows a dotted box to invite re-opening. */
-.fn-call{ cursor:pointer; border-radius:3px; }
-.fn-call:hover::after{ background:var(--fill1); border-radius:3px; }
-.fn-call[aria-expanded="false"]::after{ outline:1px dotted var(--accent); outline-offset:1px; }
-.footnote{ transition:opacity .15s ease; }
-.footnote.is-collapsed{ display:none; }
+/* ---- Footnotes: notes are always visible; the call is a link to its note ----
+   The in-text symbol is a plain anchor (href="#fn-N") that jumps to the note --
+   it stays a real hyperlink, which matters most in the mobile layout where the
+   note can be far from the call. Hover underlines it to read as clickable. */
+.fn-call:hover::after{ text-decoration:underline; }
