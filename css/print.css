@@ -57,6 +57,14 @@
   .anchor-stub{display:none}
   .vconj4,.vconj4 .v4grid{break-inside:auto}
   .vconj4 .v4tblock{display:grid;grid-column:1 / 6;grid-template-columns:subgrid;break-inside:avoid}
+  /* When the grid breaks, close the fragment cleanly. By default (slice) a
+     fragmented grid container stretches to fill the page and its frame rules
+     (left accent, the active|passive divider, right edge) trail down through the
+     blank space with no bottom -- it reads as a sliced-off table. box-decoration-
+     break:clone makes Chromium size the fragment to its content and draw a full
+     border box on it, so the break shows a clean bottom rule with blank space
+     below, and the continuation opens with a clean top rule on the next page. */
+  .vconj4 .v4grid{-webkit-box-decoration-break:clone;box-decoration-break:clone}
   /* voice/mood header band stays with the first tense, never strands at a page foot */
   .vconj4 .v4voice,.vconj4 .v4col{break-after:avoid}
   table.grid.examplegrid{break-inside:auto}
