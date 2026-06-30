@@ -1,0 +1,64 @@
+{
+  "catalogue": "Pharr Grammatical Appendix — footnote inventory",
+  "source": "Pharr_Aeneid_Grammar.pdf (1931 public-domain edition, ~95 scan pages)",
+  "scope": "Inventory only. No edits, no handling decisions, no design. IDs are assigned by this thread because Pharr's footnote markers are all printed '1' (per-page/per-section reset) and cannot disambiguate.",
+  "marker_convention": "Every footnote is marked with a superscript '1'; numbering is not continuous. Catalogue by location and content, not by number.",
+  "footnotes": [
+    {
+      "id": "FN-01",
+      "scan_page": 28,
+      "section": "118-119",
+      "anchor": "Present subjunctive of sum: the form 'sim' carries the superscript marker (first subjunctive form, under the '119. SUBJUNCTIVE' column heading)",
+      "content": "The meaning of the subjunctive varies greatly, according to its use, and is best learned from the sections on syntax.",
+      "type": "Scholarly caveat / teaching aside",
+      "current_state": "Not verified against HTML in this thread. Editor has previously singled this note out as reading awkwardly — consistent with inline folding or detachment from the 'sim' anchor. Next thread should verify against live HTML.",
+      "uncertainty": "Marker is printed on the form 'sim', not on running prose. Anchor could be read as 'sim' specifically or as the 'SUBJUNCTIVE' column heading; marker placement favors 'sim' but the note's content concerns the subjunctive mood generally."
+    },
+    {
+      "id": "FN-02",
+      "scan_page": 38,
+      "section": "155",
+      "anchor": "Imperative table, singular 2nd person active: 'dīc' carries the marker",
+      "content": "See 202.",
+      "type": "Cross-reference",
+      "current_state": "Not verified against HTML in this thread.",
+      "uncertainty": "None on anchor; points to §202 (irregular imperatives dīc, dūc, fac, fer)."
+    },
+    {
+      "id": "FN-03",
+      "scan_page": 60,
+      "section": "312",
+      "anchor": "End of the accusative-preposition list: '...post, and all in -a, and -ter.' — marker on the final line",
+      "content": "Observe the metrical form of these four lines.",
+      "type": "Teaching aside / metrical observation",
+      "current_state": "Not verified against HTML in this thread.",
+      "uncertainty": "Marker attaches to the last line ('-ter'), but the note's scope is the preceding four-line mnemonic block of accusative prepositions."
+    },
+    {
+      "id": "FN-04",
+      "scan_page": 76,
+      "section": "409",
+      "anchor": "Section heading: '409. Caesura.' — marker on the word 'Caesura'",
+      "content": "In the teaching of scansion to beginners, it is preferable to omit all reference to caesura for at least the first two or three years of reading Latin poetry. These paragraphs on caesura are given for the benefit of teachers who may wish their pupils to know something about it.",
+      "type": "Pedagogical / scholarly caveat (teacher-facing)",
+      "current_state": "Not verified against HTML in this thread.",
+      "uncertainty": "Marker is on the §409 heading word 'Caesura', but the note explicitly governs both §409 and §410."
+    }
+  ],
+  "exclusions": {
+    "note": "Deliberately NOT catalogued as footnotes:",
+    "items": [
+      "Lettered subsections (a., b., c., ...) — Pharr's structural subdivisions, not footnotes.",
+      "Inline parenthetical cross-references in running text (e.g. '(394)', '(6 b)', '(15)') — inline, not rule-separated bottom-of-page notes.",
+      "Smaller-type explanatory paragraphs (e.g. §18, §63 b) — body text, not footnotes."
+    ]
+  },
+  "observations_for_next_thread": {
+    "note": "Not acted on; flagged only.",
+    "handling_classes": [
+      "Pure cross-reference: FN-02 ('See 202.') — candidate to collapse into existing §-reference machinery.",
+      "Substantive prose notes: FN-01, FN-03, FN-04 — carry editorial/pedagogical voice; may warrant footnote/.editnote treatment rather than inline folding.",
+      "Teacher-facing audience: FN-01 and FN-04 address the teacher, a distinct audience from the student-facing body — worth a deliberate decision on how that voice is presented."
+    ]
+  }
+}
