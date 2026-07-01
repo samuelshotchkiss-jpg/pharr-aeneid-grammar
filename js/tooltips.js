@@ -406,6 +406,14 @@
     if (entry.definition_source === 'editor' && ins && document.getElementById('s' + ins))
       popLinksEl.appendChild(linkEl('Editor’s note (§' + ins + ')', 's' + ins));
 
+    // Optional structured cross-links (entry.see_also: [{label, anchor}]) to
+    // editor panels/notes that aren't a numbered § (e.g. an edpanel id). Kept as
+    // data in a dedicated field, never inline link markup (DESIGN.md §4).
+    (Array.isArray(entry.see_also) ? entry.see_also : []).forEach(function (sa) {
+      if (sa && sa.anchor && sa.label && document.getElementById(sa.anchor))
+        popLinksEl.appendChild(linkEl(sa.label, sa.anchor));
+    });
+
     var all = document.createElement('button');
     all.type = 'button'; all.className = 'gloss-pop-allbtn';
     all.textContent = 'All instances →';
