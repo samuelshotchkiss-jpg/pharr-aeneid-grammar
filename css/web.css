@@ -527,13 +527,9 @@ body.sp-open{ overflow:hidden; }                 /* lock background scroll while
   border-radius:6px;
   padding:.5rem .7rem;
   color: var(--edink);
-  font-style: italic; line-height:1.5;
+  line-height:1.5;
 }
 .gloss-pop-ed[hidden]{ display:none; }
-.gloss-pop-ed-label{
-  font-style:normal; font-weight:700; color: var(--edink);
-  margin-right:.15rem;
-}
 /* Subclasses: the constructions/uses split out of variants in the JSON pass,
    shown as a clickable list (each jumps to its § section). */
 .gloss-pop-sub{

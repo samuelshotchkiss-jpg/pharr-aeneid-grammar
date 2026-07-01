@@ -63,12 +63,12 @@
 
   // Two-voice popup: when an entry carries an optional `editor_expansion`
   // (a student-facing gloss on Pharr's laconic definition), the popup shows
-  // Pharr's text first, then this in the editor's ochre voice. Forward-
-  // compatible -- a no-op until entries gain the field. Tooltips are digital
-  // only, so the print-grayscale redundancy rule (DESIGN.md §6c) does not
-  // apply here; ochre alone is fine. (Label is the editor's to rename.)
+  // Pharr's text first, then this in the editor's ochre voice -- its own ochre
+  // box with no preamble label (the box + colour carry the distinction; the
+  // upright, non-italic treatment matches the edpanels). Forward-compatible:
+  // a no-op until entries gain the field. Tooltips are digital only, so the
+  // print-grayscale redundancy rule (DESIGN.md §6c) does not apply here.
   var ED_EXPANSION_FIELD = 'editor_expansion';
-  var ED_EXPANSION_LABEL = 'In plainer terms';
 
   // Subclasses: an entry's `subclasses` (list of {name, section}) are specific
   // constructions/uses that were split out of `variants` in the JSON pass. The
@@ -349,21 +349,15 @@
     if (entry.definition) setMarkup(popDefEl, entry.definition);
     else { popDefEl.classList.remove('gloss-markup-error'); popDefEl.textContent = '(no definition recorded)'; }
 
-    // Optional editor's expansion of Pharr's terse definition (ochre voice).
+    // Optional editor's expansion of Pharr's terse definition (ochre voice, no
+    // preamble label). JSON-sourced prose: render via the shared mini-markup
+    // parser straight into the block; a markup error scopes to this block.
     var exp = (entry[ED_EXPANSION_FIELD] || '').trim();
-    popEdEl.textContent = '';
     if (exp) {
-      var lbl = document.createElement('b'); lbl.className = 'gloss-pop-ed-label';
-      lbl.textContent = ED_EXPANSION_LABEL;
-      popEdEl.appendChild(lbl);
-      popEdEl.appendChild(document.createTextNode(' '));
-      // editor_expansion is JSON-sourced prose too: render it through the same
-      // mini-markup parser (into a span so a markup error scopes to this field).
-      var expSpan = document.createElement('span');
-      setMarkup(expSpan, exp);
-      popEdEl.appendChild(expSpan);
+      setMarkup(popEdEl, exp);
       popEdEl.hidden = false;
     } else {
+      setMarkup(popEdEl, '');   // clears content + any prior markup-error class
       popEdEl.hidden = true;
     }
 
