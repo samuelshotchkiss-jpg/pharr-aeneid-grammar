@@ -45,8 +45,15 @@
     'question':             [/\banswers?\s+the\s+question\b/gi,
                              /\banswered\s+the\s+question\b/gi],
     'foot':                 [/\bfeet\s+high\b/gi],      // measurement, not metre
-    'voice':                [/\bvoice\s+of\s+the\s+people\b/gi],
     'conditional sentence': [/\bcondition\s+at\s+the\s+time\b/gi],
+    // 'number' (grammatical category) vs. ordinary section/counting numbers
+    'number':               [/\bsection\s+numbers?\b/gi,
+                             /\bnumbers?\s+used\s+in\s+counting\b/gi],
+    // ordinary senses inside otherwise-technical prose (editor-ruled)
+    'comparison':           [/\bimplied\s+comparison\b/gi,
+                             /\bexplicit\s+comparison\b/gi],
+    'person':               [/\bperson\s+or\s+(?:thing|object)\b/gi],
+    'object':               [/\bperson\s+or\s+object\b/gi],
     // "Part." is the participle abbreviation in the conjugation tables, but
     // "part" is also a common noun. Suppress the abbreviation match where the
     // ordinary word is meant: Pharr's "principal parts", the partitive
@@ -54,6 +61,20 @@
     'participle':           [/\bprincipal\s+parts?\b/gi,
                              /\bparts?\s+of\b/gi,
                              /\bin\s+part\b/gi]
+  };
+
+  // Allow-list (inverse of STOPLIST): a few terms whose ordinary-English sense
+  // dominates so heavily that we link ONLY where the technical use is marked --
+  // by the editor's .term emphasis (checked in inAllow) or a required nearby
+  // pattern. 'common' (the quantity term: a syllable that may be long or short,
+  // sec 16-17) is swamped by ordinary 'common' (frequent/shared); bare 'voice'
+  // the category (sec 115) vs. ordinary 'voice' (pronunciation examples, reading
+  // aloud). The .term-marked headword carries each; the patterns catch the rest.
+  var ALLOWLIST = {
+    'common': [/(?:long|short|syllable|vowel)\b[^.]{0,30}\bcommon\b/gi,
+               /\bcommon\b[^.]{0,30}(?:long|short|syllable|vowel)\b/gi],
+    'voice':  [/(?:active|passive|middle)[^.]{0,15}\bvoice\b/gi,
+               /\bvoice\b[^.]{0,15}(?:active|passive|middle)/gi]
   };
 
   // Extra surface forms to match for a canonical term, beyond JSON variants.
@@ -245,6 +266,7 @@
         var after = end < text.length ? text.charAt(end) : ' ';
         if (isWordChar(before) || isWordChar(after)) continue;   // whole word
         if (inStop(m.entry.term, text, k, end)) continue;
+        if (!inAllow(m.entry.term, text, k, end, node)) continue;   // allow-list terms
         cands.push({ start: k, end: end, len: m.len, entry: m.entry, key: m.key });
       }
     }
@@ -283,6 +305,25 @@
   function inStop(term, text, s, e) {
     var pats = STOPLIST[term];
     if (!pats) return false;
+    for (var i = 0; i < pats.length; i++) {
+      pats[i].lastIndex = 0; var mm;
+      while ((mm = pats[i].exec(text))) {
+        if (s < mm.index + mm[0].length && e > mm.index) return true;
+        if (mm.index === pats[i].lastIndex) pats[i].lastIndex++;
+      }
+    }
+    return false;
+  }
+
+  // Inverse of inStop: for an allow-listed term the match is kept ONLY if it
+  // falls inside one of the required patterns; unlisted terms are unrestricted.
+  function inAllow(term, text, s, e, node) {
+    var pats = ALLOWLIST[term];
+    if (!pats) return true;
+    // the editor's own .term emphasis is itself a deliberate technical-use
+    // marker (e.g. the defining <span class=term>common</span> in sec 17,
+    // whose isolated text node has no nearby quantity words to pattern-match).
+    if (node && node.parentElement && node.parentElement.closest('.term')) return true;
     for (var i = 0; i < pats.length; i++) {
       pats[i].lastIndex = 0; var mm;
       while ((mm = pats[i].exec(text))) {
