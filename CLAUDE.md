@@ -47,10 +47,23 @@ rendered reading order; `preview_inspect` for computed styles. Prove
 content-neutral changes by diffing parsed content (text length, element counts,
 positions) at the relevant breakpoints — never by eye.
 
-Related: the static server (`.claude/launch.json` → `static`) usually needs a
-`preview_start` at session start, and the browser caches the page/CSS — force a
-fresh load via `index.html?v=<ts>` and by re-setting each stylesheet `<link>`
-href with a `?t=<ts>` query.
+Related: the static server (`.claude/launch.json` → `static`, port 8765; a
+second `static-8766` config exists for when another live session already holds
+8765) usually needs a `preview_start` at session start.
+
+**Caching is solved at the server — don't re-solve it per session.** Both
+configs run `build/serve.py`, a stdlib, dependency-free static server that sends
+`Cache-Control: no-store` on every response, so a plain reload
+(`location.href = 'index.html?v=<ts>'`, or `location.reload()`) always fetches
+the current JS/CSS. This exists because the stock `python -m http.server` sends
+no `Cache-Control`, and Chromium then served **stale JS**: `index.html?v=` busts
+only the HTML, and the `<script src="js/…">` subresource is *not* revalidated by
+a normal reload — so edits to `js/*.js` silently kept running the old file and
+verification tested the wrong code. With `serve.py` a normal reload is enough.
+If you still hit a stale asset (a session left on the old server, or a
+pre-existing cache entry from before the switch), clear it once with a
+network-forced fetch — `await fetch('js/tooltips.js', {cache:'reload'})` — or
+bump a `?v=<ts>` query on the offending `<script>`/`<link>`; then reload.
 
 ## Tooling (Node / dependencies)
 - **JS tooling runs on Node (now installed).** The validator and parser are
