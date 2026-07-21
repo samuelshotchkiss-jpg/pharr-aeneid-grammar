@@ -309,6 +309,18 @@
   .g-src.g-ed{color:var(--edink)}
   .g-src.g-ed .g-sec{color:var(--edink)}
 
+  /* The editor's expansion of a terse Pharr definition. Ochre ink for the voice,
+     PLUS an indent and a left rule so it survives grayscale (DESIGN.md §6c) --
+     the reader of a photocopied handout must still see where Pharr stops and the
+     editor starts. No preamble label; the rule carries it, as on screen. */
+  .g-ed-exp{
+    margin:.18rem 0 0 .5rem; padding-left:.5rem;
+    border-left:2px solid var(--edrule);
+    color:var(--edink); line-height:1.4;
+  }
+  .g-ed-exp .la{color:var(--edink);font-weight:700}
+  .g-ed-exp .term{color:var(--edink);font-weight:700;font-variant:small-caps;letter-spacing:.05em}
+
   /* subclasses: named uses, each a live § link (e.g. ablative of means §331) */
   .g-subs{margin-top:.2rem;font-size:.86rem;line-height:1.45;color:#333}
   .g-subs-h{font-style:italic;color:#555}

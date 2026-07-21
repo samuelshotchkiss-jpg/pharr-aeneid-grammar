@@ -170,6 +170,29 @@
     def.appendChild(DM.toFragment(entry.definition || '', doc)); // may throw -> fail loudly
     el.appendChild(def);
 
+    // The editor's expansion of a terse Pharr definition -- the SECOND VOICE.
+    //
+    // This was missing entirely until 2026-07-21, and it is the sharper kind of
+    // omission: the field was authored later than this renderer, the web tooltip
+    // picked it up (§5c), and print silently kept printing Pharr alone. Twenty-
+    // four entries were affected, including `ablative`, whose printed definition
+    // read "the case of adverbial relation" and nothing else -- the exact terse-
+    // ness the expansions exist to relieve. Nothing errored; the page just quietly
+    // said less than the data does. (Editor caught it: "I never checked the print
+    // layout after we added our own comments to Pharr's definitions.")
+    //
+    // GRAYSCALE-SAFE per DESIGN.md §6c: the ochre is doubled by an indent and a
+    // left rule, so the editor's voice stays distinguishable in a b/w handout --
+    // the same redundancy `.g-entry.g-editorial` already uses for a whole entry.
+    // No preamble label, matching the web tooltip: the rule and colour carry it.
+    var exp = (entry.editor_expansion || '').trim();
+    if (exp) {
+      var edEl = doc.createElement('div');
+      edEl.className = 'g-ed-exp';
+      edEl.appendChild(DM.toFragment(exp, doc));   // same parser; may throw -> loud
+      el.appendChild(edEl);
+    }
+
     // subclasses: §-cross-referenced list of named uses (e.g. ablative's uses)
     var subs = entry.subclasses || [];
     if (subs.length) {
