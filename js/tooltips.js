@@ -547,6 +547,7 @@
       });
       popSubEl.appendChild(slist);
       popSubEl.hidden = false;
+
     } else {
       popSubEl.hidden = true;
     }
@@ -608,6 +609,28 @@
     pop.hidden = false;
   }
 
+  // The Kinds list scrolls (a case can have 25 in Pharr), so a marked Kind further
+  // down would be invisible -- which defeats the whole point of marking it. Centre
+  // the list on it.
+  //
+  // MUST be called AFTER the popup is shown: a hidden element has no scrollHeight,
+  // so this would read 0 and do nothing. Reading scrollHeight forces layout, so no
+  // frame wait is needed -- and deliberately so. An earlier version deferred to
+  // requestAnimationFrame and silently never ran wherever frames are throttled
+  // (an inactive tab, a headless preview). A visual nicety that depends on the
+  // page being painted is a nicety that vanishes exactly when someone is testing.
+  //
+  // Arithmetic rather than scrollIntoView(), which would also scroll the PAGE
+  // behind the popup and move the reader somewhere they did not ask to go.
+  function centreOnMarkedKind() {
+    if (!popSubEl || popSubEl.hidden) return;
+    var list = popSubEl.querySelector('.gloss-pop-sub-list');
+    var hit = list && list.querySelector('.gloss-pop-sub-item.is-target');
+    if (!hit || list.scrollHeight <= list.clientHeight) return;
+    list.scrollTop = Math.max(
+      0, hit.offsetTop - list.offsetTop - (list.clientHeight - hit.offsetHeight) / 2);
+  }
+
   function openPopup(anchor) {
     var entry = BY_TERM[anchor.getAttribute('data-term')];
     if (!entry) return;
@@ -648,6 +671,7 @@
     else renderMissing(String(slug || ''));
     positionPopupStandalone();
     pop.scrollTop = 0;
+    centreOnMarkedKind();               // after the popup is visible, or it reads 0
     // Focus the panel itself: the reader arrived here with no prior focus, and a
     // keyboard user must be able to Tab straight into the links that lead onward.
     try { pop.focus({ preventScroll: true }); } catch (e) {}

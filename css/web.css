@@ -619,10 +619,25 @@ body.sp-open{ overflow:hidden; }                 /* lock background scroll while
 .gloss-pop-sub[hidden]{ display:none; }
 .gloss-pop-sub-label{
   font-weight:700; color: var(--neutral-ink); margin-right:.35rem;
+  display:block; margin-bottom:.2rem;
+}
+/* The Kinds list scrolls INSIDE the popup, so a case with many constructions
+   cannot push the definition and the section links off the bottom. The ablative
+   has 25 in Pharr; an unbounded list would make the panel a wall of blue and
+   bury the two things a reader most needs -- what the case IS, and the way out.
+   Capped in `em` so it tracks the type size, and it collapses to its natural
+   height when a case has only a few. */
+.gloss-pop-sub-list{
+  display:block;
+  max-height: 7.5em;
+  overflow-y: auto;
+  overscroll-behavior: contain;   /* don't chain the scroll to the page behind */
+  padding-right:.25rem;
 }
 .gloss-pop-sub-item{
   display:inline-block; margin:.1rem .55rem .1rem 0;
   color: var(--accent); text-decoration:none; cursor:pointer;
+  scroll-margin-block: 2em;       /* leave context above when scrolled into view */
 }
 .gloss-pop-sub-item:hover{ text-decoration:underline; color: var(--accent-deep); }
 span.gloss-pop-sub-item{ color: var(--neutral-ink); cursor:default; } /* no anchor */
