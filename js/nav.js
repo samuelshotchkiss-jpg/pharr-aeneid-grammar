@@ -77,9 +77,16 @@
      ===================================================================== */
   function buildToc(page) {
     var nav = el('nav', { class: 'nav-toc', id: 'nav-toc', 'aria-label': 'Table of contents' });
-    var heads = page.querySelectorAll('h2.h2, h3.h3');
+    // THREE levels. The h4s were always in the document -- 46 of them -- and the
+    // ToC simply never looked at them, so "Cases" was one line covering 70
+    // sections and "Moods in Subordinate Sentences" one line covering 37. The
+    // things a reader actually searches for (Ablative, Purpose Clauses,
+    // Conditional Sentences) were authored as headings and unreachable from the
+    // ToC. Nothing is added to the content here; the derivation just reads what
+    // was already written.
+    var heads = page.querySelectorAll('h2.h2, h3.h3, h4.h4');
     var topList = el('ul', { class: 'toc-l1' });
-    var curSub = null;
+    var curSub = null, curSub3 = null;
     var seen = {};
 
     function ensureId(h) {
@@ -101,11 +108,20 @@
       if (h.tagName === 'H2') {
         var li = el('li', { class: 'toc-i1' }, [a]);
         curSub = el('ul', { class: 'toc-l2' });
+        curSub3 = null;
         li.appendChild(curSub);
         topList.appendChild(li);
-      } else {
+      } else if (h.tagName === 'H3') {
         var sub = curSub || topList;          // stray h3 before any h2 (none today)
-        sub.appendChild(el('li', { class: 'toc-i2' }, [a]));
+        var li3 = el('li', { class: 'toc-i2' }, [a]);
+        curSub3 = el('ul', { class: 'toc-l3' });
+        li3.appendChild(curSub3);
+        sub.appendChild(li3);
+      } else {
+        // An h4 with no h3 above it falls back up the chain rather than being
+        // dropped -- §41's "I. Consonant Stems" must not vanish because someone
+        // later restructures the heading above it.
+        (curSub3 || curSub || topList).appendChild(el('li', { class: 'toc-i3' }, [a]));
       }
     });
 

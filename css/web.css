@@ -102,6 +102,14 @@
 .toc-l2{ margin:0 0 .35rem; }
 .toc-i2 > a{ font-size:.86rem; color:var(--muted); padding:.16rem .4rem .16rem .9rem; border-left:2px solid var(--line); margin-left:.45rem; }
 .toc-i2 > a:hover{ border-left-color:var(--accent); }
+/* Third level: the h4s that were always in the document (Ablative, Purpose
+   Clauses, …). Stepped in again and set smaller, so the eye can still find the
+   h2/h3 spine in a list this long; the rule is hairline rather than 2px so a
+   deep nest does not read as a stack of bars. */
+.toc-l3{ margin:.05rem 0 .2rem; }
+.toc-i3 > a{ font-size:.8rem; color:var(--muted); padding:.1rem .4rem .1rem .9rem;
+  border-left:1px solid var(--line); margin-left:1.5rem; }
+.toc-i3 > a:hover{ border-left-color:var(--accent); color:var(--accent-deep); }
 
 /* ---- §5d search page (modal "all instances" results) ----------------- */
 .search-page{ position:fixed; inset:0; z-index:80; display:flex; }
