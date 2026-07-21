@@ -565,12 +565,17 @@ body.sp-open{ overflow:hidden; }                 /* lock background scroll while
 .gloss-pop-missing{ border-left-color: var(--muted); }
 .gloss-pop-missing .gloss-pop-term{ color: var(--muted); font-style: italic; }
 
-/* The Kind that was asked for, when arriving via #term=<a subclass name>. */
+/* The Kind that was asked for, when arriving via #term=<a subclass name>.
+   NO NEGATIVE MARGIN. The first version used `margin: 0 -.25rem` to keep the
+   highlight flush with its unmarked neighbours, but that shorthand REPLACED the
+   base `margin: .1rem .55rem .1rem 0` -- so the gap to the next Kind went from
+   +8.3px to -3.7px and the highlight ran into the following word. Measured, not
+   guessed. Padding widens the item instead; the inherited margins keep the gap. */
 .gloss-pop-sub-item.is-target{
   font-weight: 600;
   background: var(--syn-c2-bg);
   border-radius: 4px;
-  padding: 0 .25rem; margin: 0 -.25rem;
+  padding: .05rem .3rem;
 }
 .gloss-pop-head{
   display:flex; align-items:baseline; gap:.5rem;

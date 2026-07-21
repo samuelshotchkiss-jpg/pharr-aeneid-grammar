@@ -356,7 +356,6 @@
     "variants": "Dat.",
     "subclasses": [
       { "name": "dative of the indirect object", "section": "§295" },
-      { "name": "dative with verbs of giving", "section": "§296" },
       { "name": "dative with special verbs", "section": "§297" },
       { "name": "dative with compounds", "section": "§298" },
       { "name": "dative of possession", "section": "§299" },
@@ -412,6 +411,7 @@
     "term": "ablative",
     "variants": "Abl.",
     "subclasses": [
+      { "name": "ablative with verbs of giving", "section": "§296" },
       { "name": "ablative of place where", "section": "§319" },
       { "name": "ablative of place whence", "section": "§320" },
       { "name": "ablative of accompaniment", "section": "§321" },
