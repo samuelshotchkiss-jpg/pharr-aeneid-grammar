@@ -338,6 +338,14 @@ successor will otherwise read the curated list as deliberate exclusion.)
 **Sequenced after** the vocabulary toolkit's prose-tagging sweep, so the full
 population of incoming links is known before their targets are tuned.
 
+**Logged, not urgent (editor, 2026-07-21) — break the cases out in the table of
+contents.** The ToC lists "Cases" as one syntax section; with the Kinds menus now
+complete (62 constructions across four cases), a reader who wants the ablative has
+to know it lives inside a block whose only label is "Cases". Listing nominative,
+genitive, dative, accusative, ablative, vocative and locative as their own ToC
+entries would match how the glossary now behaves. Deferred: it touches `nav.js`'s
+ToC derivation, which reads the live headings.
+
 **Next for the glossary (editor, 2026-07-21) — reach a Glossary entry from
 *inside* this app, as the ultimate failsafe.** Today a landing (§5e) is only
 reachable from an inbound `#term=` link: close it, or arrive with a typo, and

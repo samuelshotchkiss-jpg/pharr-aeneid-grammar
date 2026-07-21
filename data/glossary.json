@@ -309,7 +309,7 @@
   },
   {
     "term": "nominative",
-    "variants": "Nom.",
+    "variants": "Nom.; nominatives",
     "domain": "case",
     "parent": "case",
     "pharr_defines": true,
@@ -323,7 +323,7 @@
   },
   {
     "term": "genitive",
-    "variants": "Gen.",
+    "variants": "Gen.; genitives",
     "subclasses": [
       { "name": "possessive genitive", "section": "§283" },
       { "name": "subjective genitive", "section": "§284" },
@@ -353,7 +353,7 @@
   },
   {
     "term": "dative",
-    "variants": "Dat.",
+    "variants": "Dat.; datives",
     "subclasses": [
       { "name": "dative of the indirect object", "section": "§295" },
       { "name": "dative with special verbs", "section": "§297" },
@@ -383,7 +383,7 @@
   },
   {
     "term": "accusative",
-    "variants": "Acc.",
+    "variants": "Acc.; accusatives",
     "subclasses": [
       { "name": "accusative as direct object", "section": "§307" },
       { "name": "accusative with compounds", "section": "§308" },
