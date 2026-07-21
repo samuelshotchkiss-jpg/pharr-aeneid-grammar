@@ -321,6 +321,23 @@ thread; it edits `index.html` table markup plus core/web CSS (and touches
 `js/nav.js`). Status and specifics live in the **"Mobile:"** commit series, not
 here.
 
+**Approved, not yet done (editor, 2026-07-21) — add the Kinds a *dictionary*
+needs.** The Kinds menus omit exactly the sections an incoming `#term=` link
+wants: `ablative` has no **§342** (Ablative with Special Verbs — Pharr names
+*ūtor, fruor* there) and no **§339** (Ablative with Prepositions); `dative` has
+no **§297** (Special Verbs) and no **§298** (Compounds); `genitive` has **no
+Kinds at all**, though **§288** and **§289** use *meminit malōrum* and *miserēre*
+as their own examples.
+
+**Why this is an addition and not a reversal:** the menus were curated, but
+LLM-curated, and curated to clarify *Pharr's text*. The dictionary is a new
+purpose, and it asks a different question of the same data — so the omission was
+never a ruling against these sections. (Editor's call, recorded because a
+successor will otherwise read the curated list as deliberate exclusion.)
+
+**Sequenced after** the vocabulary toolkit's prose-tagging sweep, so the full
+population of incoming links is known before their targets are tuned.
+
 **Next for the glossary (editor, 2026-07-21) — reach a Glossary entry from
 *inside* this app, as the ultimate failsafe.** Today a landing (§5e) is only
 reachable from an inbound `#term=` link: close it, or arrive with a typo, and
