@@ -277,6 +277,19 @@ through the shared mini-markup parser; see the glossary build thread.
    commits to one spoke commits to a claim about which construction is at play,
    and usually can't know.
 
+   **TWO MODES, and the difference is behavioral, not decorative.** *Annotation*
+   (clicked in the text) is subordinate to a visible word: it sits beside it,
+   wears no frame, and light-dismisses, because getting out of the way is its
+   job. *Landing* (arrived by URL) has no word on screen — the panel is the whole
+   reason the reader is here. Every affordance the annotation gets right becomes
+   a lie, and one of them bites: **light-dismiss destroys the only thing they
+   came for and strands them at the top of a 3,000-line appendix with no way back
+   but a reload.** So the landing gets a dimmed backdrop, a full frame, a
+   "Glossary" eyebrow, `aria-modal`, focus, and dismissal only through the
+   backdrop, the close button, or Escape — each aimed at the panel, not at a
+   section link or a tap to scroll. `setMode()` is the single switch, so the two
+   cannot drift apart.
+
    Contract: `window.PharrGloss.openTerm(slug)` → bool · `.slug(text)` (the
    canonical slug function, so a consumer derives ids the same way) · `.has()`
    · `.close()`. Slugs are **derived, never authored** — folding + lowercase +

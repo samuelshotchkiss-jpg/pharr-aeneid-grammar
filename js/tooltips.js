@@ -391,15 +391,43 @@
      PHASE 2 -- display (the popup)
      ======================================================================= */
   var pop, popTermEl, popSrcEl, popDefEl, popEdEl, popSubEl, popLinksEl, openAnchor = null;
+  var popBackdrop, popEyebrowEl;
+  // TWO MODES, and the difference is not decoration.
+  //   'annotation' -- opened by clicking a word in the text. It is subordinate to
+  //      that word: it sits beside it, wants no frame, and light-dismisses,
+  //      because getting out of the way is its job.
+  //   'landing'    -- opened by URL from the dictionary. There IS no word on
+  //      screen; this panel is the whole reason the reader is here. Everything
+  //      the annotation gets right becomes a lie: it cannot sit beside anything,
+  //      and light-dismiss destroys the one thing they came for and strands them
+  //      at the top of a 3,000-line appendix with no way back but a reload.
+  var popMode = 'annotation';
 
   function buildPopup() {
     pop = document.createElement('div');
     pop.className = 'gloss-pop no-print';
     pop.setAttribute('role', 'dialog');
     pop.setAttribute('aria-modal', 'false');
+    pop.setAttribute('tabindex', '-1');   // focusable on a landing, not in the tab order
     pop.hidden = true;
 
+    // The landing backdrop. Only shown when the popup was opened by URL, where
+    // it does two jobs: it says "this is the thing you came for, not an aside",
+    // and it makes dismissal DELIBERATE -- a click landing on the dim overlay is
+    // aimed at nothing else, whereas the annotation-mode light-dismiss fires on
+    // a click meant for a section link, a text selection, or a tap to scroll.
+    popBackdrop = document.createElement('div');
+    popBackdrop.className = 'gloss-pop-backdrop no-print';
+    popBackdrop.hidden = true;
+    popBackdrop.addEventListener('click', closePopup);
+    document.body.appendChild(popBackdrop);
+
     var head = document.createElement('div'); head.className = 'gloss-pop-head';
+    // Eyebrow: names what this panel IS. Invisible in annotation mode, where the
+    // word being explained is right there and needs no announcing.
+    popEyebrowEl = document.createElement('div');
+    popEyebrowEl.className = 'gloss-pop-eyebrow';
+    popEyebrowEl.textContent = 'Glossary';
     popTermEl = document.createElement('span'); popTermEl.className = 'gloss-pop-term';
     popSrcEl = document.createElement('span'); popSrcEl.className = 'gloss-pop-src';
     var close = document.createElement('button');
@@ -413,9 +441,23 @@
     popSubEl = document.createElement('div'); popSubEl.className = 'gloss-pop-sub'; popSubEl.hidden = true;
     popLinksEl = document.createElement('div'); popLinksEl.className = 'gloss-pop-links';
 
+    // The eyebrow leads (it is hidden outright in annotation mode), so a reader
+    // arriving cold reads "Glossary" before the term itself.
+    pop.appendChild(popEyebrowEl);
     pop.appendChild(head); pop.appendChild(popDefEl); pop.appendChild(popEdEl);
     pop.appendChild(popSubEl); pop.appendChild(popLinksEl);
     document.body.appendChild(pop);
+  }
+
+  // One switch for everything that differs between the two modes, so they cannot
+  // drift apart: presentation, the backdrop, and whether light-dismiss applies.
+  function setMode(mode) {
+    popMode = mode;
+    var landing = mode === 'landing';
+    pop.classList.toggle('gloss-pop-standalone', landing);
+    popEyebrowEl.hidden = !landing;
+    popBackdrop.hidden = !landing;
+    pop.setAttribute('aria-modal', String(landing));
   }
 
   function jumpTo(id) {
@@ -539,11 +581,9 @@
     pop.style.top = top + 'px';
   }
 
-  // Anchorless placement, for a popup opened by URL rather than by clicking a
-  // word: there is no occurrence to sit beside, so it is pinned near the top of
-  // the viewport (position:fixed via the class) and stays there.
+  // Landing placement: there is no occurrence to sit beside, so it is centred
+  // near the top of the viewport (position:fixed via the class) and stays there.
   function positionPopupStandalone() {
-    pop.classList.add('gloss-pop-standalone');
     pop.style.left = ''; pop.style.top = '';
     pop.hidden = false;
   }
@@ -552,7 +592,7 @@
     var entry = BY_TERM[anchor.getAttribute('data-term')];
     if (!entry) return;
     openAnchor = anchor;
-    pop.classList.remove('gloss-pop-standalone');
+    setMode('annotation');
     renderPopup(entry);
     positionPopup(anchor);
     pop.scrollTop = 0;
@@ -581,17 +621,22 @@
     if (!pop) return false;
     var hit = BY_SLUG && BY_SLUG[slugify(slug)];
     openAnchor = null;
+    setMode('landing');
     if (hit) renderPopup(hit.entry, hit.subclass);
     else renderMissing(String(slug || ''));
     positionPopupStandalone();
     pop.scrollTop = 0;
+    // Focus the panel itself: the reader arrived here with no prior focus, and a
+    // keyboard user must be able to Tab straight into the links that lead onward.
+    try { pop.focus({ preventScroll: true }); } catch (e) {}
     return !!hit;
   }
 
   function closePopup() {
     if (!pop || pop.hidden) return;
     pop.hidden = true;
-    pop.classList.remove('gloss-pop-standalone', 'gloss-pop-missing');
+    pop.classList.remove('gloss-pop-missing');
+    setMode('annotation');            // also drops the backdrop and the eyebrow
     if (openAnchor) { try { openAnchor.focus({ preventScroll: true }); } catch (e) {} }
     openAnchor = null;
   }
@@ -620,9 +665,14 @@
         e.preventDefault(); openPopup(document.activeElement);
       }
     });
-    // light-dismiss: a click anywhere outside the popup and not on a term closes
+    // Light-dismiss, ANNOTATION MODE ONLY: a click anywhere outside the popup and
+    // not on a term closes it. That is right for an aside about a word you can
+    // see -- and wrong for a landing, where the panel is the only thing the
+    // reader came for. There, dismissal goes through the backdrop, the close
+    // button or Escape, all of which are aimed at the panel rather than at a
+    // section link, a text selection, or a tap to scroll.
     document.addEventListener('mousedown', function (e) {
-      if (pop.hidden) return;
+      if (pop.hidden || popMode === 'landing') return;
       if (pop.contains(e.target)) return;
       if (e.target.closest && e.target.closest('.gloss-term')) return;
       closePopup();

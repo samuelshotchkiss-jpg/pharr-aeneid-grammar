@@ -494,17 +494,58 @@ body.sp-open{ overflow:hidden; }                 /* lock background scroll while
 }
 .gloss-pop[hidden]{ display:none; }
 
-/* Opened by URL (#term=<slug>) rather than by clicking a word: there is no
-   occurrence to sit beside, so it is pinned near the top of the viewport and
-   centred, and stays put while the page scrolls behind it. */
+/* LANDING MODE -- opened by URL (#term=<slug>) from the dictionary, rather than
+   by clicking a word here. There is no occurrence to sit beside, and this panel
+   is not an aside: it is the whole reason the reader is on this page. So it
+   stops dressing as an annotation and dresses as a destination -- centred, on a
+   dimmed page, with a frame and an eyebrow that say what it is. The dimming also
+   does real work: it makes dismissal deliberate, where the annotation's
+   light-dismiss would fire on any stray click and strand the reader. */
+.gloss-pop-backdrop{
+  position: fixed; inset: 0; z-index: 69;
+  background: rgba(15,25,45,.45);
+}
+.gloss-pop-backdrop[hidden]{ display:none; }
+
 .gloss-pop-standalone{
   position: fixed;
   left: 50%; top: 4.5rem;
   transform: translateX(-50%);
   max-height: min(78vh, 36rem);
+  width: min(34rem, calc(100vw - 24px));
+  /* a destination gets a full frame, not the annotation's single ochre spine */
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--term);
+  border-radius: 12px;
+  box-shadow: 0 12px 48px rgba(15,25,45,.35);
+  padding: .75rem 1.05rem 1rem;
 }
+.gloss-pop-standalone:focus{ outline: none; }
+.gloss-pop-standalone:focus-visible{ outline: 2px solid var(--term); outline-offset: 2px; }
 @media (max-width: 640px){
   .gloss-pop-standalone{ top: 3rem; }
+}
+
+/* Names the panel for a reader who arrived cold. Hidden in annotation mode,
+   where the word being explained is right there and needs no announcing. */
+.gloss-pop-eyebrow{
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: .3rem; margin-bottom: .45rem;
+  border-bottom: 1px solid var(--line);
+}
+.gloss-pop-eyebrow[hidden]{ display:none; }
+
+/* On a landing the § links and "All instances" are not footnotes -- they are the
+   ways INTO the book from a page the reader reached sideways. Give them weight. */
+.gloss-pop-standalone .gloss-pop-links{
+  margin-top: .7rem; padding-top: .6rem;
+  border-top: 1px solid var(--line);
+}
+.gloss-pop-standalone .gloss-pop-links a,
+.gloss-pop-standalone .gloss-pop-links button{
+  font-size: .88rem;
 }
 /* An unresolvable slug: the border drops its term-ochre claim, since there is
    no term. Deliberately visible -- a dead inbound link must not look normal. */
