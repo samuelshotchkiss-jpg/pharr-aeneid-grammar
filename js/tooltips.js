@@ -203,7 +203,7 @@
     }
     entries.forEach(function (e) { put(e.term, e); });
     entries.forEach(function (e) {
-      variantForms(e).forEach(function (v) { put(v, e); });
+      jsonForms(e).forEach(function (v) { put(v, e); });   // data, not EXTRA_FORMS
     });
     entries.forEach(function (e) {
       (Array.isArray(e.subclasses) ? e.subclasses : []).forEach(function (sc) {
@@ -213,7 +213,10 @@
     return idx;
   }
 
-  function variantForms(e) {
+  // The forms recorded IN THE DATA: the term plus its ';'-split variants. This is
+  // a term's identity, and it is what the slug index is built from -- so an
+  // outside consumer can derive the same slugs from glossary.json alone.
+  function jsonForms(e) {
     var out = [e.term];
     if (e.variants) {
       e.variants.split(';').forEach(function (v) {
@@ -221,6 +224,15 @@
         if (v) out.push(v);
       });
     }
+    return out;
+  }
+
+  // What DETECTION scans for: the above plus EXTRA_FORMS, which are editor
+  // rulings about surface text in this page, not part of any term's identity.
+  // Keeping them out of the slug index is the point -- otherwise #term=scanning
+  // would resolve here and be unknown to a consumer reading only the JSON.
+  function variantForms(e) {
+    var out = jsonForms(e);
     if (EXTRA_FORMS[e.term]) out = out.concat(EXTRA_FORMS[e.term]);
     return out;
   }
