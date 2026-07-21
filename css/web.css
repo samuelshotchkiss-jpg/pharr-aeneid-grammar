@@ -493,6 +493,31 @@ body.sp-open{ overflow:hidden; }                 /* lock background scroll while
   color: var(--neutral-ink);
 }
 .gloss-pop[hidden]{ display:none; }
+
+/* Opened by URL (#term=<slug>) rather than by clicking a word: there is no
+   occurrence to sit beside, so it is pinned near the top of the viewport and
+   centred, and stays put while the page scrolls behind it. */
+.gloss-pop-standalone{
+  position: fixed;
+  left: 50%; top: 4.5rem;
+  transform: translateX(-50%);
+  max-height: min(78vh, 36rem);
+}
+@media (max-width: 640px){
+  .gloss-pop-standalone{ top: 3rem; }
+}
+/* An unresolvable slug: the border drops its term-ochre claim, since there is
+   no term. Deliberately visible -- a dead inbound link must not look normal. */
+.gloss-pop-missing{ border-left-color: var(--muted); }
+.gloss-pop-missing .gloss-pop-term{ color: var(--muted); font-style: italic; }
+
+/* The Kind that was asked for, when arriving via #term=<a subclass name>. */
+.gloss-pop-sub-item.is-target{
+  font-weight: 600;
+  background: var(--syn-c2-bg);
+  border-radius: 4px;
+  padding: 0 .25rem; margin: 0 -.25rem;
+}
 .gloss-pop-head{
   display:flex; align-items:baseline; gap:.5rem;
   margin: 0 0 .35rem;

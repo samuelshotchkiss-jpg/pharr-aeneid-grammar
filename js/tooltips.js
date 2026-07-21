@@ -143,6 +143,17 @@
   }
   function secDigits(loc) { var m = (loc || '').match(/\d+/); return m ? m[0] : ''; }
 
+  // Stable public identifier for a term, used by the #term= deep link and by
+  // outside consumers (the ECE dictionary tags a definition {{ablative}} and
+  // links here). Folded, lowercased, non-alphanumerics collapsed to hyphens:
+  //   "ablative" -> ablative ; "Ablative of Separation" -> ablative-of-separation
+  // Deliberately derived, never authored: a slug column in the JSON would be a
+  // second place for a term's identity to live, and the two would drift.
+  function slugify(s) {
+    return FOLD(String(s || '').toLowerCase())
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+
   // Render JSON-sourced definition text through the shared mini-markup parser
   // (js/defmarkup.js): [[term]] / <<Latin>> become known-safe class spans built
   // from text nodes -- JSON text is NEVER innerHTML'd (DESIGN.md §4; CLAUDE.md).
@@ -172,6 +183,35 @@
   var ENTRIES = null;          // glossary array
   var MATCHERS = null;         // [{form, low, len, entry, key, isStop}] longest-first
   var BY_TERM = null;          // canonical term -> entry
+  var BY_SLUG = null;          // slug -> {entry, subclass}  (see buildSlugIndex)
+
+  // The resolution table behind #term=<slug>. Three kinds of key, in priority
+  // order -- an earlier kind is never overwritten by a later one:
+  //   1. the canonical term            "ablative"              -> the hub
+  //   2. a ';'-split variant           "abl"                   -> the hub
+  //   3. a subclass name               "ablative-of-separation" -> hub, that Kind marked
+  // A subclass resolves to its PARENT entry on purpose. The narrow answer alone
+  // ("Separation is expressed by the ablative...") assumes the student already
+  // knows what an ablative is, which is exactly the assumption that sent them
+  // looking. They get the case explained, with their construction picked out and
+  // one click from its section.
+  function buildSlugIndex(entries) {
+    var idx = {};
+    function put(key, entry, subclass) {
+      var s = slugify(key);
+      if (s && !idx[s]) idx[s] = { entry: entry, subclass: subclass || null };
+    }
+    entries.forEach(function (e) { put(e.term, e); });
+    entries.forEach(function (e) {
+      variantForms(e).forEach(function (v) { put(v, e); });
+    });
+    entries.forEach(function (e) {
+      (Array.isArray(e.subclasses) ? e.subclasses : []).forEach(function (sc) {
+        if (sc && sc.name) put(sc.name, e, sc.name);
+      });
+    });
+    return idx;
+  }
 
   function variantForms(e) {
     var out = [e.term];
@@ -187,6 +227,7 @@
 
   function buildMatchers(entries) {
     BY_TERM = {};
+    BY_SLUG = buildSlugIndex(entries);
     var list = [];
     entries.forEach(function (e) {
       BY_TERM[e.term] = e;
@@ -382,7 +423,8 @@
     return a;
   }
 
-  function renderPopup(entry) {
+  function renderPopup(entry, markSubclass) {
+    pop.classList.remove('gloss-pop-missing');
     popTermEl.textContent = entry.term;
     var src = entry.definition_source === 'editor' ? "Editor's note" :
               entry.definition_source === 'Pharr' ? 'Pharr' : '';
@@ -416,6 +458,8 @@
         var hasAnchor = sc.section && document.getElementById(id);
         var item = document.createElement(hasAnchor ? 'a' : 'span');
         item.className = 'gloss-pop-sub-item';
+        // arrived via #term=<this subclass>: mark which Kind was asked for
+        if (markSubclass && sc.name === markSubclass) item.className += ' is-target';
         item.appendChild(document.createTextNode(sc.name));
         if (sc.section) {
           var secEl = document.createElement('span'); secEl.className = 'gloss-pop-sub-sec';
@@ -483,19 +527,71 @@
     pop.style.top = top + 'px';
   }
 
+  // Anchorless placement, for a popup opened by URL rather than by clicking a
+  // word: there is no occurrence to sit beside, so it is pinned near the top of
+  // the viewport (position:fixed via the class) and stays there.
+  function positionPopupStandalone() {
+    pop.classList.add('gloss-pop-standalone');
+    pop.style.left = ''; pop.style.top = '';
+    pop.hidden = false;
+  }
+
   function openPopup(anchor) {
     var entry = BY_TERM[anchor.getAttribute('data-term')];
     if (!entry) return;
     openAnchor = anchor;
+    pop.classList.remove('gloss-pop-standalone');
     renderPopup(entry);
     positionPopup(anchor);
     pop.scrollTop = 0;
   }
+
+  // A slug that resolves to nothing must SAY so. This popup is the target of
+  // links written in another repo (the ECE dictionary's {{term}} markup), and a
+  // silent no-op there is a dead link no one ever sees fail. The toolkit gates
+  // its tags against this same glossary, so reaching here means the two have
+  // drifted -- which is worth a student reporting.
+  function renderMissing(slug) {
+    pop.classList.add('gloss-pop-missing');
+    popTermEl.textContent = slug;
+    popSrcEl.textContent = '';
+    popDefEl.classList.remove('gloss-markup-error');
+    popDefEl.textContent = 'There is no glossary entry by that name. It may have been ' +
+                           'renamed, or the link that sent you here may be out of date.';
+    setMarkup(popEdEl, ''); popEdEl.hidden = true;
+    popSubEl.textContent = ''; popSubEl.hidden = true;
+    popLinksEl.textContent = '';
+  }
+
+  // Public entry point: open a glossary entry by slug, with no in-text anchor.
+  // Returns true if the slug resolved. Mirrors the window.PharrSearch contract.
+  function openTermBySlug(slug) {
+    if (!pop) return false;
+    var hit = BY_SLUG && BY_SLUG[slugify(slug)];
+    openAnchor = null;
+    if (hit) renderPopup(hit.entry, hit.subclass);
+    else renderMissing(String(slug || ''));
+    positionPopupStandalone();
+    pop.scrollTop = 0;
+    return !!hit;
+  }
+
   function closePopup() {
     if (!pop || pop.hidden) return;
     pop.hidden = true;
+    pop.classList.remove('gloss-pop-standalone', 'gloss-pop-missing');
     if (openAnchor) { try { openAnchor.focus({ preventScroll: true }); } catch (e) {} }
     openAnchor = null;
+  }
+
+  // Deep link: #term=<slug>. Sits alongside nav.js's #find= / #all= routes and
+  // the plain #sNNN section anchors; the three do not overlap.
+  function handleTermHash() {
+    var h = location.hash || '';
+    if (!/^#term=/.test(h)) return;
+    var slug = '';
+    try { slug = decodeURIComponent(h.slice(6)); } catch (e) { slug = h.slice(6); }
+    if (slug) openTermBySlug(slug);
   }
 
   function wire() {
@@ -519,7 +615,23 @@
       if (e.target.closest && e.target.closest('.gloss-term')) return;
       closePopup();
     });
+    window.addEventListener('hashchange', handleTermHash);
   }
+
+  /* =======================================================================
+     Public contract -- window.PharrGloss (mirrors window.PharrSearch, §5d)
+
+     openTerm(slug) opens a glossary entry with no in-text anchor and returns
+     whether the slug resolved; slug(text) is the canonical slug function, so a
+     consumer can derive an id the same way this file does. This is the surface
+     the ECE dictionary links to: its {{term}} markup becomes #term=<slug> here.
+     ======================================================================= */
+  window.PharrGloss = {
+    openTerm: openTermBySlug,
+    close: closePopup,
+    slug: slugify,
+    has: function (s) { return !!(BY_SLUG && BY_SLUG[slugify(s)]); }
+  };
 
   /* =======================================================================
      Boot
@@ -536,6 +648,7 @@
         buildPopup();
         scan(page);
         wire();
+        handleTermHash();          // arrived on a #term= link: open it now
       })
       .catch(function () { /* term DB unavailable (file://, offline): no tooltips */ });
   }

@@ -263,6 +263,29 @@ through the shared mini-markup parser; see the glossary build thread.
    (5c). Contract: `openQuery(text)` / `openTerm(term)` (term = canonical
    `term` string from `glossary.json`; variants resolved there); deep links
    `#find=<text>` and `#all=<term-slug>`.
+
+   5e. **[done]** Web: **glossary deep links (`#term=<slug>`)** — a glossary
+   entry openable by URL, with no in-text occurrence to anchor to (pinned
+   near the top of the viewport). Built for an **outside consumer**: the ECE
+   dictionary tags grammatical terms in its definitions and links here, so a
+   student reading *ūtor* "with the ablative" can reach the ablative entry.
+
+   **Why the entry and not a §.** The entry is the *hub* — Pharr's definition,
+   the editor's expansion, and the **Kinds** menu, each Kind already pointing
+   at its §. §30 alone ("the case of adverbial relation") answers no question a
+   student who is lost actually has. Sections are the spokes; a link that
+   commits to one spoke commits to a claim about which construction is at play,
+   and usually can't know.
+
+   Contract: `window.PharrGloss.openTerm(slug)` → bool · `.slug(text)` (the
+   canonical slug function, so a consumer derives ids the same way) · `.has()`
+   · `.close()`. Slugs are **derived, never authored** — folding + lowercase +
+   hyphens — and resolve in priority order against the canonical `term`, a
+   `variants` entry, then a **`subclasses` name**. A subclass resolves to its
+   *parent* entry with that Kind marked: the narrow section assumes the student
+   already knows what an ablative is, which is the assumption that sent them
+   looking. An unresolvable slug renders a visible "no such entry" state —
+   never a silent no-op, because the links are written in another repo.
 6. **[done]** Print: paged-media CSS + color translation (6b, 6c) —
    Playwright/Chromium pipeline (`build/render_pdf.py`), grayscale-safe
    all-sans typography with the editorial voice redundantly encoded, and
