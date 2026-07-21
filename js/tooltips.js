@@ -391,7 +391,7 @@
      PHASE 2 -- display (the popup)
      ======================================================================= */
   var pop, popTermEl, popSrcEl, popDefEl, popEdEl, popSubEl, popLinksEl, openAnchor = null;
-  var popBackdrop, popEyebrowEl;
+  var popBackdrop, popEyebrowEl, popDismissEl;
   // TWO MODES, and the difference is not decoration.
   //   'annotation' -- opened by clicking a word in the text. It is subordinate to
   //      that word: it sits beside it, wants no frame, and light-dismisses,
@@ -419,7 +419,12 @@
     popBackdrop = document.createElement('div');
     popBackdrop.className = 'gloss-pop-backdrop no-print';
     popBackdrop.hidden = true;
-    popBackdrop.addEventListener('click', closePopup);
+    // DELIBERATELY NOT click-to-dismiss (editor, 2026-07-21). The backdrop's job
+    // here is to say "this is what you came for" and to swallow stray clicks
+    // aimed at the page -- not to be a dismiss target. Arguing that a click on a
+    // dim overlay is "obviously deliberate" was wrong: it is the same reflex that
+    // loses the panel, and losing it is the whole failure this mode exists to
+    // prevent. Dismissal is the close button or Escape, both aimed at the panel.
     document.body.appendChild(popBackdrop);
 
     var head = document.createElement('div'); head.className = 'gloss-pop-head';
@@ -433,8 +438,21 @@
     var close = document.createElement('button');
     close.className = 'gloss-pop-close'; close.type = 'button';
     close.setAttribute('aria-label', 'Close definition'); close.innerHTML = '&times;';
+    close.title = 'Close (Esc)';
     close.addEventListener('click', closePopup);
     head.appendChild(popTermEl); head.appendChild(popSrcEl); head.appendChild(close);
+
+    // A LABELLED exit, landing mode only. With the backdrop no longer dismissing,
+    // the only ways out are a small × in the corner and a key you have to know
+    // about -- thin for a reader who arrived here from another site and may not
+    // have registered that this is a panel at all. It sits in the actions row,
+    // where the eye already is after reading.
+    popDismissEl = document.createElement('button');
+    popDismissEl.type = 'button';
+    popDismissEl.className = 'gloss-pop-dismiss';
+    popDismissEl.textContent = 'Close';
+    popDismissEl.hidden = true;
+    popDismissEl.addEventListener('click', closePopup);
 
     popDefEl = document.createElement('p'); popDefEl.className = 'gloss-pop-def';
     popEdEl = document.createElement('div'); popEdEl.className = 'gloss-pop-ed'; popEdEl.hidden = true;
@@ -457,6 +475,7 @@
     pop.classList.toggle('gloss-pop-standalone', landing);
     popEyebrowEl.hidden = !landing;
     popBackdrop.hidden = !landing;
+    popDismissEl.hidden = !landing;
     pop.setAttribute('aria-modal', String(landing));
   }
 
@@ -561,6 +580,7 @@
       }
     });
     popLinksEl.appendChild(all);
+    popLinksEl.appendChild(popDismissEl);   // re-attached: the clear above drops it
   }
 
   function positionPopup(anchor) {
@@ -613,6 +633,8 @@
     setMarkup(popEdEl, ''); popEdEl.hidden = true;
     popSubEl.textContent = ''; popSubEl.hidden = true;
     popLinksEl.textContent = '';
+    // The dead-link state needs its exit MOST -- there is nothing else to act on.
+    popLinksEl.appendChild(popDismissEl);
   }
 
   // Public entry point: open a glossary entry by slug, with no in-text anchor.

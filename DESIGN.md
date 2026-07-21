@@ -285,10 +285,14 @@ through the shared mini-markup parser; see the glossary build thread.
    a lie, and one of them bites: **light-dismiss destroys the only thing they
    came for and strands them at the top of a 3,000-line appendix with no way back
    but a reload.** So the landing gets a dimmed backdrop, a full frame, a
-   "Glossary" eyebrow, `aria-modal`, focus, and dismissal only through the
-   backdrop, the close button, or Escape — each aimed at the panel, not at a
-   section link or a tap to scroll. `setMode()` is the single switch, so the two
-   cannot drift apart.
+   "Glossary" eyebrow, `aria-modal`, focus, and **no dismissal on an outside
+   click at all** — not even on the backdrop. The argument that a click on a dim
+   overlay is "obviously deliberate" was tried and was wrong (editor, 2026-07-21):
+   it is the same reflex that loses the panel, and losing it is the entire
+   failure this mode exists to prevent. The ways out are the corner ×, a labelled
+   **Close** in the actions row, and Escape — each aimed at the panel rather than
+   at the page. `setMode()` is the single switch, so the two modes cannot drift
+   apart.
 
    Contract: `window.PharrGloss.openTerm(slug)` → bool · `.slug(text)` (the
    canonical slug function, so a consumer derives ids the same way) · `.has()`
@@ -316,6 +320,23 @@ began as the §5a "must stay legible on mobile" requirement and grew into its ow
 thread; it edits `index.html` table markup plus core/web CSS (and touches
 `js/nav.js`). Status and specifics live in the **"Mobile:"** commit series, not
 here.
+
+**Next for the glossary (editor, 2026-07-21) — reach a Glossary entry from
+*inside* this app, as the ultimate failsafe.** Today a landing (§5e) is only
+reachable from an inbound `#term=` link: close it, or arrive with a typo, and
+there is no way back except editing the URL. Two parts:
+
+- **The search bar should find glossary entries**, so any term is reachable
+  without leaving the appendix. This is what makes the landing recoverable, and
+  it is why nothing else about the landing needs to defend against dismissal.
+- **Glossary entries should appear in the back-of-book index**, with their own
+  markup distinguishing them from ordinary index entries.
+
+**The hard part is the overlap**, and it wants a clear, elegant answer rather
+than a merge: an index entry points at *occurrences in Pharr's text*, while a
+glossary entry is *a definition of the term itself* — often for a term Pharr
+uses without defining. The same word will legitimately want both, and the reader
+must be able to tell which is which and why they might want the other.
 
 Deferred / future: a possible student-facing rewrite of Pharr's own
 (sometimes sparse or old-fashioned) definitions; any further content passes.

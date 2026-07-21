@@ -547,6 +547,19 @@ body.sp-open{ overflow:hidden; }                 /* lock background scroll while
 .gloss-pop-standalone .gloss-pop-links button{
   font-size: .88rem;
 }
+
+/* The labelled exit. The backdrop deliberately does NOT dismiss, so this and the
+   corner × are the only ways out besides Escape -- it has to be findable. Pushed
+   to the far end of the actions row, away from the links that lead further in,
+   so leaving and going deeper are not adjacent targets. */
+.gloss-pop-dismiss{
+  margin-left: auto;
+  border: 1px solid var(--line); border-radius: 7px;
+  background: var(--paper); color: var(--muted);
+  padding: .15rem .6rem; cursor: pointer;
+}
+.gloss-pop-dismiss:hover{ background: var(--fill1); color: var(--ink); }
+.gloss-pop-dismiss[hidden]{ display:none; }
 /* An unresolvable slug: the border drops its term-ochre claim, since there is
    no term. Deliberately visible -- a dead inbound link must not look normal. */
 .gloss-pop-missing{ border-left-color: var(--muted); }
