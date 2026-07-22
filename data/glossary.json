@@ -2892,5 +2892,19 @@
     "in_term_span": true,
     "notes": "",
     "editor_expansion": "An enclitic never stands on its own — it has no separate life as a word, and you will only ever meet it welded to the back of the word in front of it. So <<arma virumque>> is <<arma>> plus <<virum>> plus <<-que>>, and the <<-que>> means and, joining <<virum>> to <<arma>>: arms and the man. The one that catches readers out is <<-ne>>, which turns a statement into a yes-or-no [[question]] and translates as nothing at all in English — <<venitne?>> is simply is he coming? Pharr's other point here is about accent: tacking an enclitic on drags the stress onto the syllable just before it, so <<forī́busque>> and <<amṓque>>."
+  },
+  {
+    "term": "indefinite pronoun",
+    "variants": "indefinite pronouns",
+    "domain": "pronoun",
+    "parent": "",
+    "pharr_defines": false,
+    "definition_source": "editor",
+    "definition": "An indefinite pronoun points at a person or thing without identifying which — English 'someone', 'anyone', 'something'. Latin has <<aliquis>>, <<aliquid>> 'somebody, something' and the shorter <<quis>>, <<quid>> 'anyone, anything', identical in form to the [[interrogative pronoun]] and told apart by function. Each has a matching adjective: <<aliquī, aliqua, aliquod>> and <<quī, quae, quod>> 'some, any'.",
+    "definition_location": "",
+    "first_appearance": "§113",
+    "insertion_point": "§113",
+    "in_term_span": false,
+    "notes": ""
   }
 ]
