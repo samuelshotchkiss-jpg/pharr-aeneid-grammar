@@ -553,8 +553,17 @@ a.xref:hover{border-bottom-style:solid;text-decoration:none}
 .idx .lemma{font-weight:700;color:var(--accent-deep)}
 .idxnote{font-size:.85rem}
 
-/* invisible landing anchors for section cross-references */
-.anchor-stub{display:inline-block;width:0;height:0;overflow:hidden}
+/* Invisible landing anchors for section cross-references.
+   BLOCK, not inline-block: an inline-block on its own line still generates a
+   LINE BOX, so each of these 139 zero-height anchors was reserving a full
+   line-height of nothing. Measured on screen: ~7px apiece where margins partly
+   absorbed it, the full ~27px directly under a heading (the gap after "3. Liquid
+   Stems in r" was 35px against 8px for a heading whose section carries its own
+   id), and 1,440px of phantom whitespace over the document. A zero-height block
+   generates no line box. Verified that no stub sits mid-paragraph, so none of
+   them was relying on inline flow. Print was never affected -- print.css has
+   always set .anchor-stub{display:none}. */
+.anchor-stub{display:block;width:0;height:0;overflow:hidden}
 .vconj .secbadge{font-variant:normal;font-weight:700;font-size:.72rem;color:var(--accent);
   background:var(--fill1);border:1px solid var(--line);border-radius:.3rem;
   padding:0 .3rem;margin-right:.35rem;vertical-align:.08em;letter-spacing:0}
@@ -620,9 +629,16 @@ table.grid.paradigm tbody tr.pl-row td.numdata .la{color:var(--la-green)}
 .edpanel .edpanel-h{font-weight:700;color:var(--edink);font-size:1.02rem;margin:0 0 .5rem}
 .edpanel p{margin:.45rem 0;line-height:1.5}
 .edpanel .edpanel-key{display:inline-block;font-weight:700;color:var(--edink)}
+/* NOT italic. The italics were dropped from .edpanel for equity -- long runs of
+   italic are harder for dyslexic readers -- and print.css had already dropped
+   them from .edbox too, so the same sentence read italic on screen and upright
+   on paper. The screen is if anything the WORSE place to keep them: a reader on
+   paper cannot adjust anything, yet paper was the one surface we fixed. The soft
+   ochre fill, the ochre left rule and the ochre ink are three signals already,
+   and print has been proving the box reads without a fourth. (Editor, 2026-07-21.) */
 .edbox{background:var(--edbg-soft);border:1px solid var(--edborder);
   border-left:4px solid var(--edrule);border-radius:6px;
-  padding:.55rem .8rem;margin:.7rem 0;font-style:italic;
+  padding:.55rem .8rem;margin:.7rem 0;
   color:var(--edink);font-size:.9rem;line-height:1.5;break-inside:avoid}
 .edbox b{font-style:normal;color:var(--edink)}
 /* Editorial tables (inside panel/box): ochre voice, soft — never paradigm blue */

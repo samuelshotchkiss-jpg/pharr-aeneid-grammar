@@ -37,6 +37,26 @@ from playwright.sync_api import sync_playwright
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
+def _append_edexpansions(page) -> None:
+    """Render the editor's expansions that the printed glossary does NOT carry
+    as inline `.edbox`es at their section (js/edexpansions.js).
+
+    Seven terms are `domain: "rhetoric"`, which the print glossary excludes on
+    purpose -- so their expansions reached the web tooltip and nothing else.
+    This puts them where a reader meets the figure, in both outputs, from the
+    single source. Runs BEFORE the glossary so the two never race for the DOM.
+
+    On screen the same module is booted by js/edexpansions-boot.js; the page
+    being printed has already run it, and `build` is idempotent (it skips a box
+    whose id is present), so doing it here is safe either way.
+    """
+    data = json.loads((ROOT / "data" / "glossary.json").read_text(encoding="utf-8"))
+    page.add_script_tag(path=str(ROOT / "js" / "defmarkup.js"))
+    page.add_script_tag(path=str(ROOT / "js" / "edexpansions.js"))
+    stats = page.evaluate("(data) => window.PharrBuildEdExpansions(data)", data)
+    print(f"editor expansions inline: {stats['placed']} placed, {stats['skipped']} skipped")
+
+
 def _append_glossary(page) -> None:
     """Build the print glossary (DESIGN.md §6d) from data/glossary.json and
     insert it before the back-of-book index, in the live Chromium render path.
@@ -63,6 +83,7 @@ def render(source: str, out_path: pathlib.Path, *, is_url: bool) -> None:
         page = browser.new_page()
         # wait until network is idle so deferred scripts settle before printing.
         page.goto(target, wait_until="networkidle")
+        _append_edexpansions(page)
         _append_glossary(page)
         page.pdf(
             path=str(out_path),
