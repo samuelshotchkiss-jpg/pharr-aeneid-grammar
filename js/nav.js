@@ -77,16 +77,15 @@
      ===================================================================== */
   function buildToc(page) {
     var nav = el('nav', { class: 'nav-toc', id: 'nav-toc', 'aria-label': 'Table of contents' });
-    // THREE levels. The h4s were always in the document -- 46 of them -- and the
-    // ToC simply never looked at them, so "Cases" was one line covering 70
-    // sections and "Moods in Subordinate Sentences" one line covering 37. The
-    // things a reader actually searches for (Ablative, Purpose Clauses,
-    // Conditional Sentences) were authored as headings and unreachable from the
-    // ToC. Nothing is added to the content here; the derivation just reads what
-    // was already written.
-    // FOUR levels. h6 is deliberately absent: it labels the three mute-stem
-    // paradigm tables (a/b/c under "5. Mute Stems"), which are a place to land
-    // once you are in the right section, not a place to navigate to.
+    // FOUR levels, from headings the document already carries. Before this the
+    // ToC read only h2/h3, so "Cases" was one line covering 70 sections and
+    // "Moods in Subordinate Sentences" one line covering 37 -- while the things
+    // a reader actually searches for (Ablative, Purpose Clauses, Conditional
+    // Sentences) sat right there as headings, unreachable.
+    //
+    // h6 is deliberately EXCLUDED: it labels the three mute-stem paradigm tables
+    // (a/b/c under "5. Mute Stems"), which are a place to land once you are in
+    // the right section, not a place to navigate to.
     var heads = page.querySelectorAll('h2.h2, h3.h3, h4.h4, h5.h5');
     var topList = el('ul', { class: 'toc-l1' });
     var curSub = null, curSub3 = null, curSub4 = null;
@@ -104,7 +103,16 @@
 
     Array.prototype.forEach.call(heads, function (h) {
       var id = ensureId(h);
-      var label = h.textContent.trim();
+      // A heading may carry its own section number in a `.sn` span -- seven do,
+      // where a table follows immediately and the number has nowhere else to
+      // live. The page wants it; the sidebar does not, and printing it there is
+      // what made Irregular Verbs read "1, 2, 3, 230".
+      var label = '';
+      Array.prototype.forEach.call(h.childNodes, function (n) {
+        if (n.nodeType === 1 && n.classList && n.classList.contains('sn')) return;
+        label += n.textContent;
+      });
+      label = label.trim() || h.textContent.trim();
       var a = el('a', { href: '#' + id, text: label });
       a.addEventListener('click', function (e) { goTo(id, e); });
 
