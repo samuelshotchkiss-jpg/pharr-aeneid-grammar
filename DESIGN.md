@@ -382,5 +382,11 @@ glossary entry is *a definition of the term itself* — often for a term Pharr
 uses without defining. The same word will legitimately want both, and the reader
 must be able to tell which is which and why they might want the other.
 
+**Owed by the editor (2026-07-21):** the seven "How will you spot one?" notes on
+the case entries, and the 25 ochre index additions, were drafted by Claude in the
+editor's voice and are his to revise. See PROJECT-STATUS.md — including the
+warning that they must be edited in `data/glossary.json`, never in `index.html`,
+which `build/index_glossary_links.py` regenerates.
+
 Deferred / future: a possible student-facing rewrite of Pharr's own
 (sometimes sparse or old-fashioned) definitions; any further content passes.

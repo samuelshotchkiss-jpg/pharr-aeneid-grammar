@@ -103,6 +103,28 @@ depends on the declension — then the one rule that does hold (the accusative
 singular always ends in **-m**; dative and ablative plurals are always
 identical), then points at §32–33, where Pharr tabulates the lot.
 
+## Owed by the editor — content drafted for you, not by you
+
+Some of the prose now in the edition was **drafted by Claude in the editor's
+voice**. It is accurate and it validates, but the voice is borrowed. These are
+yours to revise or discard, and nothing depends on them staying as they are:
+
+- **The seven "How will you spot one?" notes** at the end of each case entry
+  (nominative, genitive, dative, accusative, ablative, vocative, locative). Every
+  ending in them was read off §32's tables and checked, and each note gives only
+  the one generalisation that actually holds for that case — but the phrasing,
+  the choice of which rule is worth a beginner's attention, and the tone are all
+  open. *Editor, 2026-07-21: "I'll probably tinker with your entries myself."*
+- **The 25 index entries added in ochre**, and where they sort. They were placed
+  alphabetically and each carries a real section link, but whether they earn
+  their place in the index is an editorial call.
+
+Both live in `data/glossary.json` (`editor_expansion` for the notes; the index
+entries are regenerated from the glossary by
+`build/index_glossary_links.py --apply`). **Edit the JSON, re-run that script,
+rebuild the PDF** — do not hand-edit the entries in `index.html`, since the next
+run of the script will overwrite them.
+
 ## Editorial conventions worth remembering
 
 - The **editor's voice** is visually distinct (an ochre color family, in three
