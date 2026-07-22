@@ -267,7 +267,11 @@ def main() -> int:
     # --- 2/3: build the entries to add --------------------------------------
     def entry_html(e: dict) -> str:
         n = secnum(e.get("definition_location") or "") or secnum(e.get("insertion_point") or "")
-        return (f'<p class="idx idx-added"><span class="lemma lemma-term lemma-added"'
+        # No `lemma-added` class on the span: "ours" is recorded ONCE, on the <p>,
+        # and the CSS selects `.idx-added .lemma`. A copy on the span was silently
+        # erased every run, because mark() rebuilds the span from scratch and only
+        # the <p> remembers. Two places holding one fact is how that happens.
+        return (f'<p class="idx idx-added"><span class="lemma lemma-term"'
                 f' data-gloss="{slugify(e["term"])}"'
                 f' title="Open the glossary entry for {html.escape(e["term"])}">'
                 f'{html.escape(e["term"])}</span>, <a href="#s{n}">{n}</a></p>')

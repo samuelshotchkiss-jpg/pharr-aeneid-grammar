@@ -555,21 +555,31 @@ a.xref:hover{border-bottom-style:solid;text-decoration:none}
    Latin. They are not: the first column alone holds "Anticipation, clauses of",
    "Appointing, verbs of, with two accusatives" and "At" (the ENGLISH preposition,
    "translated by prep. with abl.").
-     .lemma-latin   -- a Latin word, in the same accent as .la everywhere else,
-       so the index agrees with the text about what Latin looks like.
-     .lemma-english -- an English topic heading ("Ability", "Time"). Neutral ink.
-     .lemma-term    -- names a glossary term; clicking opens its entry. The dotted
-       underline is the same affordance the vocabulary app uses for a grammar
-       link, so the two surfaces teach the same gesture.
-     .lemma-added   -- ours, not Pharr's: editorial ochre. */
-.idx .lemma-plain{color:var(--head)}
+   Each kind takes the colour this edition ALREADY assigns to that kind of thing,
+   so the index makes no new claims -- ONLY LATIN IS BLUE:
+     .lemma-latin   -- var(--accent), the same blue as .la everywhere else, so the
+       index agrees with the text about what Latin looks like.
+     .lemma-term    -- var(--term-deep): the edition's magenta for a grammatical
+       term, one step deeper than b.term's var(--term) because index type is
+       .86rem and the lighter tone goes thin. Clicking opens its glossary entry;
+       the
+       dotted underline is the affordance the vocabulary app uses for a grammar
+       link, so the two surfaces teach one gesture.
+     .lemma-english -- var(--neutral-ink), documented in the palette as "near-
+       black, not blue". An English topic heading ("Ability", "Time") is neither
+       Latin nor a term, and should look like neither.
+     .idx-added     -- ours, not Pharr's: editorial ochre. Selected from the
+       ENTRY, not a class on the span, because the span is regenerated on every
+       build run and a marker there does not survive. It must come last so it
+       wins over .lemma-term, which every added entry also carries. */
+.idx .lemma-plain{color:var(--neutral-ink)}
 .idx .lemma-latin{color:var(--accent)}
-.idx .lemma-english{color:var(--head)}
-.idx .lemma-term{color:var(--accent-deep);cursor:pointer;
+.idx .lemma-english{color:var(--neutral-ink)}
+.idx .lemma-term{color:var(--term-deep);cursor:pointer;
   text-decoration:underline dotted var(--line);text-underline-offset:3px}
-.idx .lemma-term:hover{color:var(--accent);text-decoration-color:var(--accent)}
-.idx .lemma-added{color:var(--edink)}
-.idx .lemma-added:hover{color:var(--edrule);text-decoration-color:var(--edrule)}
+.idx .lemma-term:hover{color:var(--term);text-decoration-color:var(--term)}
+.idx-added .lemma{color:var(--edink)}
+.idx-added .lemma:hover{color:var(--edrule);text-decoration-color:var(--edrule)}
 .idxnote{font-size:.85rem}
 
 /* Invisible landing anchors for section cross-references.

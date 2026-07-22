@@ -181,11 +181,16 @@
   /* Index: the dotted "clickable" hint is screen-only -- on paper it is noise.
      Our added entries keep the ochre AND take a left rule, so the editorial
      voice survives a grayscale photocopy (§6c) even at index type size. */
-  .idx .lemma-term{text-decoration:none}
-  .idx .lemma-plain{color:#000}
+  /* On paper the three kinds keep their distinction the §6c way -- typography,
+     not colour, since colour is what a photocopy destroys. Each mirrors the
+     signature its kind already has in the body: .la -> bold, .term -> bold
+     small-caps. So the index reads the same way the text does. */
+  .idx .lemma-term{text-decoration:none;font-variant:small-caps;letter-spacing:.04em}
+  .idx .lemma-plain,.idx .lemma-latin,.idx .lemma-english{color:#000}
+  .idx .lemma-term{color:#000}
   .idx-added{border-left:2px solid var(--edrule);padding-left:.35rem;
     margin-left:-.35rem;text-indent:-.75rem}
-  .idx .lemma-added{color:var(--edink)}
+  .idx-added .lemma{color:var(--edink)}
 
   /* ---- Pharr's own note: NOT ochre, unlabelled, DOUBLE-rule signature ---- */
   .editnote{background:#f4f4f4;border-color:#999;border-left:5px double #777;color:var(--ink)}
