@@ -23,17 +23,23 @@ THREE THINGS IT DOES
    glossary" fallback is needed. Added entries are marked `.idx-added` and print
    in editorial ochre, because they are ours and not Pharr's.
 
-3. CLASSES the rest `.lemma-plain`, so the default styling can stop implying
-   Latin. It does NOT try to say which of them are Latin: the editor found
-   "Anticipation, clauses of", "Appointing, verbs of, with two accusatives" and
-   "At" (the English preposition, "translated by prep. with abl.") in the first
-   column alone -- neither Latin, nor glossary terms, nor the same kind of thing
-   as each other. That classification is a later judgment pass.
+3. CLASSIFIES the rest by language, because the old single blue implied every
+   lemma was Latin and many are not -- the first column alone holds "Anticipation,
+   clauses of", "Appointing, verbs of, with two accusatives", and "At", which is
+   the ENGLISH preposition ("translated by prep. with abl.").
 
-   Recorded for that pass: CAPITALISATION looks like a strong prior. Pharr leaves
-   Latin lowercase (a, absum, ac si, ad) and capitalises English topic headings
-   (Ability, Abounding, Accompaniment) -- 348 against 242 in the unmatched set.
-   Latin proper nouns will break it, so it is a prior to review, not a rule.
+   No single signal does it, so three are overlaid (the editor's suggestion):
+   a leading HYPHEN (-que, -ne, -met are Latin enclitics), a LOWERCASE initial
+   (Pharr capitalises English topic headings), and a MACRON (catches Aeneas).
+   Whatever survives is checked against the document's OWN <span class="la">
+   marking, which is used only positively -- its precision is good (it found
+   `Caere` and `Orpheus`, capitalised Latin with no macron) but its recall is
+   poor (42 plainly Latin lemmas never appear in a .la span at all).
+
+   That left four genuinely ambiguous, resolved by reading their entries and
+   recorded in REVIEWED with the evidence. Result: 370 Latin, 229 English, 0
+   unresolved. If a future edit introduces a fifth, the script will report it as
+   unresolved rather than guess.
 
 IDEMPOTENT: re-running finds the markers already present and changes nothing.
 """
@@ -62,6 +68,65 @@ GLOSSARY = ROOT / "data" / "glossary.json"
 # footgun.
 IDX_P = r'<p class="idx[^"]*"[^>]*>(.*?)</p>'
 IDX_BLOCK = r'[ \t]*<p class="idx[^"]*"[^>]*>.*?</p>\n?'
+
+
+MACRONS = "āēīōūȳăĕĭŏŭÿĀĒĪŌŪ"
+
+# The four lemmas the mechanical signals could not settle, resolved by reading
+# their own index entries. Kept as data, with the evidence, so the next person
+# does not re-derive them -- and so a fifth case has an obvious place to go.
+REVIEWED = {
+    "At":      ("english", 'entry reads "translated by prep. with abl." -- the ENGLISH preposition'),
+    "Time":    ("english", 'entry reads "from which; when, within which; expressed by abl."'),
+    "Caere":   ("latin",   'entry reads "decl., 56b" -- a Latin noun being declined'),
+    "Orpheus": ("latin",   'entry reads "decl., 69"'),
+}
+
+
+def latin_tokens(doc: str) -> set[str]:
+    """Every token the document itself marks <span class="la">.
+
+    Used only in the POSITIVE direction. Its precision is good -- it caught
+    `Caere` and `Orpheus`, capitalised Latin proper nouns with no macron, which
+    capitalisation alone misfiles. Its recall is poor: 42 plainly Latin lemmas
+    (aethēr, careō, dōnō, misereor) never appear in a .la span, because they are
+    index-only or live in tables. So absence proves nothing.
+    """
+    out: set[str] = set()
+    for m in re.finditer(r'<span class="la">(.*?)</span>', doc, re.S):
+        text = html.unescape(re.sub(r"<[^>]+>", "", m.group(1)))
+        for tok in re.split(r"[,;:.!?()\s]+", text):
+            f = fold(tok)
+            if f:
+                out.add(f)
+    return out
+
+
+def language_of(lemma: str, la: set[str]) -> str | None:
+    """'latin' | 'english' | None (unresolved).
+
+    Three mechanical signals, overlaid at the editor's suggestion because no one
+    of them is sufficient:
+      - a LEADING HYPHEN is a Latin suffix or enclitic (-que, -ne, -met). These
+        broke the capitalisation test outright: a hyphen is not lowercase, so all
+        nine were being called English.
+      - LOWERCASE initial. Pharr capitalises English topic headings and leaves
+        Latin words lowercase.
+      - a MACRON. Catches the capitalised Latin proper nouns (Aenēās).
+    Whatever survives all three is checked against the document's own .la marking,
+    and anything still ambiguous is left for a human -- which came to four.
+    """
+    if lemma in REVIEWED:
+        return REVIEWED[lemma][0]
+    if lemma[:1] in ("-", "‑", "‐"):
+        return "latin"
+    if lemma[:1].islower():
+        return "latin"
+    if any(c in lemma for c in MACRONS):
+        return "latin"
+    if fold(lemma) in la:
+        return None                      # capitalised, no macron, but marked Latin: review
+    return "english"
 
 
 def fold(s: str) -> str:
@@ -110,6 +175,7 @@ def main() -> int:
         for k in variant_keys(e):
             by_key.setdefault(k, e)
 
+    la_tokens = latin_tokens(t)
     entries = list(re.finditer(IDX_P, t, re.S))
     # The class pattern must tolerate EXTRA CLASSES. After marking, a span reads
     # class="lemma lemma-term", and a regex anchored on the closing quote --
@@ -141,7 +207,12 @@ def main() -> int:
 
     print(f"index entries          : {len(entries)}")
     print(f"  lemma names a term   : {len(marked)}  -> gains data-gloss + a glossary click")
-    print(f"  everything else      : {len(plain)}  -> .lemma-plain (styling only; NOT classified)")
+    langs = [language_of(l, la_tokens) for l in plain]
+    print(f"  everything else      : {len(plain)}  -> .lemma-plain, classified by language:")
+    print(f"       Latin           : {sum(1 for x in langs if x == 'latin')}")
+    print(f"       English         : {sum(1 for x in langs if x == 'english')}")
+    print(f"       unresolved      : {sum(1 for x in langs if x is None)}"
+          f"{'  <- needs a human; add it to REVIEWED' if any(x is None for x in langs) else ''}")
     print()
     print(f"glossary terms         : {len(gloss)}")
     print(f"  already in the index : {len(seen_terms)}")
@@ -165,8 +236,14 @@ def main() -> int:
     def mark(mo: re.Match) -> str:
         inner = mo.group(1)
         lm = lemma_re.search(inner)
-        if not lm or 'data-gloss=' in lm.group(0) or 'lemma-plain' in lm.group(0):
-            return mo.group(0)                       # idempotent
+        if not lm:
+            return mo.group(0)
+        # RECOMPUTE the span from scratch every run rather than skipping ones that
+        # already carry a marker. A "have I run before?" guard is idempotent only
+        # until the script learns to emit something new: this one saw `lemma-plain`
+        # from an earlier pass and refused to add the language class, so the
+        # classifier silently did nothing. Same output for the same input is the
+        # property actually wanted, and recomputing gives it for free.
         raw = html.unescape(re.sub(r"<[^>]+>", "", lm.group(1))).strip()
         key = fold(raw)
         hit = by_key.get(key)
@@ -180,7 +257,9 @@ def main() -> int:
                         f' title="Open the glossary entry for {html.escape(hit["term"])}">'
                         f'{lm.group(1)}</span>')
         else:
-            new_span = f'<span class="lemma lemma-plain">{lm.group(1)}</span>'
+            lang = language_of(raw, la_tokens)
+            cls = "lemma lemma-plain" + (f" lemma-{lang}" if lang else "")
+            new_span = f'<span class="{cls}">{lm.group(1)}</span>'
         return mo.group(0).replace(lm.group(0), new_span, 1)
 
     t2 = re.sub(IDX_P, mark, t, flags=re.S)

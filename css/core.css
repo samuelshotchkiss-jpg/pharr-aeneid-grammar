@@ -555,13 +555,16 @@ a.xref:hover{border-bottom-style:solid;text-decoration:none}
    Latin. They are not: the first column alone holds "Anticipation, clauses of",
    "Appointing, verbs of, with two accusatives" and "At" (the ENGLISH preposition,
    "translated by prep. with abl.").
-     .lemma-plain -- everything not yet classified. Neutral ink, so it asserts
-       nothing about language. Which of these 599 are Latin is a later pass.
-     .lemma-term  -- names a glossary term; clicking opens its entry. The dotted
+     .lemma-latin   -- a Latin word, in the same accent as .la everywhere else,
+       so the index agrees with the text about what Latin looks like.
+     .lemma-english -- an English topic heading ("Ability", "Time"). Neutral ink.
+     .lemma-term    -- names a glossary term; clicking opens its entry. The dotted
        underline is the same affordance the vocabulary app uses for a grammar
        link, so the two surfaces teach the same gesture.
-     .lemma-added -- ours, not Pharr's: editorial ochre. */
+     .lemma-added   -- ours, not Pharr's: editorial ochre. */
 .idx .lemma-plain{color:var(--head)}
+.idx .lemma-latin{color:var(--accent)}
+.idx .lemma-english{color:var(--head)}
 .idx .lemma-term{color:var(--accent-deep);cursor:pointer;
   text-decoration:underline dotted var(--line);text-underline-offset:3px}
 .idx .lemma-term:hover{color:var(--accent);text-decoration-color:var(--accent)}
