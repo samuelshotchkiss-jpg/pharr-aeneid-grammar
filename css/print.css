@@ -178,6 +178,15 @@
   .edbox::before{content:"EDITOR";position:absolute;top:.34rem;left:.8rem;
     font-variant:small-caps;font-weight:800;letter-spacing:.12em;font-size:.58rem;color:var(--edink)}
 
+  /* Index: the dotted "clickable" hint is screen-only -- on paper it is noise.
+     Our added entries keep the ochre AND take a left rule, so the editorial
+     voice survives a grayscale photocopy (§6c) even at index type size. */
+  .idx .lemma-term{text-decoration:none}
+  .idx .lemma-plain{color:#000}
+  .idx-added{border-left:2px solid var(--edrule);padding-left:.35rem;
+    margin-left:-.35rem;text-indent:-.75rem}
+  .idx .lemma-added{color:var(--edink)}
+
   /* ---- Pharr's own note: NOT ochre, unlabelled, DOUBLE-rule signature ---- */
   .editnote{background:#f4f4f4;border-color:#999;border-left:5px double #777;color:var(--ink)}
   .editnote b{color:#000}

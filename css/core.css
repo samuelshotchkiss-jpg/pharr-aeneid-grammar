@@ -551,6 +551,22 @@ a.xref:hover{border-bottom-style:solid;text-decoration:none}
 .indexcols{column-count:2;column-gap:1.6rem;font-size:.86rem}
 .idx{break-inside:avoid;margin:.05rem 0;text-indent:-1.1rem;padding-left:1.1rem;line-height:1.32}
 .idx .lemma{font-weight:700;color:var(--accent-deep)}
+/* Index lemmas come in kinds, and the old single blue implied they were all
+   Latin. They are not: the first column alone holds "Anticipation, clauses of",
+   "Appointing, verbs of, with two accusatives" and "At" (the ENGLISH preposition,
+   "translated by prep. with abl.").
+     .lemma-plain -- everything not yet classified. Neutral ink, so it asserts
+       nothing about language. Which of these 599 are Latin is a later pass.
+     .lemma-term  -- names a glossary term; clicking opens its entry. The dotted
+       underline is the same affordance the vocabulary app uses for a grammar
+       link, so the two surfaces teach the same gesture.
+     .lemma-added -- ours, not Pharr's: editorial ochre. */
+.idx .lemma-plain{color:var(--head)}
+.idx .lemma-term{color:var(--accent-deep);cursor:pointer;
+  text-decoration:underline dotted var(--line);text-underline-offset:3px}
+.idx .lemma-term:hover{color:var(--accent);text-decoration-color:var(--accent)}
+.idx .lemma-added{color:var(--edink)}
+.idx .lemma-added:hover{color:var(--edrule);text-decoration-color:var(--edrule)}
 .idxnote{font-size:.85rem}
 
 /* Invisible landing anchors for section cross-references.

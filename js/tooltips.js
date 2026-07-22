@@ -723,6 +723,18 @@
       if (e.target.closest && e.target.closest('.gloss-term')) return;
       closePopup();
     });
+    // Index lemmas that name a glossary term open it. Delegated from the
+    // document on purpose: the search dropdown CLONES the live .idx nodes
+    // (nav.js collectIndex), so one listener serves the printed index on the
+    // page and its mirror in the dropdown, and a clone can never arrive without
+    // its behaviour. Marked by build/index_glossary_links.py.
+    document.addEventListener('click', function (e) {
+      var lem = e.target.closest && e.target.closest('.lemma[data-gloss]');
+      if (!lem) return;
+      e.preventDefault();
+      openTermBySlug(lem.getAttribute('data-gloss'));
+    });
+
     window.addEventListener('hashchange', handleTermHash);
   }
 
