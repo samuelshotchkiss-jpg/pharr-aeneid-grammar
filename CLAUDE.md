@@ -131,13 +131,47 @@ term-detection (notably tooltip **polysemy** — "voice," "mood," "case,"
 "person," "perfect" are also ordinary words), surface candidates with rationale
 and let the user rule. Don't auto-apply these.
 
+## Build steps that rewrite content (run, review the diff, commit)
+
+Two scripts edit `index.html` / `data/glossary.json` in place. Both are
+**idempotent** — re-running changes nothing — and both are meant to be run, then
+read as a diff, then committed:
+
+- `build/index_glossary_links.py --apply` — marks index lemmas that name a
+  glossary term, adds the terms the index lacks, classifies the rest by language.
+  Run it after adding a glossary entry.
+- `build/render_pdf.py` — the PDF. It injects the inline editor expansions and
+  the printed glossary in the Chromium render path, so **`js/edexpansions.js` and
+  `build/glossary_print.js` must both keep working** or print silently says less
+  than the data holds. That exact failure went unnoticed for weeks.
+
+**A stale PDF is invisible.** `build/out/pharr-appendix.pdf` is gitignored, so
+nothing warns you it is old; rebuild it after any content change. If Acrobat has
+it open, Windows blocks the write and the render fails with `PermissionError` —
+close it.
+
+## Verify quantitatively — the screenshot tool will not help
+
+Capture times out on this page (and on the vocabulary app), so **measure**:
+`getBoundingClientRect`, `getComputedStyle`, `elementFromPoint`, element counts.
+Two traps found this way, both of which would have passed a glance:
+
+- **`requestAnimationFrame` callbacks do not fire in a throttled preview pane.** A
+  visual nicety deferred to rAF silently never ran — precisely when someone was
+  looking at it. Prefer synchronous work after the element is visible; reading
+  `scrollHeight` forces layout, so no frame wait is needed.
+- **Dispatch events at the element that is really under the cursor.** A dismiss
+  test aimed at `.page` "passed" because a backdrop sat on top of it and a real
+  click never reached `.page` at all. `document.elementFromPoint` first.
+
 ## Key files
 - `DESIGN.md` — full system design and build order.
 - `PROJECT-STATUS.md` — plain-language status (hosting, repo + live URL,
   licensing) for code-blind sessions.
 - `COPYRIGHT.md` — the three-way license split; `LICENSE-CONTENT` (CC BY-NC-SA
   4.0) and `LICENSE-CODE` (AGPL-3.0) hold the full terms.
-- `pharr_grammatical_terms_N.json` — single source for all term definitions;
+- `data/glossary.json` — single source for all term definitions (DESIGN.md calls
+  it `pharr_grammatical_terms_N.json`, its historical name);
   feeds both web tooltips and the printed glossary. Pharr's definitions are
   read-only.
 - `js/defmarkup.js` — the shared definition mini-markup parser (notation above).

@@ -321,30 +321,49 @@ thread; it edits `index.html` table markup plus core/web CSS (and touches
 `js/nav.js`). Status and specifics live in the **"Mobile:"** commit series, not
 here.
 
-**Approved, not yet done (editor, 2026-07-21) — add the Kinds a *dictionary*
-needs.** The Kinds menus omit exactly the sections an incoming `#term=` link
-wants: `ablative` has no **§342** (Ablative with Special Verbs — Pharr names
-*ūtor, fruor* there) and no **§339** (Ablative with Prepositions); `dative` has
-no **§297** (Special Verbs) and no **§298** (Compounds); `genitive` has **no
-Kinds at all**, though **§288** and **§289** use *meminit malōrum* and *miserēre*
-as their own examples.
+**DONE (2026-07-21) — the Kinds are complete: 62 across four cases.** Ablative 26,
+dative 13, genitive 13, accusative 10 (it had none). Names follow Pharr's own
+headings, and the lists are in SECTION ORDER so they read as a walk through the
+book. The menus were incomplete in a way that misled — a reader saw 11 Kinds and
+could reasonably conclude those were the kinds of ablative — and the omissions
+were an artifact of Pharr's heading format, not a judgment: §319 Place Where,
+§320 Place Whence, §322 Time When, §323 Origin and §334 Standard of Measurement
+all lack the words "Ablative of" and were all skipped, while §335 Measure of
+Difference also lacks them and was kept.
 
-**Why this is an addition and not a reversal:** the menus were curated, but
-LLM-curated, and curated to clarify *Pharr's text*. The dictionary is a new
-purpose, and it asks a different question of the same data — so the omission was
-never a ruling against these sections. (Editor's call, recorded because a
-successor will otherwise read the curated list as deliberate exclusion.)
+**§296 lives under the ABLATIVE, not the dative** (editor): its point is the
+ablative alternative (*hominem aurō dōnat*); the dative half is §295 restated.
 
-**Sequenced after** the vocabulary toolkit's prose-tagging sweep, so the full
-population of incoming links is known before their targets are tuned.
+**A long Kinds list scrolls inside the popup and centres on the marked Kind**, so
+arriving at §342 does not mean hunting through 25 entries, and the definition and
+the exits stay visible.
 
-**Logged, not urgent (editor, 2026-07-21) — break the cases out in the table of
-contents.** The ToC lists "Cases" as one syntax section; with the Kinds menus now
-complete (62 constructions across four cases), a reader who wants the ablative has
-to know it lives inside a block whose only label is "Cases". Listing nominative,
-genitive, dative, accusative, ablative, vocative and locative as their own ToC
-entries would match how the glossary now behaves. Deferred: it touches `nav.js`'s
-ToC derivation, which reads the live headings.
+### 5f. Index → glossary **[done 2026-07-21]**
+`build/index_glossary_links.py` rewrites `.indexcols` in place: it marks the 174
+lemmas that name a glossary term with `data-gloss`, adds the 25 terms the index
+lacked (in ochre, each with a real § link — none needed a "see glossary"
+fallback), and classifies the rest by language.
+
+**Editing the INDEX rather than the search dropdown is the whole point.**
+`collectIndex` clones the live `.idx` nodes, so one edit reaches the page, the
+dropdown and the PDF with no second code path and no runtime matching.
+
+**Language classification** overlays three signals — a leading hyphen (Latin
+enclitics), a lowercase initial (Pharr capitalises English topic headings), and a
+macron — then checks survivors against the document's own `.la` marking, used
+only positively (good precision: it found `Caere` and `Orpheus`; poor recall: 42
+plainly Latin lemmas never appear in a `.la` span). Four were left over and are
+resolved by hand in a `REVIEWED` table with their evidence. Result: 370 Latin,
+229 English, 0 unresolved. A future edit that introduces a fifth is reported as
+**unresolved**, never guessed.
+
+> ⚠ **If this script grows another feature, port it to a DOM parser first.** It
+> manipulates HTML with regexes, and every bug it had came from that: patterns
+> anchored as `class="idx"` stop matching once a second class is added, which
+> broke it twice — once silently dropping all 25 additions, once duplicating
+> them. It is idempotent now and proven so by repeated runs, but the technique
+> punishes exactly that mistake, and `classList.contains` would make it
+> unrepresentable.
 
 **Next for the glossary (editor, 2026-07-21) — reach a Glossary entry from
 *inside* this app, as the ultimate failsafe.** Today a landing (§5e) is only

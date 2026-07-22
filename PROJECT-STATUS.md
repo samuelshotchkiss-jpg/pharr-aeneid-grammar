@@ -69,6 +69,40 @@ content stays non-commercial; the code stays open.
   conversation's memory. So this very document is the kind of handoff that lets a
   later conversation pick up cleanly.
 
+## What the edition gained in July 2026 — the vocabulary link-up
+
+The class also has a **vocabulary app** (a separate project). Its definitions tag
+grammatical terms, and those tags now open the matching entry *here*. Three
+things were built or fixed to make that work, and they changed this edition too:
+
+- **A glossary entry is now addressable.** A link of the form `…/#term=ablative`
+  opens that entry directly, as a panel over the page. Before, an entry could
+  only be reached by clicking the word inside Pharr's text — which is no use to
+  a reader arriving from somewhere else.
+- **The "Kinds" menus were completed.** Each case entry lists the constructions
+  Pharr treats, every one linking to its section: **62** of them across the
+  ablative, dative, genitive and accusative, up from 34. The accusative had none
+  at all. A link can therefore land on *"ablative"* with *"ablative of
+  separation §340"* already picked out.
+- **The index is wired to the glossary.** Clicking an index word that names a
+  grammatical term opens its entry; clicking the numbers still jumps to the
+  section, as before. 25 terms the index never carried were added, in editorial
+  ochre. Index words are now coloured by what they are — Latin, grammatical term,
+  or English heading — where they used to be one undifferentiated blue.
+
+**Two things that were quietly wrong and are now fixed**, both worth knowing
+because they were invisible rather than broken: the editor's expansions of
+Pharr's terser definitions **were never reaching the printed glossary** (24
+entries, including *ablative*, which printed as "the case of adverbial relation"
+and nothing else), and every one of 139 invisible anchor points was reserving a
+blank line of space on screen — about a page of accumulated whitespace.
+
+**Each case entry now ends by answering the question a stuck student actually
+has:** *how will I recognise one?* It gives the honest answer — that the ending
+depends on the declension — then the one rule that does hold (the accusative
+singular always ends in **-m**; dative and ablative plurals are always
+identical), then points at §32–33, where Pharr tabulates the lot.
+
 ## Editorial conventions worth remembering
 
 - The **editor's voice** is visually distinct (an ochre color family, in three
