@@ -77,6 +77,13 @@ h3.h3{font-size:1.08rem;color:var(--head);margin:1.5rem 0 .55rem;
   border-bottom:2px solid var(--line);padding-bottom:.18rem}
 h4.h4{font-size:.98rem;color:var(--term-deep);margin:1.1rem 0 .4rem;
   text-transform:none;font-weight:700}
+/* h5/h6 exist for the third declension's real depth: I. Consonant Stems (h4)
+   > 1.-5. the kinds of stem (h5) > a.-c. the mute paradigm tables (h6). Each
+   step is smaller and lighter than the last so four levels of nesting still
+   read as a hierarchy rather than as four kinds of bold. */
+h5.h5{font-size:.92rem;color:var(--term-deep);margin:.95rem 0 .3rem;font-weight:700}
+h6.h6{font-size:.86rem;color:var(--muted);margin:.8rem 0 .25rem;
+  font-weight:700;font-style:italic}
 
 /* ---- section blocks ---- */
 .sec{margin:.55rem 0 .7rem}

@@ -19,7 +19,7 @@
      before each major section -- continuous flow reads more like Pharr, and the
      readability gain didn't justify the whitespace.) */
   h2.h2{break-after:avoid}
-  h3.h3,h4.h4{break-after:avoid}
+  h3.h3,h4.h4,h5.h5,h6.h6{break-after:avoid}
   table.grid,.casetable,.scanrow,.callout,.note,.editnote,.edpanel,.edbox,.classlist,.braceitem,.footnote{break-inside:avoid}
   .ppsys .pptense,.ppgrid{break-inside:avoid}
   .sec{break-inside:auto}
@@ -164,7 +164,8 @@
   table.grid.paradigm tr.pl-row td.numdata .la{color:#000}
 
   /* ---- headings: neutral ink; reversed h2 bar goes dark-neutral ---- */
-  h1.h1,h3.h3,h4.h4{color:#000}
+  h1.h1,h3.h3,h4.h4,h5.h5{color:#000}
+  h6.h6{color:#333}                 /* the deepest level stays a shade lighter */
   h2.h2{background:#222;color:#fff}
   h3.h3{border-bottom-color:#333}
 

@@ -110,6 +110,13 @@
 .toc-i3 > a{ font-size:.8rem; color:var(--muted); padding:.1rem .4rem .1rem .9rem;
   border-left:1px solid var(--line); margin-left:1.5rem; }
 .toc-i3 > a:hover{ border-left-color:var(--accent); color:var(--accent-deep); }
+/* Fourth level: only the third declension's kinds of consonant stem reach here.
+   Stepped in once more and set in italic, so depth is signalled by style as well
+   as indent -- four nested rules would otherwise read as a picket fence. */
+.toc-l4{ margin:0 0 .1rem; }
+.toc-i4 > a{ font-size:.76rem; font-style:italic; color:var(--muted);
+  padding:.08rem .4rem .08rem .8rem; border-left:1px dotted var(--line); margin-left:2.4rem; }
+.toc-i4 > a:hover{ border-left-color:var(--accent); color:var(--accent-deep); font-style:normal; }
 
 /* ---- §5d search page (modal "all instances" results) ----------------- */
 .search-page{ position:fixed; inset:0; z-index:80; display:flex; }

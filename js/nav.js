@@ -84,9 +84,12 @@
     // Conditional Sentences) were authored as headings and unreachable from the
     // ToC. Nothing is added to the content here; the derivation just reads what
     // was already written.
-    var heads = page.querySelectorAll('h2.h2, h3.h3, h4.h4');
+    // FOUR levels. h6 is deliberately absent: it labels the three mute-stem
+    // paradigm tables (a/b/c under "5. Mute Stems"), which are a place to land
+    // once you are in the right section, not a place to navigate to.
+    var heads = page.querySelectorAll('h2.h2, h3.h3, h4.h4, h5.h5');
     var topList = el('ul', { class: 'toc-l1' });
-    var curSub = null, curSub3 = null;
+    var curSub = null, curSub3 = null, curSub4 = null;
     var seen = {};
 
     function ensureId(h) {
@@ -115,13 +118,20 @@
         var sub = curSub || topList;          // stray h3 before any h2 (none today)
         var li3 = el('li', { class: 'toc-i2' }, [a]);
         curSub3 = el('ul', { class: 'toc-l3' });
+        curSub4 = null;
         li3.appendChild(curSub3);
         sub.appendChild(li3);
+      } else if (h.tagName === 'H4') {
+        var li4 = el('li', { class: 'toc-i3' }, [a]);
+        curSub4 = el('ul', { class: 'toc-l4' });
+        li4.appendChild(curSub4);
+        // A heading with no parent above it falls back up the chain rather than
+        // being dropped -- §41's "I. Consonant Stems" must not vanish because
+        // someone later restructures the heading above it.
+        (curSub3 || curSub || topList).appendChild(li4);
       } else {
-        // An h4 with no h3 above it falls back up the chain rather than being
-        // dropped -- §41's "I. Consonant Stems" must not vanish because someone
-        // later restructures the heading above it.
-        (curSub3 || curSub || topList).appendChild(el('li', { class: 'toc-i3' }, [a]));
+        (curSub4 || curSub3 || curSub || topList)
+          .appendChild(el('li', { class: 'toc-i4' }, [a]));
       }
     });
 
