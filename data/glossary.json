@@ -279,6 +279,9 @@
   {
     "term": "plural",
     "variants": "pl.",
+    "subclasses": [
+      { "name": "poetic plural", "section": "§243" }
+    ],
     "domain": "nominal",
     "parent": "number",
     "pharr_defines": true,
@@ -338,7 +341,10 @@
       { "name": "genitive of the charge", "section": "§291" },
       { "name": "genitive of value", "section": "§292" },
       { "name": "genitive with interest and rēfert", "section": "§293" },
-      { "name": "genitive of respect", "section": "§294" }
+      { "name": "genitive of respect", "section": "§294" },
+      { "name": "genitive of material", "section": "§280" },
+      { "name": "appositional genitive", "section": "§281" },
+      { "name": "epexegetical genitive", "section": "§282" }
     ],
     "domain": "case",
     "parent": "case",
@@ -1475,6 +1481,11 @@
   {
     "term": "participle",
     "variants": "participles; Part.",
+    "subclasses": [
+      { "name": "present participle", "section": "§272" },
+      { "name": "future participle", "section": "§274" },
+      { "name": "perfect participle", "section": "§275" }
+    ],
     "domain": "pos",
     "parent": "",
     "pharr_defines": false,
@@ -1492,6 +1503,17 @@
   {
     "term": "infinitive",
     "variants": "infinitives; Inf.",
+    "subclasses": [
+      { "name": "historical infinitive", "section": "§257" },
+      { "name": "infinitive as neuter subject", "section": "§258" },
+      { "name": "complementary infinitive", "section": "§259" },
+      { "name": "infinitive as object", "section": "§260" },
+      { "name": "infinitive of purpose", "section": "§261" },
+      { "name": "infinitive of exclamation", "section": "§262" },
+      { "name": "infinitive of indirect statement", "section": "§263" },
+      { "name": "infinitive with nouns", "section": "§264" },
+      { "name": "infinitive with adjectives", "section": "§265" }
+    ],
     "domain": "verb",
     "parent": "",
     "pharr_defines": false,
@@ -1915,6 +1937,11 @@
   {
     "term": "conditional sentence",
     "variants": "conditional sentences; condition; conditions",
+    "subclasses": [
+      { "name": "logical conditional sentence", "section": "§380" },
+      { "name": "ideal conditional sentence", "section": "§381" },
+      { "name": "unreal conditional sentence", "section": "§382" }
+    ],
     "domain": "syntax",
     "parent": "",
     "pharr_defines": false,
@@ -2849,5 +2876,21 @@
     "in_situ": false,
     "in_situ_note": "",
     "in_situ_rationale": "umbrella term for the whole §29-235 inflectional system; defined once for the student who meets 'inflection' inside Pharr's definition of conjugation (§115)"
+  },
+  {
+    "term": "enclitic",
+    "variants": "enclitics",
+    "subclasses": [],
+    "domain": "phonology",
+    "parent": "",
+    "pharr_defines": true,
+    "definition_source": "Pharr",
+    "definition": "Certain words are not written separately but appended to the word they follow; the most common are <<-que>> and, <<-ve>> or, and <<-ne>> (the sign of a question)",
+    "definition_location": "§27",
+    "first_appearance": "§27",
+    "insertion_point": "§27",
+    "in_term_span": true,
+    "notes": "",
+    "editor_expansion": "An enclitic never stands on its own — it has no separate life as a word, and you will only ever meet it welded to the back of the word in front of it. So <<arma virumque>> is <<arma>> plus <<virum>> plus <<-que>>, and the <<-que>> means and, joining <<virum>> to <<arma>>: arms and the man. The one that catches readers out is <<-ne>>, which turns a statement into a yes-or-no [[question]] and translates as nothing at all in English — <<venitne?>> is simply is he coming? Pharr's other point here is about accent: tacking an enclitic on drags the stress onto the syllable just before it, so <<forī́busque>> and <<amṓque>>."
   }
 ]
