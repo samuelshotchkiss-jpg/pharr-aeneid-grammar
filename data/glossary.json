@@ -2905,6 +2905,9 @@
     "first_appearance": "§113",
     "insertion_point": "§113",
     "in_term_span": false,
-    "notes": ""
+    "notes": "",
+    "in_situ": true,
+    "in_situ_note": "An indefinite pronoun points at a person or thing without saying which — 'someone', 'anyone', 'something'.",
+    "in_situ_rationale": "keep, meaning-only: the without-saying-which meaning is the need, and it is what separates it from the look-alike interrogative at §110 and relative at §109; the aliquis/quis forms and §113a's adjectives are left to the paradigm directly below || anchored at the §113 'G. The Indefinite Pronoun' heading, which unlike D and E is inside the numbered section rather than a separate h3; added as a full intro sentence."
   }
 ]
